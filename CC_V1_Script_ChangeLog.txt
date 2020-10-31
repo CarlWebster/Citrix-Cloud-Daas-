@@ -1,0 +1,94 @@
+#webster@carlwebster.com
+#@carlwebster on Twitter
+#http://www.CarlWebster.com
+#Original script created on October 20, 2013
+#started updating for Citrix Cloud on August 28, 2020
+
+# This script is based on the CVAD V3.00 doc script
+
+#Version 1.00 21-Sep-2020
+#
+#	Add a switch statement for the machine/desktop/server Power State
+#	Add a test to make sure the script is running from an elevated PowerShell session
+#	Add additional Citrix Cloud administrator permissions:
+#		App-V
+#			Add App-V applications
+#			Remove App-V applications
+#		Cloud
+#			Read Storefront Configuration 
+#			Update Storefront Configuration
+#		Director
+#			View Filters page Application Instances only
+#			View Filters page Connections only
+#			View Filters page Machines only
+#			View Filters page Sessions only
+#		Other Permissions
+#			Customer Update Site Configuration
+#			Update Site Configuration
+#			Read database status information
+#			Export Broker Configuration
+#		UPM
+#			Add UPM Broker Machine Configuration
+#			Read UPM Broker Machine Configuration
+#			Delete UPM Broker Machine Configuration
+#	Added a ValidateSet to the Sections parameter. You can use -Section, press tab, and tab through all the section options. (Credit to Guy Leech)
+#	Added a -ProfileName parameter for use by Get-XDAuthentication 
+#		For more information, see the Authentication section in the ReadMe file https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+#		Thanks to David Prows and Devan Tilly for documenting this process for me to use
+#	Added testing to see if the computer running the script is in a Domain or Workgroup
+#		If not in a domain, and VDARegistryKeys is set, set it to $False
+#		If not in a domain, set NoADPolicies to $True
+#	Added testing to see if the Remote SDK is installed (Thanks to Martin Zugec)
+#	Change all Write-Verbose $(Get-Date) to add -Format G to put the dates in the user's locale (Thanks to Guy Leech)
+#	Change checking some String variables from just $Null to [String]::IsNullOrEmpty
+#		Some cmdlet's string properties are sometimes Null and sometimes an empty string
+#	Change checking the way a machine is online or offline
+#	Change some cmdlets to sort on the left of the pipeline using the cmdlet's -SortBy option
+#	Changed testing for existing PSDrives from Get-PSDrive to Test-Path
+#	Comment out the code for Session Recording until Citrix enables the cmdlet in the Cloud
+#	Fixed administrators output by restricting to UserIdentityType -ne "Sid" -and (-not ([String]::IsNullOrEmpty($_.Name)))
+#	Fixed an issue with "Connections meeting any of the following (Access Gateway) filters"
+#		If you selected HTML and any other output format in the same run, only the HTML output had any Access Gateway data
+#	Fixed issue with PowerShell 5.1.x and empty Hashtables for Ian Brighton's Word Table functions
+#		PoSH 3, 4, and 5.0 had no problem with an empty hashtable and would create a blank Word table with only column headings
+#		For many tables, before passing the hashtable to Ian's function, test if the hashtable is empty
+#		If it is, create a dummy row of data for the hashtable
+#		For example, a RemotePC catalog based on OU that contains no machines, or Applications with no administrators
+#		Instead of having a missing table, the table will now have a row that says "None found"
+#	Fixed issue with the array used for Appendix A and the CSV file when selecting multiple output formats
+#		If HTML and Text and MSWord were selected, Appendix A and the CSV file contained three duplicate entries
+#		Changed from using only one array to three. Changed from using $Script:ALLVDARegistryItems to
+#			$Script:WordALLVDARegistryItems
+#			$Script:TextALLVDARegistryItems
+#			$Script:HTMLALLVDARegistryItems
+#	Fixed output issues with Power Management settings
+#	Fixed several more array out of bounds issues when accessing element 0 when the array was empty
+#	Fixed Zone output by excluding "Initial Zone" and Zones with a name of "00000000-0000-0000-0000-000000000000"
+#	For Appendix A, Text output, change the column heading "DDC Name" to "Computer Name" to match the HTML and MSWord/PDF output
+#	For Zones, add Citrix Cloud Connectors
+#	For Zones, add MemType into the Sort-Object for Site View and Zone View
+#	For Zones, for MSWord and PDF output, change the column widths
+#	Removed a lot of the Licensing code as there are no Get-Lic* cmdlets in the Remote SDK
+#	Removed all code for BrokerRegistryKeys
+#		Removed AppendixB
+#	Removed all code for CEIP
+#	Removed all code for Hardware
+#	Removed all code for Microsoft hotfixes, Citrix hotfixes, and installed Windows Features and Roles
+#		Removed AppendixC, AppendixD, and AppendixE
+#	Removed all code for the Controllers section
+#		Also removed code for checking if StoreFront is installed on the Delivery Controller
+#	Removed all code for the three Citrix SQL databases
+#	Removed some code for Configuration Logging
+#		We don't have access to Preferences or the Logging database details
+#		We do have access to the configuration logging high-level action details
+#		Remove checking for product code MPS since that doesn't exist in the cloud licenses
+#	Removed the help text and parameter for $AdminAddress
+#		Hardcode $AdminAddress to LocalHost
+#	Removed licensing data that didn't make sense for Citrix Cloud and added some data that did make sense
+#	Since the RegistrationState property is an enum, add .ToString() to the machine/desktop/server variable so HTML output is correct
+#	When getting the Master VM for an MCS based machine catalog, also check for images ending in .template for Nutanix
+#	When getting the provisioning scheme data for a machine, only process machines with a provisioning type of MCS
+#		There is no provisioning scheme data for manually or PVS provisioned machines
+#	When VDARegistryKeys is used, now test the RemoteRegistry service for its status
+#		If the service is not running, add that information into the various *VDARegistryItems arrays
+#	Where appropriate, changed all "CVAD" to "CC"
