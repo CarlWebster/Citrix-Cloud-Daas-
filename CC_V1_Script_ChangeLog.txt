@@ -6,6 +6,36 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.10
+#	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
+#	Added to Hosting Connection section:
+#	(Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me)
+#		Amazon EC2    
+#		Google Cloud Platform
+#		Microsoft Azure
+#		Nutanix AHV
+#		Remote PC Wake on LAN
+#	Correct the invalid variable name in the ScriptInfo output file for WordFilename
+#	Fixed alignment in the Text output for the ScriptInfo output file
+#	Fixed bug reported by David Prows in the Hosting section. First, check to see if the hosting connection's 
+#		AdditionalStorage.StorageLocations is valid
+#	For MCS Machine Catalogs:
+#		Check that the catalog's ProvisioningSchemeId is not $Null before retrieving the Provision Scheme's machine data
+#		Check that $MachineData is not $Null before checking for HostingUnitName
+#	For the Hosting section, for High Availability Servers and Power Actions, handle empty arrays
+#	In Function GetAdmins, for Hosting Connections, handle the error "The property 'ScopeId' cannot be found on this object. Verify that the property exists."
+#		Also, added some white space to make the function easier for me to read
+#	In Function OutputAdminsForDetails, add "No Admins found" to replace blank tables and text output
+#	In Function OutputDeliveryGroupCatalogs, handle the case where a Delivery Group has no Machine Catalog(s) assigned
+#	In Function OutputMachineDetails, when using Test-NetConnection, add Resolve-DnsName first to see if the machine name is resolvable. 
+#		This prevents every call to Test-NetConnection from failing with "<MachineName> was not found in DNS". Add error message:
+#		<MachineName> was not found in DNS. VDA Registry Key data cannot be gathered.
+#		Otherwise, every machine was reported as offline, which may not be true.
+#	In Function OutputPerZoneView, add "There are no zone members for Zone <ZoneName>" to replace blank tables and text output
+#	Provide full details in the error message if the Citrix.Common.GroupPolicy snapin is missing (Thanks to Guy Leech for the suggestion)
+#	Removed Controllers from the ScriptInfo output file and the Section parameter switch statement
+#	Updated the ReadMe file
+
 #Version 1.00 21-Sep-2020
 #
 #	Add a switch statement for the machine/desktop/server Power State
