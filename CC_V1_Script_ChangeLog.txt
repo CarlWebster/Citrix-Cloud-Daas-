@@ -6,7 +6,7 @@
 
 # This script is based on the CVAD V3.00 doc script
 
-#Version 1.10
+#Version 1.10 4-Dec-2020
 #	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
 #	Added to Hosting Connection section:
 #	(Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me)
@@ -19,6 +19,7 @@
 #	Fixed alignment in the Text output for the ScriptInfo output file
 #	Fixed bug reported by David Prows in the Hosting section. First, check to see if the hosting connection's 
 #		AdditionalStorage.StorageLocations is valid
+#	For all calls to Get-AdminAdministrator, remove the -SortBy Name. Sorting by Name is the default behavior.
 #	For MCS Machine Catalogs:
 #		Check that the catalog's ProvisioningSchemeId is not $Null before retrieving the Provision Scheme's machine data
 #		Check that $MachineData is not $Null before checking for HostingUnitName
@@ -34,6 +35,7 @@
 #	In Function OutputPerZoneView, add "There are no zone members for Zone <ZoneName>" to replace blank tables and text output
 #	Provide full details in the error message if the Citrix.Common.GroupPolicy snapin is missing (Thanks to Guy Leech for the suggestion)
 #	Removed Controllers from the ScriptInfo output file and the Section parameter switch statement
+#	Reordered the parameters in an order recommended by Guy Leech
 #	Updated the ReadMe file
 
 #Version 1.00 21-Sep-2020
