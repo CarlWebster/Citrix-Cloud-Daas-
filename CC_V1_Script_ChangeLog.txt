@@ -18,6 +18,7 @@
 #		Remote PC Wake on LAN
 #	Added variables, counters, and text for the following Administrative Roles
 #		Cloud Administrator: [int]$Script:TotalCloudAdmins
+#		Full Monitor Administrator: [int]$Script:TotalFullMonitorAdmins
 #		Probe Agent Administrator: [int]$Script:TotalProbeAdmins
 #		Session Administrator: [int]$Script:TotalSessionAdmins
 #	Correct the invalid variable name in the ScriptInfo output file for WordFilename

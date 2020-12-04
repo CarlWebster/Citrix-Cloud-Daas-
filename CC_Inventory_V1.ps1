@@ -1305,6 +1305,7 @@ Param(
 #		Remote PC Wake on LAN
 #	Added variables, counters, and text for the following Administrative Roles
 #		Cloud Administrator: [int]$Script:TotalCloudAdmins
+#		Full Monitor Administrator: [int]$Script:TotalFullMonitorAdmins
 #		Probe Agent Administrator: [int]$Script:TotalProbeAdmins
 #		Session Administrator: [int]$Script:TotalSessionAdmins
 #	Correct the invalid variable name in the ScriptInfo output file for WordFilename
@@ -1748,6 +1749,7 @@ If($Dev)
 [int]$Script:TotalCloudAdmins            = 0
 [int]$Script:TotalDeliveryGroupAdmins    = 0
 [int]$Script:TotalFullAdmins             = 0
+[int]$Script:TotalFullMonitorAdmins      = 0
 [int]$Script:TotalHelpDeskAdmins         = 0
 [int]$Script:TotalHostAdmins             = 0
 [int]$Script:TotalMachineCatalogAdmins   = 0
@@ -26230,6 +26232,7 @@ Function OutputAdministrators
 			"Cloud Administrator"			{$Script:TotalCloudAdmins++}
 			"Delivery Group Administrator"	{$Script:TotalDeliveryGroupAdmins++}
 			"Full Administrator"			{$Script:TotalFullAdmins++}
+			"Full Monitor Administrator"	{$Script:TotalFullMonitorAdmins++}
 			"Help Desk Administrator"		{$Script:TotalHelpDeskAdmins++}
 			"Host Administrator"			{$Script:TotalHostAdmins++}
 			"Machine Catalog Administrator"	{$Script:TotalMachineCatalogAdmins++}
@@ -29830,6 +29833,7 @@ Function OutputSummaryPage
 		$ScriptInformation.Add(@{Data = "Total Cloud Admins"; Value = $Script:TotalCloudAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Total Delivery Group Admins"; Value = $Script:TotalDeliveryGroupAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Full Admins'; Value = $Script:TotalFullAdmins.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = 'Total Full Monitor Admins'; Value = $Script:TotalFullMonitorAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Help Desk Admins'; Value = $Script:TotalHelpDeskAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Host Admins'; Value = $Script:TotalHostAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Machine Catalog Admins'; Value = $Script:TotalMachineCatalogAdmins.ToString(); }) > $Null
@@ -29841,6 +29845,7 @@ Function OutputSummaryPage
 		$Script:TotalCloudAdmins+
 		$Script:TotalDeliveryGroupAdmins+
 		$Script:TotalFullAdmins+
+		$Script:TotalFullMonitorAdmins+
 		$Script:TotalHelpDeskAdmins+
 		$Script:TotalHostAdmins+
 		$Script:TotalMachineCatalogAdmins+
@@ -29971,6 +29976,7 @@ Function OutputSummaryPage
 		Line 1 "Total Cloud Admins`t`t: " $Script:TotalCloudAdmins
 		Line 1 "Total Delivery Group Admins`t: " $Script:TotalDeliveryGroupAdmins
 		Line 1 "Total Full Admins`t`t: " $Script:TotalFullAdmins
+		Line 1 "Total Full Monitor Admins`t: " $Script:TotalFullMonitorAdmins
 		Line 1 "Total Help Desk Admins`t`t: " $Script:TotalHelpDeskAdmins
 		Line 1 "Total Host Admins`t`t: " $Script:TotalHostAdmins
 		Line 1 "Total Machine Catalog Admins`t: " $Script:TotalMachineCatalogAdmins
@@ -29982,6 +29988,7 @@ Function OutputSummaryPage
 		$Script:TotalCloudAdmins+
 		$Script:TotalDeliveryGroupAdmins+
 		$Script:TotalFullAdmins+
+		$Script:TotalFullMonitorAdmins+
 		$Script:TotalHelpDeskAdmins+
 		$Script:TotalHostAdmins+
 		$Script:TotalMachineCatalogAdmins+
@@ -30056,6 +30063,7 @@ Function OutputSummaryPage
 		$columnHeaders = @("Total Cloud Admins",($global:htmlsb),$Script:TotalCloudAdmins.ToString(),$htmlwhite)
 		$rowdata += @(,('Total Delivery Group Admins',($global:htmlsb),$Script:TotalDeliveryGroupAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Full Admins',($global:htmlsb),$Script:TotalFullAdmins.ToString(),$htmlwhite))
+		$rowdata += @(,('Total Full Monitor Admins',($global:htmlsb),$Script:TotalFullMonitorAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Help Desk Admins',($global:htmlsb),$Script:TotalHelpDeskAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Host Admins',($global:htmlsb),$Script:TotalHostAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Machine Catalog Admins',($global:htmlsb),$Script:TotalMachineCatalogAdmins.ToString(),$htmlwhite))
@@ -30067,6 +30075,7 @@ Function OutputSummaryPage
 		$Script:TotalCloudAdmins+
 		$Script:TotalDeliveryGroupAdmins+
 		$Script:TotalFullAdmins+
+		$Script:TotalFullMonitorAdmins+
 		$Script:TotalHelpDeskAdmins+
 		$Script:TotalHostAdmins+
 		$Script:TotalMachineCatalogAdmins+
