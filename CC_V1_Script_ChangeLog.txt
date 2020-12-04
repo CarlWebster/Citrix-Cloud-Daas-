@@ -6,7 +6,8 @@
 
 # This script is based on the CVAD V3.00 doc script
 
-#Version 1.10 4-Dec-2020
+#Version 1.10
+#	Added CustomerID to function ShowScriptInfo and ProcessScriptEnd
 #	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
 #	Added to Hosting Connection section:
 #	(Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me)
@@ -15,6 +16,10 @@
 #		Microsoft Azure
 #		Nutanix AHV
 #		Remote PC Wake on LAN
+#	Added variables, counters, and text for the following Administrative Roles
+#		Cloud Administrator: [int]$Script:TotalCloudAdmins
+#		Probe Agent Administrator: [int]$Script:TotalProbeAdmins
+#		Session Administrator: [int]$Script:TotalSessionAdmins
 #	Correct the invalid variable name in the ScriptInfo output file for WordFilename
 #	Fixed alignment in the Text output for the ScriptInfo output file
 #	Fixed bug reported by David Prows in the Hosting section. First, check to see if the hosting connection's 
@@ -33,8 +38,12 @@
 #		<MachineName> was not found in DNS. VDA Registry Key data cannot be gathered.
 #		Otherwise, every machine was reported as offline, which may not be true.
 #	In Function OutputPerZoneView, add "There are no zone members for Zone <ZoneName>" to replace blank tables and text output
+#	In Function OutputSummaryPage, add text for Cloud, Probe Agent, and Session Administrators
 #	Provide full details in the error message if the Citrix.Common.GroupPolicy snapin is missing (Thanks to Guy Leech for the suggestion)
+#	Removed all references to $Script:CCParams1 and @CCParams1
+#	Removed all references to AdminAddress
 #	Removed Controllers from the ScriptInfo output file and the Section parameter switch statement
+#	Removed Licensing from the Summary Page because there are no individual license files in Citrix Cloud
 #	Reordered the parameters in an order recommended by Guy Leech
 #	Updated the ReadMe file
 

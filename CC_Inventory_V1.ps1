@@ -1293,7 +1293,8 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
-#Version 1.10 4-Dec-2020
+#Version 1.10
+#	Added CustomerID to function ShowScriptInfo and ProcessScriptEnd
 #	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
 #	Added to Hosting Connection section:
 #	(Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me)
@@ -1302,6 +1303,10 @@ Param(
 #		Microsoft Azure
 #		Nutanix AHV
 #		Remote PC Wake on LAN
+#	Added variables, counters, and text for the following Administrative Roles
+#		Cloud Administrator: [int]$Script:TotalCloudAdmins
+#		Probe Agent Administrator: [int]$Script:TotalProbeAdmins
+#		Session Administrator: [int]$Script:TotalSessionAdmins
 #	Correct the invalid variable name in the ScriptInfo output file for WordFilename
 #	Fixed alignment in the Text output for the ScriptInfo output file
 #	Fixed bug reported by David Prows in the Hosting section. First, check to see if the hosting connection's 
@@ -1320,8 +1325,12 @@ Param(
 #		<MachineName> was not found in DNS. VDA Registry Key data cannot be gathered.
 #		Otherwise, every machine was reported as offline, which may not be true.
 #	In Function OutputPerZoneView, add "There are no zone members for Zone <ZoneName>" to replace blank tables and text output
+#	In Function OutputSummaryPage, add text for Cloud, Probe Agent, and Session Administrators
 #	Provide full details in the error message if the Citrix.Common.GroupPolicy snapin is missing (Thanks to Guy Leech for the suggestion)
+#	Removed all references to $Script:CCParams1 and @CCParams1
+#	Removed all references to AdminAddress
 #	Removed Controllers from the ScriptInfo output file and the Section parameter switch statement
+#	Removed Licensing from the Summary Page because there are no individual license files in Citrix Cloud
 #	Reordered the parameters in an order recommended by Guy Leech
 #	Updated the ReadMe file
 #
@@ -1725,23 +1734,32 @@ If($Dev)
 [int]$Script:TotalADPolicies             = 0
 [int]$Script:TotalADPoliciesNotProcessed = 0
 [int]$Script:TotalPolicies               = 0
+
 [int]$Script:TotalServerOSCatalogs       = 0
 [int]$Script:TotalDesktopOSCatalogs      = 0
 [int]$Script:TotalRemotePCCatalogs       = 0
+
 [int]$Script:TotalApplicationGroups      = 0
 [int]$Script:TotalDesktopGroups          = 0
 [int]$Script:TotalAppsAndDesktopGroups   = 0
 [int]$Script:TotalPublishedApplications  = 0
 [int]$Script:TotalAppvApplications       = 0
+
+[int]$Script:TotalCloudAdmins            = 0
 [int]$Script:TotalDeliveryGroupAdmins    = 0
 [int]$Script:TotalFullAdmins             = 0
 [int]$Script:TotalHelpDeskAdmins         = 0
 [int]$Script:TotalHostAdmins             = 0
 [int]$Script:TotalMachineCatalogAdmins   = 0
+[int]$Script:TotalProbeAdmins            = 0
 [int]$Script:TotalReadOnlyAdmins         = 0
+[int]$Script:TotalSessionAdmins          = 0
 [int]$Script:TotalCustomAdmins           = 0
+
 [int]$Script:TotalHostingConnections     = 0
+
 [int]$Script:TotalStoreFrontServers      = 0
+
 [int]$Script:TotalZones                  = 0
 [string]$Script:RunningOS                = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
 	
@@ -1788,11 +1806,15 @@ If($VDARegistryKeys)
 If($ProfileName -eq "")
 {
 	Get-XDAuthentication -EA 0 *>$Null
+	$CCCreds = (Get-XDCredentials -ProfileName default).Credentials
 }
 Else
 {
 	Get-XDAuthentication -ProfileName $ProfileName -EA 0 *>$Null
+	$CCCreds = (Get-XDCredentials -ProfileName $ProfileName).Credentials
 }
+
+$Script:CustomerID = $CCCreds.CustomerID
 
 If(!$?)
 {
@@ -1809,8 +1831,6 @@ If(!$?)
 	"
 	Exit
 }
-
-$AdminAddress = "LocalHost"
 
 #endregion
 
@@ -4402,7 +4422,6 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): Add DateTime       : $($AddDateTime)"
-	Write-Verbose "$(Get-Date -Format G): AdminAddress       : $($AdminAddress)"
 	Write-Verbose "$(Get-Date -Format G): Administrators     : $($Administrators)"
 	Write-Verbose "$(Get-Date -Format G): Applications       : $($Applications)"
 	Write-Verbose "$(Get-Date -Format G): Company Name       : $($Script:CoName)"
@@ -4411,6 +4430,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Company Fax        : $($CompanyFax)"
 	Write-Verbose "$(Get-Date -Format G): Company Phone      : $($CompanyPhone)"
 	Write-Verbose "$(Get-Date -Format G): Cover Page         : $($CoverPage)"
+	Write-Verbose "$(Get-Date -Format G): Customer ID        : $($Script:CustomerID)"
 	Write-Verbose "$(Get-Date -Format G): CSV                : $($CSV)"
 	Write-Verbose "$(Get-Date -Format G): Dev                : $($Dev)"
 	Write-Verbose "$(Get-Date -Format G): DeliveryGroups     : $($DeliveryGroups)"
@@ -5271,7 +5291,7 @@ Function OutputMachines
 			{
 				If($null -ne $Catalog.ProvisioningSchemeId)
 				{
-					$MachineData = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeId @CCParams1
+					$MachineData = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeId -EA 0
 				}
 				Else
 				{
@@ -5308,7 +5328,7 @@ Function OutputMachines
 					    $Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 						$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-					((Get-ConfigEnabledFeature @CCParams1) -contains "DedicatedFullDiskClone"))
+					((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
 					{
 						If($MachineData.UseFullDiskCloneProvisioning -eq $True)
 						{
@@ -5436,7 +5456,7 @@ Function OutputMachines
 					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
 				($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-				((Get-ConfigEnabledFeature @CCParams1) -contains "DedicatedFullDiskClone"))
+				((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
 				{
 					$CatalogInformation += @{Data = "VM copy mode"; Value = $VMCopyMode; }
 				}
@@ -5739,7 +5759,7 @@ Function OutputMachines
 					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
 				($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-				((Get-ConfigEnabledFeature @CCParams1) -contains "DedicatedFullDiskClone"))
+				((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
 				{
 					Line 1 "VM copy mode`t`t`t`t: " $VMCopyMode
 				}
@@ -6029,7 +6049,7 @@ Function OutputMachines
 					$Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 					$Catalog.MinimumFunctionalLevel -eq "L7_25") -and 
 				($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-				((Get-ConfigEnabledFeature @CCParams1) -contains "DedicatedFullDiskClone"))
+				((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone"))
 				{
 					$rowdata += @(,('VM copy mode',($global:htmlsb),$VMCopyMode,$htmlwhite))
 				}
@@ -9232,7 +9252,7 @@ Function OutputDeliveryGroupDetails
 		$DGSFServers += "-"
 	}
 
-	$test = Get-BrokerSessionPreLaunch @CCParams1
+	$test = Get-BrokerSessionPreLaunch -EA 0
 	If($? -and $null -ne $test)
 	{
 		$SPLUIDs = @()
@@ -9242,7 +9262,7 @@ Function OutputDeliveryGroupDetails
 		}
 		If($SPLUIDs -contains $Group.Uid)
 		{
-			$Results = Get-BrokerSessionPreLaunch -DesktopGroupUid $Group.Uid @CCParams1
+			$Results = Get-BrokerSessionPreLaunch -DesktopGroupUid $Group.Uid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				If($Results.Enabled -and $Results.AssociatedUserFullNames.Count -eq 0)
@@ -9281,7 +9301,7 @@ Function OutputDeliveryGroupDetails
 		}
 	}
 	
-	$test = Get-BrokerSessionLinger @CCParams1
+	$test = Get-BrokerSessionLinger -EA 0
 	If($? -and $null -ne $test)
 	{
 		$SLUIDs = @()
@@ -9291,7 +9311,7 @@ Function OutputDeliveryGroupDetails
 		}
 		If($SLUIDs -contains $Group.Uid)
 		{
-			$Results = Get-BrokerSessionLinger -DesktopGroupUid $Group.Uid @CCParams1
+			$Results = Get-BrokerSessionLinger -DesktopGroupUid $Group.Uid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				$xSessionLinger = "Keep session active"
@@ -9772,7 +9792,7 @@ Function OutputDeliveryGroupDetails
 		
 		If($Group.SessionSupport -eq "MultiSession")
 		{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams1 -DesktopGroupUid $Group.Uid
+			$RestartSchedules = Get-BrokerRebootScheduleV2 -EA 0 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
@@ -10403,7 +10423,7 @@ Function OutputDeliveryGroupDetails
 		
 		If($Group.SessionSupport -eq "MultiSession")
 		{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams1 -DesktopGroupUid $Group.Uid
+			$RestartSchedules = Get-BrokerRebootScheduleV2 -EA 0 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
@@ -11019,7 +11039,7 @@ Function OutputDeliveryGroupDetails
 			
 		If($Group.SessionSupport -eq "MultiSession")
 		{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams1 -DesktopGroupUid $Group.Uid
+			$RestartSchedules = Get-BrokerRebootScheduleV2 -EA 0 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
@@ -12280,7 +12300,7 @@ Function OutputApplicationDetails
 		ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 		{
 			$cnt++
-			$Results = Get-BrokerDesktopGroup @CCParams1 -Uid $DGUid
+			$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
 			If($? -and $Null -ne $Results)
 			{
 				$DeliveryGroups += "$($Results.Name) Priority: $($Application.AssociatedDesktopGroupPriorities[$cnt])"
@@ -12291,7 +12311,7 @@ Function OutputApplicationDetails
 	{
 		ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 		{
-			$Results = Get-BrokerDesktopGroup @CCParams1 -Uid $DGUid
+			$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
 			If($? -and $Null -ne $Results)
 			{
 				$DeliveryGroups += $Results.Name
@@ -12880,7 +12900,7 @@ Function OutputApplicationAdministrators
 	$DeliveryGroups = @()
 	ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 	{
-		$Results = Get-BrokerDesktopGroup @CCParams1 -Uid $DGUid
+		$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
 		If($? -and $Null -ne $Results)
 		{
 			$DeliveryGroups += $Results.Name
@@ -13049,7 +13069,7 @@ Function ProcessApplicationGroupDetails
 			$DGs = @()
 			ForEach($DGUid in $AppGroup.AssociatedDesktopGroupUids)
 			{
-				$results = Get-BrokerDesktopGroup @CCParams1 -Uid $DGUid
+				$results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
 				
 				If($? -and $Null -ne $results)
 				{
@@ -13285,7 +13305,7 @@ Function ProcessPolicies
 		}
 		
 		Write-Verbose "$(Get-Date -Format G): Creating localfarmgpo PSDrive for Computer policies"
-		New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller $AdminAddress -Scope Global *>$Null
+		New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller LocalHost -Scope Global *>$Null
 		
 		#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
 		TranscriptLogging
@@ -13297,11 +13317,11 @@ Function ProcessPolicies
 		}
 		Else
 		{
-			Write-Warning "Unable to create the LocalFarmGPO PSDrive on the CC Controller $($AdminAddress)"
+			Write-Warning "Unable to create the LocalFarmGPO PSDrive"
 		}
 
 		Write-Verbose "$(Get-Date -Format G): Creating localfarmgpo PSDrive for User policies"
-		New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller $AdminAddress -Scope Global *>$Null
+		New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller LocalHost -Scope Global *>$Null
 		
 		#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
 		TranscriptLogging
@@ -13313,7 +13333,7 @@ Function ProcessPolicies
 		}
 		Else
 		{
-			Write-Warning "Unable to create the LocalFarmGPO PSDrive on the CC Controller $($AdminAddress)"
+			Write-Warning "Unable to create the LocalFarmGPO PSDrive"
 		}
 		
 		If($NoADPolicies)
@@ -13401,7 +13421,7 @@ Function ProcessPolicySummary
 	}
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving Site Policies"
 	Write-Verbose "$(Get-Date -Format G): `t`tCreating localfarmgpo PSDrive"
-	New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller $AdminAddress -Scope Global *>$Null
+	New-PSDrive -Name localfarmgpo -psprovider citrixgrouppolicy -root \ -controller LocalHost -Scope Global *>$Null
 	
 	#using Citrix policy stuff and new-psdrive breaks transcript logging so restart transcript logging
 	TranscriptLogging
@@ -13416,7 +13436,8 @@ Function ProcessPolicySummary
 	}
 	Else
 	{
-		Write-Warning "Unable to create the LocalFarmGPO PSDrive on the CC Controller $($AdminAddress)"
+		#Write-Warning "Unable to create the LocalFarmGPO PSDrive on the CC Controller $($AdminAddress)"
+		Write-Warning "Unable to create the LocalFarmGPO PSDrive"
 	}
 	
 	If($NoADPolicies)
@@ -26206,12 +26227,15 @@ Function OutputAdministrators
 	{
 		Switch ($Admin.Rights.RoleName)
 		{
+			"Cloud Administrator"			{$Script:TotalCloudAdmins++}
 			"Delivery Group Administrator"	{$Script:TotalDeliveryGroupAdmins++}
 			"Full Administrator"			{$Script:TotalFullAdmins++}
 			"Help Desk Administrator"		{$Script:TotalHelpDeskAdmins++}
 			"Host Administrator"			{$Script:TotalHostAdmins++}
 			"Machine Catalog Administrator"	{$Script:TotalMachineCatalogAdmins++}
+			"Probe Agent Administrator"		{$Script:TotalProbeAdmins++}
 			"Read Only Administrator"		{$Script:TotalReadOnlyAdmins++}
+			"Session Administrator"			{$Script:TotalSessionAdmins++}
 			Default							{$Script:TotalCustomAdmins++}
 		}
 	}
@@ -26894,7 +26918,7 @@ Function OutputScopeAdministrators
 			WriteHTMLLine 3 0 "Administrators for Scope: $($Scope.Name)"
 		}
 	
-		$Admins = Get-AdminAdministrator @CCParams1 | `
+		$Admins = Get-AdminAdministrator -EA 0 | `
 		Where-Object {$_.UserIdentityType -ne "Sid" -and (-not [String]::IsNullOrEmpty($_.Name))} | `
 		Where-Object {$_.Rights.ScopeName -Contains $Scope.Name}
 		
@@ -27539,7 +27563,7 @@ Function OutputRoleAdministrators
 			WriteHTMLLine 3 0 "Administrators for Role: $($Role.Name)"
 		}
 		
-		$Admins = Get-AdminAdministrator @CCParams1 | `
+		$Admins = Get-AdminAdministrator -EA 0 | `
 		Where-Object {$_.UserIdentityType -ne "Sid" -and (-not [String]::IsNullOrEmpty($_.Name))} | `
 		Where-Object {$_.Rights.RoleName -Contains $Role.Name}
 		
@@ -27686,7 +27710,7 @@ Function ProcessHosting
 	$IntelliCache = New-Object System.Collections.ArrayList
 
 	Write-Verbose "$(Get-Date -Format G): `tProcessing Hosting Units"
-	$HostingUnits = Get-ChildItem @CCParams1 -path 'xdhyp:\hostingunits' 4>$Null
+	$HostingUnits = Get-ChildItem -EA 0 -path 'xdhyp:\hostingunits' 4>$Null
 	If($? -and $Null -ne $HostingUnits)
 	{
 		ForEach($item in $HostingUnits)
@@ -27799,7 +27823,7 @@ Function ProcessHosting
 			$xZoneName = ""
 			$xPowerActions = @()
 			Write-Verbose "$(Get-Date -Format G): `tProcessing Hosting Connections"
-			$Connections = Get-ChildItem @CCParams1 -path 'xdhyp:\connections' 4>$Null
+			$Connections = Get-ChildItem -EA 0 -path 'xdhyp:\connections' 4>$Null
 			
 			If($? -and $Null -ne $Connections)
 			{
@@ -29056,7 +29080,7 @@ Function ProcessStoreFront
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving StoreFront information"
-	$SFInfos = Get-BrokerMachineConfiguration @CCParams1 -Name rs* -SortBy LeafName
+	$SFInfos = Get-BrokerMachineConfiguration -EA 0 -Name rs* -SortBy LeafName
 	If($? -and ($Null -ne $SFInfos))
 	{
 		$First = $True
@@ -29201,7 +29225,7 @@ Function OutputStoreFrontDeliveryGroups
 	$DeliveryGroups = @()
 	ForEach($DGUid in $SFInfo.DesktopGroupUids)
 	{
-		$Results = Get-BrokerDesktopGroup @CCParams1 -Uid $DGUid
+		$Results = Get-BrokerDesktopGroup -EA 0 -Uid $DGUid
 		If($? -and $Null -ne $Results)
 		{
 			$DeliveryGroups += $Results.Name
@@ -29301,7 +29325,7 @@ Function ProcessAppV
 	}
 	
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving App-V configuration"
-	$AppVConfigs = Get-BrokerMachineConfiguration @CCParams1 -Name appv* 4>$Null
+	$AppVConfigs = Get-BrokerMachineConfiguration -EA 0 -Name appv* 4>$Null
 	
 	If($? -and $Null -ne $AppVConfigs)
 	{
@@ -29440,7 +29464,7 @@ Function ProcessZones
 	
 	#get all zone names
 	Write-Verbose "$(Get-Date -Format G): `tRetrieving All Zones"
-	$Zones = Get-ConfigZone @CCParams1 -Filter {Name -ne "Initial Zone" -and Name -ne "00000000-0000-0000-0000-000000000000"} -SortBy Name
+	$Zones = Get-ConfigZone -EA 0 -Filter {Name -ne "Initial Zone" -and Name -ne "00000000-0000-0000-0000-000000000000"} -SortBy Name
 	$ZoneMembers = New-Object System.Collections.ArrayList
 	
 	ForEach($Zone in $Zones)
@@ -29460,7 +29484,7 @@ Function ProcessZones
 		}
 		
 		Write-Verbose "$(Get-Date -Format G): `t`tRetrieving Host Connections for Zone $($Zone.Name)"
-		$ZoneHosts = Get-ChildItem @CCParams1 -path 'xdhyp:\connections' 4>$Null | Where-Object{$_.ZoneUid -eq $Zone.Uid}
+		$ZoneHosts = Get-ChildItem -EA 0 -path 'xdhyp:\connections' 4>$Null | Where-Object{$_.ZoneUid -eq $Zone.Uid}
 		ForEach($ZoneHost in $ZoneHosts)
 		{
 			$obj = [PSCustomObject] @{
@@ -29803,14 +29827,28 @@ Function OutputSummaryPage
 		
 		$ScriptInformation = New-Object System.Collections.ArrayList
 		WriteWordLine 4 0 "Administrators"
+		$ScriptInformation.Add(@{Data = "Total Cloud Admins"; Value = $Script:TotalCloudAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Total Delivery Group Admins"; Value = $Script:TotalDeliveryGroupAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Full Admins'; Value = $Script:TotalFullAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Help Desk Admins'; Value = $Script:TotalHelpDeskAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Host Admins'; Value = $Script:TotalHostAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Machine Catalog Admins'; Value = $Script:TotalMachineCatalogAdmins.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Total Probe Agent Admins"; Value = $Script:TotalProbeAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Read Only Admins'; Value = $Script:TotalReadOnlyAdmins.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Total Session Admins"; Value = $Script:TotalSessionAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Custom Admins'; Value = $Script:TotalCustomAdmins.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = '     Total Administrators'; Value = ($Script:TotalDeliveryGroupAdmins+$Script:TotalFullAdmins+$Script:TotalHelpDeskAdmins+$Script:TotalHostAdmins+$Script:TotalMachineCatalogAdmins+$Script:TotalReadOnlyAdmins+$Script:TotalCustomAdmins).ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = '     Total Administrators'; Value = (
+		$Script:TotalCloudAdmins+
+		$Script:TotalDeliveryGroupAdmins+
+		$Script:TotalFullAdmins+
+		$Script:TotalHelpDeskAdmins+
+		$Script:TotalHostAdmins+
+		$Script:TotalMachineCatalogAdmins+
+		$Script:TotalProbeAdmins+
+		$Script:TotalReadOnlyAdmins+
+		$Script:TotalSessionAdmins+
+		$Script:TotalCustomAdmins
+		).ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
@@ -29832,43 +29870,6 @@ Function OutputSummaryPage
 		$ScriptInformation = New-Object System.Collections.ArrayList
 		WriteWordLine 4 0 "Hosting Connections"
 		$ScriptInformation.Add(@{Data = "     Total Hosting Connections"; Value = $Script:TotalHostingConnections.ToString(); }) > $Null
-
-		$Table = AddWordTable -Hashtable $ScriptInformation `
-		-Columns Data,Value `
-		-List `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
-
-		SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-		$Table.Columns.Item(1).Width = 250;
-		$Table.Columns.Item(2).Width = 50;
-
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-		FindWordDocumentEnd
-		$Table = $Null
-		WriteWordLine 0 0 ""
-
-		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Licensing"
-		$TotalLicenses = 0
-		$cnt = 0
-		ForEach($License in $Script:Licenses)
-		{
-			$cnt++
-			
-			If($cnt -eq 1)
-			{
-				$ScriptInformation.Add(@{Data = "$($License.LicenseProduct) $($License.LicenseType) $($License.LicenseModel)"; Value = $License.LicenseCount.ToString(); }) > $Null
-			}
-			Else
-			{
-				$ScriptInformation.Add(@{Data = "$($License.LicenseProduct) $($License.LicenseType) $($License.LicenseModel)"; Value = $License.LicenseCount.ToString(); }) > $Null
-			}
-			$TotalLicenses += $License.LicenseCount
-		}
-		$ScriptInformation.Add(@{Data = '     Total Licenses'; Value = $TotalLicenses.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
@@ -29967,26 +29968,31 @@ Function OutputSummaryPage
 		}
 		
 		Line 0 "Administrators"
+		Line 1 "Total Cloud Admins`t`t: " $Script:TotalCloudAdmins
 		Line 1 "Total Delivery Group Admins`t: " $Script:TotalDeliveryGroupAdmins
 		Line 1 "Total Full Admins`t`t: " $Script:TotalFullAdmins
 		Line 1 "Total Help Desk Admins`t`t: " $Script:TotalHelpDeskAdmins
 		Line 1 "Total Host Admins`t`t: " $Script:TotalHostAdmins
 		Line 1 "Total Machine Catalog Admins`t: " $Script:TotalMachineCatalogAdmins
+		Line 1 "Total Probe Agent Admins`t: " $Script:TotalProbeAdmins
 		Line 1 "Total Read Only Admins`t`t: " $Script:TotalReadOnlyAdmins
+		Line 1 "Total Session Admins`t`t: " $Script:TotalSessionAdmins
 		Line 1 "Total Custom Admins`t`t: " $Script:TotalCustomAdmins
-		Line 2 "Total Administrators`t: " ($Script:TotalDeliveryGroupAdmins+$Script:TotalFullAdmins+$Script:TotalHelpDeskAdmins+$Script:TotalHostAdmins+$Script:TotalMachineCatalogAdmins+$Script:TotalReadOnlyAdmins+$Script:TotalCustomAdmins)
+		Line 2 "Total Administrators`t: " (
+		$Script:TotalCloudAdmins+
+		$Script:TotalDeliveryGroupAdmins+
+		$Script:TotalFullAdmins+
+		$Script:TotalHelpDeskAdmins+
+		$Script:TotalHostAdmins+
+		$Script:TotalMachineCatalogAdmins+
+		$Script:TotalProbeAdmins+
+		$Script:TotalReadOnlyAdmins+
+		$Script:TotalSessionAdmins+
+		$Script:TotalCustomAdmins
+		)
 		Line 0 ""
 		Line 0 "Hosting Connections"
 		Line 1 "Total Hosting Connections`t: " $Script:TotalHostingConnections
-		Line 0 ""
-		Line 0 "Licensing"
-		$TotalLicenses = 0
-		ForEach($License in $Script:Licenses)
-		{
-			Line 1 "$($License.LicenseProduct) $($License.LicenseType) $($License.LicenseModel)`t`t`t: $($License.LicenseCount)"
-			$TotalLicenses += $License.LicenseCount
-		}
-		Line 2 "Total Licenses`t`t: " $TotalLicenses
 		Line 0 ""
 		Line 0 "StoreFront"
 		Line 1 "Total StoreFront Servers`t: " $Script:TotalStoreFrontServers
@@ -30047,14 +30053,28 @@ Function OutputSummaryPage
 		}
 		
 		$rowdata = @()
-		$columnHeaders = @("Total Delivery Group Admins",($global:htmlsb),$Script:TotalDeliveryGroupAdmins.ToString(),$htmlwhite)
+		$columnHeaders = @("Total Cloud Admins",($global:htmlsb),$Script:TotalCloudAdmins.ToString(),$htmlwhite)
+		$rowdata += @(,('Total Delivery Group Admins',($global:htmlsb),$Script:TotalDeliveryGroupAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Full Admins',($global:htmlsb),$Script:TotalFullAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Help Desk Admins',($global:htmlsb),$Script:TotalHelpDeskAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Host Admins',($global:htmlsb),$Script:TotalHostAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Machine Catalog Admins',($global:htmlsb),$Script:TotalMachineCatalogAdmins.ToString(),$htmlwhite))
+		$rowdata += @(,('Total Probe Agent Admins',($global:htmlsb),$Script:TotalProbeAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Read Only Admins',($global:htmlsb),$Script:TotalReadOnlyAdmins.ToString(),$htmlwhite))
+		$rowdata += @(,('Total Session Admins',($global:htmlsb),$Script:TotalSessionAdmins.ToString(),$htmlwhite))
 		$rowdata += @(,('Total Custom Admins',($global:htmlsb),$Script:TotalCustomAdmins.ToString(),$htmlwhite))
-		$rowdata += @(,('     Total Administrators',($global:htmlsb),($Script:TotalDeliveryGroupAdmins+$Script:TotalFullAdmins+$Script:TotalHelpDeskAdmins+$Script:TotalHostAdmins+$Script:TotalMachineCatalogAdmins+$Script:TotalReadOnlyAdmins+$Script:TotalCustomAdmins).ToString(),$htmlwhite))
+		$rowdata += @(,('     Total Administrators',($global:htmlsb),(
+		$Script:TotalCloudAdmins+
+		$Script:TotalDeliveryGroupAdmins+
+		$Script:TotalFullAdmins+
+		$Script:TotalHelpDeskAdmins+
+		$Script:TotalHostAdmins+
+		$Script:TotalMachineCatalogAdmins+
+		$Script:TotalProbeAdmins+
+		$Script:TotalReadOnlyAdmins+
+		$Script:TotalSessionAdmins+
+		$Script:TotalCustomAdmins
+		).ToString(),$htmlwhite))
 
 		$msg = "Administrators"
 		$columnWidths = @("250","50")
@@ -30064,36 +30084,6 @@ Function OutputSummaryPage
 		$columnHeaders = @("     Total Hosting Connections",($global:htmlsb),$Script:TotalHostingConnections.ToString(),$htmlwhite)
 
 		$msg = "Hosting Connections"
-		$columnWidths = @("250","50")
-		FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths
-
-		$rowdata = @()
-		$TotalLicenses = 0
-		$cnt = 0
-		ForEach($License in $Script:Licenses)
-		{
-			$cnt++
-			
-			If($cnt -eq 1)
-			{
-				$columnHeaders = @("$($License.LicenseProduct) $($License.LicenseType) $($License.LicenseModel)",($global:htmlsb),$License.LicenseCount.ToString(),$htmlwhite)
-			}
-			Else
-			{
-				$rowdata += @(,("$($License.LicenseProduct) $($License.LicenseType) $($License.LicenseModel)",($global:htmlsb),$License.LicenseCount.ToString(),$htmlwhite))
-			}
-			$TotalLicenses += $License.LicenseCount
-		}
-		$rowdata += @(,('     Total Licenses',($global:htmlsb),$TotalLicenses.ToString(),$htmlwhite))
-
-		$msg = "Licensing"
-		$columnWidths = @("250","50")
-		FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths
-
-		$rowdata = @()
-		$columnHeaders = @("     Total StoreFront Servers",($global:htmlsb),$Script:TotalStoreFrontServers.ToString(),$htmlwhite)
-
-		$msg = "StoreFront"
 		$columnWidths = @("250","50")
 		FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths
 
@@ -30313,13 +30303,7 @@ Function ProcessScriptSetup
 	#set value for MaxRecordCount
 	$Script:MaxRecordCount = [int]::MaxValue 
 
-	$Script:CCParams1 = @{
-	adminaddress = $AdminAddress; 
-	EA = 0;
-	}
-
 	$Script:CCParams2 = @{
-	adminaddress = $AdminAddress; 
 	EA = 0;
 	MaxRecordCount = $Script:MaxRecordCount;
 	}
@@ -30327,7 +30311,7 @@ Function ProcessScriptSetup
 	# Get Site information
 	Write-Verbose "$(Get-Date -Format G): Gathering initial Site data"
 
-	$Script:CCSite1 = Get-BrokerSite @CCParams1
+	$Script:CCSite1 = Get-BrokerSite -EA 0
 
 #Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
 	If( !($?) -or $Null -eq $Script:CCSite1)
@@ -30336,7 +30320,7 @@ Function ProcessScriptSetup
 		Write-Warning "CC Site1 information could not be retrieved. Script cannot continue"
 		Write-Error "
 	`n`n
-Unable to connect to Delivery Controller: $($CCParams1.adminaddress)
+Unable to connect to your Citrix Cloud Account $($Script:CustomerId)
 	`n`n
 cmdlet failed: $($error[ 0 ].ToString())
 	`n`n
@@ -30344,7 +30328,7 @@ cmdlet failed: $($error[ 0 ].ToString())
 		AbortScript
 	}
 
-	$Script:CCSite2 = Get-ConfigSite @CCParams1
+	$Script:CCSite2 = Get-ConfigSite -EA 0
 
 	If( !($?) -or $Null -eq $Script:CCSite2)
 	{
@@ -30485,7 +30469,6 @@ Function ProcessScriptEnd
 		$SIFile = "$Script:pwdpath\CCInventoryScriptInfo_$(Get-Date -f yyyy-MM-dd_HHmm).txt"
 		Out-File -FilePath $SIFile -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Add DateTime       : $($AddDateTime)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "AdminAddress       : $($AdminAddress)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Administrators     : $($Administrators)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Applications       : $($Applications)" 4>$Null
 		If($MSWORD -or $PDF)
@@ -30498,6 +30481,7 @@ Function ProcessScriptEnd
 			Out-File -FilePath $SIFile -Append -InputObject "Cover Page         : $($CoverPage)" 4>$Null
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "CSV                : $($CSV)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Customer ID        : $($Script:CustomerID)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "DeliveryGroups     : $($DeliveryGroups)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Dev                : $($Dev)" 4>$Null
 		If($Dev)
