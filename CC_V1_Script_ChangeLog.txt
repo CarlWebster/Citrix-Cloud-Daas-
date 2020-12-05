@@ -6,6 +6,73 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.10 5-Dec-2020
+#	Added CustomerID to function ShowScriptInfo and ProcessScriptEnd
+#	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
+#	Added to Hosting Connection section:
+#	(Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me)
+#		Amazon EC2    
+#		Google Cloud Platform
+#		Microsoft Azure
+#		Nutanix AHV
+#		Remote PC Wake on LAN
+#	Added variables, counters, and text for the following Administrative Roles
+#		Cloud Administrator: [int]$Script:TotalCloudAdmins
+#		Full Monitor Administrator: [int]$Script:TotalFullMonitorAdmins
+#		Probe Agent Administrator: [int]$Script:TotalProbeAdmins
+#		Session Administrator: [int]$Script:TotalSessionAdmins
+#	Correct the invalid variable name in the ScriptInfo output file for WordFilename
+#	Fixed alignment in the Text output for the ScriptInfo output file
+#	Fixed bug reported by David Prows in the Hosting section. First, check to see if the hosting connection's 
+#		AdditionalStorage.StorageLocations is valid
+#	For all calls to Get-AdminAdministrator, remove the -SortBy Name. Sorting by Name is the default behavior.
+#	For MCS Machine Catalogs:
+#		Check that the catalog's ProvisioningSchemeId is not $Null before retrieving the Provision Scheme's machine data
+#		Check that $MachineData is not $Null before checking for HostingUnitName
+#	For the Hosting section, for High Availability Servers and Power Actions, handle empty arrays
+#	In Function GetAdmins, for Hosting Connections, handle the error "The property 'ScopeId' cannot be found on this object. Verify that the property exists."
+#		Also, added some white space to make the function easier for me to read
+#	In Function OutputAdminsForDetails, add "No Admins found" to replace blank tables and text output
+#	In Function OutputDeliveryGroupCatalogs, handle the case where a Delivery Group has no Machine Catalog(s) assigned
+#	In Function OutputMachineDetails, when using Test-NetConnection, add Resolve-DnsName first to see if the machine name is resolvable. 
+#		This prevents every call to Test-NetConnection from failing with "<MachineName> was not found in DNS". Add error message:
+#		<MachineName> was not found in DNS. VDA Registry Key data cannot be gathered.
+#		Otherwise, every machine was reported as offline, which may not be true.
+#	In Function OutputPerZoneView, add "There are no zone members for Zone <ZoneName>" to replace blank tables and text output
+#	In Function OutputSummaryPage, add text for Cloud, Full Monitor, Probe Agent, and Session Administrators
+#	KNOWN ISSUE: 
+#		A few users report they get the following errors even in a new elevated PowerShell session:
+#			"Import-Module : A drive with the name 'XDHyp' already exists."
+#			"ProcessScriptSetup : Unable to import the Citrix.Host.Commands module. Script cannot continue."
+#		Even if the script runs for these users, the Hosting section contains no usable data.
+#			Hosting
+#				Unable to retrieve Hosting Units
+#			
+#				Unable to retrieve Hosting Connections
+#			 
+#			My-Hosting-ConnectioName
+#				Connection Name		My-Hosting-ConnectioName
+#				Type				Hypervisor Type could not be determined:
+#				Address	   
+#				State				Disabled
+#				Username	   
+#				Scopes	   
+#				Maintenance Mode	Off
+#				Zone	   
+#				Storage resource name	   
+#
+#			Advanced
+#				Connection Name		My-Hosting-ConnectioName
+#				Unable to retrieve Hosting Connections
+#		I have been unable to determine the root cause, a resolution, or a workaround for this issue
+#	Provide full details in the error message if the Citrix.Common.GroupPolicy snapin is missing (Thanks to Guy Leech for the suggestion)
+#	Removed all references to $Script:CCParams1 and @CCParams1
+#	Removed all references to AdminAddress
+#	Removed Controllers from the ScriptInfo output file and the Section parameter switch statement
+#	Removed Licensing from the Summary Page because there are no individual license files in Citrix Cloud
+#	Reordered the parameters in an order recommended by Guy Leech
+#	Updated the ReadMe file
+
 #Version 1.00 21-Sep-2020
 #
 #	Add a switch statement for the machine/desktop/server Power State
