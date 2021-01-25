@@ -25,6 +25,15 @@
 	
 	This script supports only Citrix Cloud, not the on-premises CVAD products.
 	
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+
 	To prevent multiple Citrix Cloud authentication prompts, follow the instructions in 
 	the Authentication section of the ReadMe file to create a profile named Default.
 	
@@ -210,7 +219,7 @@
 	This parameter is disabled by default.
 	This parameter has an alias of NS.
 .PARAMETER Policies
-	Give detailed information for both Site and Citrix AD based Policies.
+	Give detailed information for both Site and Citrix AD-based Policies.
 	
 	Using the Policies parameter can cause the report to take a very long time 
 	to complete and can generate an extremely long report.
@@ -283,8 +292,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be ReportName_2020-06-01_1800.docx (or.pdf).
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be ReportName_2021-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -302,7 +311,7 @@
 	Outputs all errors to a text file at the end of the script.
 	
 	This is used when the script developer requests more troubleshooting data.
-	The text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 .PARAMETER Folder
@@ -311,7 +320,7 @@
 	Generates a log file for troubleshooting.
 .PARAMETER ScriptInfo
 	Outputs information about the script to a text file.
-	The text file is placed in the same folder from where the script is run.
+	The text file is placed in the same folder from where the script runs.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of SI.
@@ -458,7 +467,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MSWord
 	
-	Will use all default values.
+	Uses all default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -515,7 +524,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -PDF
 	
-	Will use all default values and save the document as a PDF file.
+	Uses all default values and saves the document as a PDF file.
 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
@@ -566,7 +575,7 @@
 	Creates a Microsoft Word report with utilization details for all Desktop (Delivery) 
 	Groups.
 
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -586,7 +595,7 @@
 	
 	Creates a PDF report with utilization details for all Desktop (Delivery) Groups.
 
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -630,7 +639,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -NoADPolicies
 	
-	Creates an HTML report with no Citrix AD based Policy information.
+	Creates an HTML report with no Citrix AD-based Policy information.
 	
 	If no authentication profile exists, prompts for Citrix Cloud credentials.
 	If a profile named Default exists, uses the credentials stored in the Default profile.
@@ -641,7 +650,7 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Policies -NoADPolicies
 	
 	Creates an HTML report with full details on Site policies created in Studio but 
-	no Citrix AD based Policy information.
+	no Citrix AD-based Policy information.
 
 	If no authentication profile exists, prompts for Citrix Cloud credentials.
 	If a profile named Default exists, uses the credentials stored in the Default profile.
@@ -649,24 +658,24 @@
 	Note: If a profile named Default does not exist, you may be prompted for Citrix Cloud 
 	credentials.
 .EXAMPLE
-	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2020 -EndDate 
-	09/30/2020	
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2021 -EndDate 
+	09/30/2021	
 	
-	Creates an HTML report with Configuration Logging details for the dates 09/01/2020 
-	through 09/30/2020.
+	Creates an HTML report with Configuration Logging details for the dates 09/01/2021 
+	through 09/30/2021.
 
 	If no authentication profile exists, prompts for Citrix Cloud credentials.
 	If a profile named Default exists, uses the credentials stored in the Default profile.
 .EXAMPLE
-	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2020 10:00:00" 
-	-EndDate "09/01/2020 14:00:00" -MSWord
+	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2021 10:00:00" 
+	-EndDate "09/01/2021 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2020 10:00:00AM through 09/01/2020 02:00:00PM.
+	09/01/2021 10:00:00AM through 09/01/2021 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -726,7 +735,7 @@
 		Policies
 		Hosts, Host Connections, and Resources
 		
-	Will use all Default values.
+	Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -746,7 +755,7 @@
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster"
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name.
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
@@ -758,7 +767,7 @@
 	-UN "Carl Webster" -MSWord
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Carl Webster Consulting for the Company Name (alias CN).
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the User Name (alias UN).
@@ -771,7 +780,7 @@
 	Street, London, England" -CompanyFax "+44 1753 276600" -CompanyPhone "+44 1753 276200"
 	
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Exposure for the Cover Page format.
 		Dr. Watson for the User Name.
@@ -787,7 +796,7 @@
 	SuperSleuth@SherlockHolmes.com
 
 	Creates a Microsoft Word report.
-	Will use:
+	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Facet for the Cover Page format.
 		Dr. Watson for the User Name.
@@ -801,8 +810,8 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CCSiteName_2020-06-01_1800.docx
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be CCSiteName_2021-06-01_1800.docx
 
 	If no authentication profile exists, prompts for Citrix Cloud credentials.
 	If a profile named Default exists, uses the credentials stored in the Default profile.
@@ -810,7 +819,7 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -PDF -AddDateTime
 	
 	Creates a PDF report.
-	Will use all Default values and save the document as a PDF file.
+	Uses all Default values and saves the document as a PDF file.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -822,8 +831,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2020 at 6PM is 2020-06-01_1800.
-	Output filename will be CCSiteName_2020-06-01_1800.pdf
+	June 1, 2021 at 6PM is 2021-06-01_1800.
+	Output filename will be CCSiteName_2021-06-01_1800.pdf
 
 	If no authentication profile exists, prompts for Citrix Cloud credentials.
 	If a profile named Default exists, uses the credentials stored in the Default profile.
@@ -831,7 +840,7 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Folder \\FileServer\ShareName
 	
 	Creates an HTML report.
-	Output file will be saved in the path \\FileServer\ShareName
+	Output file is saved in the path \\FileServer\ShareName
 
 	If no authentication profile exists, prompts for Citrix Cloud credentials.
 	If a profile named Default exists, uses the credentials stored in the Default profile.
@@ -900,7 +909,7 @@
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	For Microsoft Word and PDF, will use all Default values.
+	For Microsoft Word and PDF, Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -948,7 +957,7 @@
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -CSV
 	
-	Will use all Default values.
+	Uses all Default values.
 
 	Creates a CSV file for each Appendix.
 	For example:
@@ -975,7 +984,7 @@
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-	For Microsoft Word and PDF, will use all Default values.
+	For Microsoft Word and PDF, Uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -1008,13 +1017,13 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer mail.domain.tld -From 
 	CCAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script will use the email server mail.domain.tld, sending from 
-	CCAdmin@domain.tld, sending to ITGroup@domain.tld.
+	The script Uses the email server mail.domain.tld, sending from CCAdmin@domain.tld and 
+	sending to ITGroup@domain.tld.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script Uses the default SMTP port 25 and does not use SSL.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 
@@ -1026,23 +1035,23 @@
 
 	***SENDING UNAUTHENTICATED EMAIL***
 
-	The script will use the email server mailrelay.domain.tld, sending from 
+	The script uses the email server mailrelay.domain.tld, sending from 
 	anonymous@domain.tld, sending to ITGroup@domain.tld.
 
-	To send unauthenticated email using an email relay server requires the From email account 
-	to use the name Anonymous.
+	To send an unauthenticated email using an email relay server requires the From email 
+	account to use the name Anonymous.
 
-	The script will use the default SMTP port 25 and will not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 	
 	***GMAIL/G SUITE SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
 	https://support.google.com/a/answer/176600?hl=en
 
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	***GMAIL/G SUITE SMTP RELAY***
 
-	The script will generate an anonymous secure password for the anonymous@domain.tld 
+	The script will generate an anonymous, secure password for the anonymous@domain.tld 
 	account.
 
 	Creates an HTML report.
@@ -1062,10 +1071,10 @@
 	
 	***OFFICE 365 Example***
 
-	The script will use the email server labaddomain-com.mail.protection.outlook.com, 
-	sending from SomeEmailAddress@labaddomain.com, sending to ITGroupDL@labaddomain.com.
+	The script uses the email server labaddomain-com.mail.protection.outlook.com, sending 
+	from SomeEmailAddress@labaddomain.com and sending to ITGroupDL@labaddomain.com.
 
-	The script will use the default SMTP port 25 and will use SSL.
+	The script uses the default SMTP port 25 and SSL.
 
 	Creates an HTML report.
 
@@ -1075,11 +1084,11 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
-	The script will use the email server smtp.office365.com on port 587 using SSL, 
-	sending from webster@carlwebster.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.office365.com on port 587 using SSL, sending from 
+	webster@carlwebster.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 
@@ -1090,15 +1099,15 @@
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send email using a Gmail or g-suite account, you may have to turn ON
-	the "Less secure app access" option on your account.
+	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	secure app access" option on your account.
 	*** NOTE ***
 	
-	The script will use the email server smtp.gmail.com on port 587 using SSL, 
-	sending from webster@gmail.com, sending to ITGroup@carlwebster.com.
+	The script uses the email server smtp.gmail.com on port 587 using SSL, sending from 
+	webster@gmail.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, 
-	the user will be prompted to enter valid credentials.
+	If the current user's credentials are not valid to send email, the script prompts the 
+	user to enter valid credentials.
 
 	Creates an HTML report.
 
@@ -1111,9 +1120,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.10
+	VERSION: 1.11
 	AUTHOR: Carl Webster
-	LASTEDIT: December 5, 2020
+	LASTEDIT: January 25, 2021
 #>
 
 #endregion
@@ -1293,6 +1302,13 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.11 25-Jan-2021
+#	Added error checking in Function Check-NeededPSSnapins (Requested by Guy Leech)
+#	Updated the error message when Get-XDAuthentication fails
+#	Updated the error messages in Function ProcessScriptSetup
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 1.10 5-Dec-2020
 #	Added CustomerID to function ShowScriptInfo and ProcessScriptEnd
 #	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
@@ -1363,7 +1379,7 @@ Param(
 #Version 1.00 21-Sep-2020
 #
 #	Add a switch statement for the machine/desktop/server Power State
-#	Add a test to make sure the script is running from an elevated PowerShell session
+#	Add a test to make sure the script runsning from an elevated PowerShell session
 #	Add additional Citrix Cloud administrator permissions:
 #		App-V
 #			Add App-V applications
@@ -1846,15 +1862,26 @@ $Script:CustomerID = $CCCreds.CustomerID
 If(!$?)
 {
 	Write-Error "
-	`n
+	`n`n
 	Get-XDAuthentication failed.
-	`n
+	`n`n
 	For more information, see the Authentication section in the ReadMe file at 
-	`n
+	`n`n
 	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
-	`n
+	`n`n
+	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
 	Script cannot continue.
-	`n
+	`n`n
 	"
 	Exit
 }
@@ -2405,7 +2432,7 @@ Function CheckWordPrereq
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
-	#Find out if winword is running in our session
+	#Find out if winword runsning in our session
 	[bool]$wordrunning = $null –ne ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	If($wordrunning)
 	{
@@ -4150,7 +4177,7 @@ Function CheckExcelPrereq
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 	
-	#Find out if excel is running in our session
+	#Find out if excel runsning in our session
 	[bool]$excelrunning = $null –ne ((Get-Process 'Excel' -ea 0) | Where-Object {$_.SessionId -eq $SessionID})
 	
 	If($excelrunning)
@@ -4194,7 +4221,19 @@ Function Check-NeededPSSnapins
 			Else
 			{
 				#Snapin is registered, but not loaded, loading it now:
-				Add-PSSnapin -Name $snapin -EA 0 *>$Null
+				Write-Host "Loading Windows PowerShell snap-in: $snapin"
+				Add-PSSnapin -Name $snapin -EA 0
+
+				If(!($?))
+				{
+					Write-Error "
+	`n`n
+	Error loading snapin: $($error[0].Exception.Message)
+	`n`n
+	Script cannot continue.
+	`n`n"
+					Return $false
+				}				
 			}
 		}
 	}
@@ -4202,7 +4241,9 @@ Function Check-NeededPSSnapins
 	If($FoundMissingSnapin)
 	{
 		Write-Warning "Missing Windows PowerShell snap-ins Detected:"
-		$missingSnapins | ForEach-Object {Write-Warning "($_)"}
+		Write-Host ""
+		$missingSnapins | ForEach-Object {Write-Host "`tMissing Snapin: ($_)"}
+		Write-Host ""
 		Return $False
 	}
 	Else
@@ -4279,7 +4320,7 @@ Function SaveandCloseDocumentandShutdownWord
 	#find out our session (usually "1" except on TS/RDC or Citrix)
 	$SessionID = (Get-Process -PID $PID).SessionId
 
-	#Find out if winword is running in our session
+	#Find out if winword runsning in our session
 	$wordprocess = $Null
 	$wordprocess = ((Get-Process 'WinWord' -ea 0) | Where-Object {$_.SessionId -eq $SessionID}).Id
 	If($null -ne $wordprocess -and $wordprocess -gt 0)
@@ -13369,15 +13410,15 @@ Function ProcessPolicies
 		}
 		Else
 		{
-			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD based Policies
+			#thanks to the Citrix Engineering Team for helping me solve processing Citrix AD-based Policies
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tSee if there are any Citrix AD-based policies to process"
 			$CtxGPOArray = @()
 			$CtxGPOArray = GetCtxGPOsInAD
 			If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 			{
 				Write-Verbose "$(Get-Date -Format G): "
-				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process"
+				Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to process"
 				Write-Verbose "$(Get-Date -Format G): "
 
 				[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
@@ -13429,7 +13470,7 @@ Function ProcessPolicies
 			}
 			Else
 			{
-				Write-Verbose "$(Get-Date -Format G): There are no Citrix AD based policies to process"
+				Write-Verbose "$(Get-Date -Format G): There are no Citrix AD-based policies to process"
 				Write-Verbose "$(Get-Date -Format G): "
 			}
 		}
@@ -13474,14 +13515,14 @@ Function ProcessPolicySummary
 	Else
 	{
 		Write-Verbose "$(Get-Date -Format G): "
-		Write-Verbose "$(Get-Date -Format G): See if there are any Citrix AD based policies to process"
+		Write-Verbose "$(Get-Date -Format G): See if there are any Citrix AD-based policies to process"
 		$CtxGPOArray = @()
 		$CtxGPOArray = GetCtxGPOsInAD
 		If($CtxGPOArray -is [Array] -and $CtxGPOArray.Count -gt 0)
 		{
 			[array]$CtxGPOArray = $CtxGPOArray | Sort-Object -unique
 			Write-Verbose "$(Get-Date -Format G): "
-			Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): `tThere are $($CtxGPOArray.Count) Citrix AD-based policies to process"
 			Write-Verbose "$(Get-Date -Format G): "
 			
 			ForEach($CtxGPO in $CtxGPOArray)
@@ -13517,7 +13558,7 @@ Function ProcessPolicySummary
 		}
 		Else
 		{
-			Write-Verbose "$(Get-Date -Format G): There are no Citrix AD based policies to process"
+			Write-Verbose "$(Get-Date -Format G): There are no Citrix AD-based policies to process"
 			Write-Verbose "$(Get-Date -Format G): "
 		}
 	}
@@ -30147,9 +30188,18 @@ Function ProcessScriptSetup
 		Write-Host "Script will abort. You can try again after installing the required SDK from https://download.apps.cloud.com/CitrixPoshSdk.exe" -ForegroundColor Red
 
 		Write-Error "
-	`n
+	`n`r
 	CVADS Remote Powershell SDK is not available
-	`n
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
 	Script will now close.
 	`n
 		"
@@ -30162,14 +30212,23 @@ Function ProcessScriptSetup
 		#We're missing Citrix Snapins that we need
 		$ErrorActionPreference = $SaveEAPreference
 		Write-Error "
-	`n
+	`n`n
 	Missing Citrix PowerShell Snap-ins Detected. 
-	`n
+	`n`n
 	Install the Citrix Group Policy Management Console from the CVAD 2006 or later installation media. 
 	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
 	x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
 	Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
-	`n
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
 	Script will now close.
 	`n
 		"

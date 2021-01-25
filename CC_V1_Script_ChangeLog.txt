@@ -6,6 +6,13 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.11 25-Jan-2021
+#	Added error checking in Function Check-NeededPSSnapins (Requested by Guy Leech)
+#	Updated the error message when Get-XDAuthentication fails
+#	Updated the error messages in Function ProcessScriptSetup
+#	Updated the help text
+#	Updated the ReadMe file
+
 #Version 1.10 5-Dec-2020
 #	Added CustomerID to function ShowScriptInfo and ProcessScriptEnd
 #	Added the missing ReadMe file link to the warning message about the missing Citrix.GroupPolicy.Commands file
