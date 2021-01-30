@@ -6,6 +6,9 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.12 30-Jan-2021
+#	Fixed duplicate item in the HTML output for Machine Catalogs
+
 #Version 1.11 25-Jan-2021
 #	Added error checking in Function Check-NeededPSSnapins (Requested by Guy Leech)
 #	Updated the error message when Get-XDAuthentication fails

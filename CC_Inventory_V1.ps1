@@ -1120,9 +1120,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.11
+	VERSION: 1.12
 	AUTHOR: Carl Webster
-	LASTEDIT: January 25, 2021
+	LASTEDIT: January 30, 2021
 #>
 
 #endregion
@@ -1302,6 +1302,9 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.12 30-Jan-2021
+#	Fixed duplicate item in the HTML output for Machine Catalogs
+#
 #Version 1.11 25-Jan-2021
 #	Added error checking in Function Check-NeededPSSnapins (Requested by Guy Leech)
 #	Updated the error message when Get-XDAuthentication fails
@@ -6061,10 +6064,9 @@ Function OutputMachines
 		{
 			WriteHTMLLine 2 0 "Machine Catalog: $($Catalog.Name)"
 			$rowdata = @()
-			$columnHeaders = @("Machine type",($global:htmlsb),$xCatalogType,$htmlwhite)
+			$columnHeaders = @("Descriptione",($global:htmlsb),$Catalog.Description,$htmlwhite)
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
 				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
 				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
@@ -6151,7 +6153,6 @@ Function OutputMachines
 			}
 			ElseIf($Catalog.ProvisioningType -eq "PVS")
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
 				$rowdata += @(,('Provisioning method',($global:htmlsb),$xProvisioningType,$htmlwhite))
 				$rowdata += @(,('PVS address',($global:htmlsb),$Catalog.PvsAddress,$htmlwhite))
@@ -6188,8 +6189,6 @@ Function OutputMachines
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -eq $True)
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
-
 				If($RemotePCAccounts -is [array])
 				{
 					ForEach($RemotePCAccount in $RemotePCAccounts)
@@ -6282,7 +6281,6 @@ Function OutputMachines
 			}
 			ElseIf($Catalog.ProvisioningType -eq "Manual" -and $Catalog.IsRemotePC -ne $True)
 			{
-				$rowdata += @(,('Description',($global:htmlsb),$Catalog.Description,$htmlwhite))
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
 				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
 				$rowdata += @(,('Allocated machines',($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
