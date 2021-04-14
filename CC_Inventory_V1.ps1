@@ -76,7 +76,7 @@
 	Creates an output file named after the CC Site (which by default is cloudxdsite), unless 
 	you use the SiteName parameter.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents and Footer.
+	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
 		Chinese
@@ -200,7 +200,7 @@
 	Includes only Site policies created in Studio.
 	
 	This Switch is useful in large AD environments, where there may be thousands
-	of policies, to keep SYSVOL from being searched.
+	of policies to keep SYSVOL from being searched.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of NoAD.
@@ -231,7 +231,7 @@
 	
 	There are three related parameters: Policies, NoPolicies, and NoADPolicies.
 	
-	Policies and NoPolicies are mutually exclusive and priority is given to NoPolicies.
+	Policies and NoPolicies are mutually exclusive, and priority is given to NoPolicies.
 	
 	This parameter is disabled by default.
 	This parameter has an alias of Pol.
@@ -1120,9 +1120,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.12
+	VERSION: 1.13
 	AUTHOR: Carl Webster
-	LASTEDIT: January 30, 2021
+	LASTEDIT: April 14, 2021
 #>
 
 #endregion
@@ -1302,6 +1302,67 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.13 14-Apr-2021
+#	Added Computer policy
+#		Profile Management\Enable profile streaming for folders
+#		Workspace Environment Management\Citrix Cloud Connectors
+#	Added User policy
+#		ICA\Multimedia\Browser Content Redirection Server Fetch Proxy Auth
+#	Changed $Application.IconFromClient to $Application.IconFromClient.ToString()
+#	Changed how the Session Recording Status was obtained
+#	Enabled the Session Recording code that was commented out
+#	Fixed three typos of "Unabled" to "Unable"
+#	Fixed typos of "Descriptione" to "Description"
+#	For Restart schedules added the following items:
+#		Use natural reboot
+#		Ignore maintenance mode
+#		Maximum Overtime Start Minutes
+#	For the following three Delivery Group properties, if there is no data or value, use "-" to match all the other empty values
+#		All connections not through NetScaler Gateway
+#		Connections through NetScaler Gateway
+#		Restrict to tag
+#	In Machine details added 
+#		Draining Until Shutdown (Multi-session only)
+#		Last Connection Failure reason
+#			"None"                = "None"
+#			"SessionPreparation"  = "Session preparation"
+#			"RegistrationTimeout" = "Registration timeout"
+#			"ConnectionTimeout"   = "Connection Timeout"
+#			"Licensing"           = "Licensing"
+#			"Ticketing"           = "Ticketing"
+#			"Other"               = "Other"
+#		Maintenance Mode reason
+#			"Administrator"          = "Machine was manually placed in maintenance mode by an administrator"
+#			"MaxFailedRegistrations" = "Machine was automatically placed in maintenance mode due to reaching the maximum failed registration limit"
+#			"None"                   = "Machine is not in maintenance mode"
+#		Will Shutdown After Use reason
+#			"None"                   = "Machine will not shutdown after use"
+#			"ResetDiskImage"         = "Machine will shutdown after use to reset its disk image"
+#			"ScheduledNaturalReboot" = "Machine will shutdown after use as part of the scheduled natural reboot process"
+#			"OnDemandNaturalReboot"  = "Machine will shutdown after use as part of an on-demand natural reboot process"
+#	In Machine Details, for MCS catalogs, if the Provisioning Scheme doesn't exist, set the $MasterVM variable to "Unable to retrieve details"
+#	Moved Authentication code to right after the test for elevation. If authentication fails, there is no need to test and set a bunch of variables.
+#	Renamed computer policy
+#		Enable multi-session write-back for FSLogix Profile Container to Enable multi-session write-back for profile containers
+#		Virtual channel white list to Virtual channel allow list
+#	To get the Master VM for an Azure Catalog, add searching for ".manageddisk"
+#		Also added ".snapshot" which was found in customer data
+#	Updated the Authentication section in the ReadMe
+#	Updated the text explanations for:
+#		Machine Fault State
+#			"None"          = "No fault; machine is healthy"
+#			"FailedToStart" = "Last power-on operation for machine failed"
+#			"StuckOnBoot"   = "Machine does not seem to have booted following power on"
+#			"Unregistered"  = "Machine has failed to register within expected period, or its registration has been rejected"
+#			"MaxCapacity"   = "Machine is reporting itself at maximum capacity"
+#		Machine Scheduled Reboot
+#			"None"       = "No reboot is scheduled"
+#			"Pending"    = "Machine is awaiting reboot but is available for us"
+#			"Draining"   = "Machine is awaiting reboot and is unavailable for new sessions; reconnections to existing connections are still allowed, however"
+#			"InProgress" = "Machine is actively undergoing a scheduled reboot"
+#			"Natural"    = "Natural reboot in progress. Machine is awaiting a restart"
+#	When testing a session for Session Recording status, add a test for $null -ne $results
+#
 #Version 1.12 30-Jan-2021
 #	Fixed duplicate item in the HTML output for Machine Catalogs
 #
@@ -1473,7 +1534,8 @@ Set-StrictMode -Version Latest
 #force  on
 $PSDefaultParameterValues = @{"*:Verbose"=$True}
 $SaveEAPreference = $ErrorActionPreference
-$ErrorActionPreference = 'SilentlyContinue'
+#$ErrorActionPreference = 'SilentlyContinue'
+$Error.Clear()
 
 Write-Verbose "$(Get-Date -Format G): Testing for elevation"
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal( [Security.Principal.WindowsIdentity]::GetCurrent() )
@@ -1492,6 +1554,118 @@ Else
 	`n"
 	Exit
 }
+
+If($ProfileName -eq "")
+{
+	Get-XDAuthentication -EA 0 *>$Null
+	
+	If($?)
+	{
+		$CCCreds = (Get-XDCredentials -ProfileName default).Credentials
+	}
+	Else
+	{
+		write-host "Exception: " -NoNewLine
+		$error[0].Exception
+		
+		Write-Error "
+	`n`n
+	Get-XDAuthentication failed.
+	`n`n
+	For more information, see the Authentication section in the ReadMe file at 
+	`n`n
+	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+	`n`n
+	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
+	Script cannot continue.
+	`n`n
+		"
+		Exit
+	}
+}
+Else
+{
+	Get-XDAuthentication -ProfileName $ProfileName -EA 0 *>$Null
+
+	If($?)
+	{
+		$CCCreds = (Get-XDCredentials -ProfileName $ProfileName).Credentials
+	}
+	Else
+	{
+		write-host "Exception: " -NoNewLine
+		$error[0].Exception
+		
+		If($error[0].Exception -like "*ProfileNotFound*")
+		{
+		Write-Host "
+		The Profile used, $ProfileName, does not exist.
+		`n
+		"
+
+		Write-Error "
+	`n`n
+	Get-XDAuthentication failed.
+	`n`n
+	For more information, see the Authentication section in the ReadMe file at 
+	`n`n
+	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+	`n`n
+	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
+	Script cannot continue.
+	`n`n
+		"
+		}
+		Else
+		{
+		Write-Error "
+	`n`n
+	Get-XDAuthentication failed.
+	`n`n
+	For more information, see the Authentication section in the ReadMe file at 
+	`n`n
+	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
+	`n`n
+	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
+	`n`n
+	If you are running XA/XD 7.0 through 7.7, please use: 
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	`n`n
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	`n`n
+	If you are running CVAD 2006 and later, please use:
+	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	`n`n
+	Script cannot continue.
+	`n`n
+		"
+		}
+		Exit
+	}
+}
+
+$Script:CustomerID = $CCCreds.CustomerID
 
 If($Null -eq $HTML)
 {
@@ -1848,47 +2022,6 @@ If($VDARegistryKeys)
 	Write-Verbose "$(Get-Date -Format G): VDARegistryKeys Switch is set True. Forcing MachineCatalogs to True."
 	$MachineCatalogs = $True
 }
-
-If($ProfileName -eq "")
-{
-	Get-XDAuthentication -EA 0 *>$Null
-	$CCCreds = (Get-XDCredentials -ProfileName default).Credentials
-}
-Else
-{
-	Get-XDAuthentication -ProfileName $ProfileName -EA 0 *>$Null
-	$CCCreds = (Get-XDCredentials -ProfileName $ProfileName).Credentials
-}
-
-$Script:CustomerID = $CCCreds.CustomerID
-
-If(!$?)
-{
-	Write-Error "
-	`n`n
-	Get-XDAuthentication failed.
-	`n`n
-	For more information, see the Authentication section in the ReadMe file at 
-	`n`n
-	https://carlwebster.sharefile.com/d-sb4e144f9ecc48e7b
-	`n`n
-	This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
-	`n`n
-	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
-	`n`n
-	If you are running XA/XD 7.8 through CVAD 2006, please use:
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
-	`n`n
-	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
-	`n`n
-	Script cannot continue.
-	`n`n
-	"
-	Exit
-}
-
 #endregion
 
 #region initialize variables for Word, HTML, and text
@@ -5379,7 +5512,10 @@ Function OutputMachines
 					$MasterVM = ""
 					ForEach($Item in $tmp1)
 					{
-						If(($Item.EndsWith(".vm")) -or ($Item.EndsWith(".template"))) #.template for Nutanix
+						 #.template for Nutanix and AWS
+						 #.manageddisk for Azure
+						 #.snapshot from sample data from a customer
+						If(($Item.EndsWith(".vm")) -or ($Item.EndsWith(".template")) -or ($Item.EndsWith(".manageddisk")) -or ($Item.EndsWith(".snapshot")))
 						{
 							$MasterVM = $Item
 						}
@@ -5414,6 +5550,7 @@ Function OutputMachines
 				Else
 				{
 					$xDiskImage = "Unable to retrieve details"
+					$MasterVM = "Unable to retrieve details"
 				}
 			}
 			Else
@@ -5500,7 +5637,7 @@ Function OutputMachines
 				{
 					$CatalogInformation += @{Data = "Master VM"; Value = $MasterVM; }
 					$CatalogInformation += @{Data = "Disk Image"; Value = $xDiskImage; }
-					$CatalogInformation += @{Data = "Virtual CPUs"; Value = $MachineData.CpuCount; }
+					$CatalogInformation += @{Data = "Virtual CPUs"; Value = $MachineData.CpuCount.ToString(); }
 					$CatalogInformation += @{Data = "Memory"; Value = "$($MachineData.MemoryMB) MB"; }
 					$CatalogInformation += @{Data = "Hard disk"; Value = "$($MachineData.DiskSize) GB"; }
 				}
@@ -5803,7 +5940,7 @@ Function OutputMachines
 				{
 					Line 1 "Master VM`t`t`t`t: " $MasterVM
 					Line 1 "Disk Image`t`t`t`t: " $xDiskImage
-					Line 1 "Virtual CPUs`t`t`t`t: " $MachineData.CpuCount
+					Line 1 "Virtual CPUs`t`t`t`t: " $MachineData.CpuCount.ToString()
 					Line 1 "Memory`t`t`t`t`t: " "$($MachineData.MemoryMB) MB"
 					Line 1 "Hard disk`t`t`t`t: " "$($MachineData.DiskSize) GB"
 				}
@@ -6064,7 +6201,7 @@ Function OutputMachines
 		{
 			WriteHTMLLine 2 0 "Machine Catalog: $($Catalog.Name)"
 			$rowdata = @()
-			$columnHeaders = @("Descriptione",($global:htmlsb),$Catalog.Description,$htmlwhite)
+			$columnHeaders = @("Description",($global:htmlsb),$Catalog.Description,$htmlwhite)
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
@@ -6092,7 +6229,7 @@ Function OutputMachines
 				{
 					$rowdata += @(,('Master VM',($global:htmlsb),$MasterVM,$htmlwhite))
 					$rowdata += @(,('Disk Image',($global:htmlsb),$xDiskImage,$htmlwhite))
-					$rowdata += @(,('Virtual CPUs',($global:htmlsb),$MachineData.CpuCount,$htmlwhite))
+					$rowdata += @(,('Virtual CPUs',($global:htmlsb),$MachineData.CpuCount.ToString(),$htmlwhite))
 					$rowdata += @(,('Memory',($global:htmlsb),"$($MachineData.MemoryMB) MB",$htmlwhite))
 					$rowdata += @(,('Hard disk',($global:htmlsb),"$($MachineData.DiskSize) GB",$htmlwhite))
 				}
@@ -6779,6 +6916,15 @@ Function OutputMachineDetails
 		$xInMaintenanceMode ="Off"
 	}
 
+	$MaintModeReason = ""
+	Switch($Machine.MaintenanceModeReason)
+	{
+		"Administrator"				{$MaintModeReason = "Machine was manually placed in maintenance mode by an administrator"; Break}
+		"MaxFailedRegistrations"	{$MaintModeReason = "Machine was automatically placed in maintenance mode due to reaching the maximum failed registration limit"; Break}
+		"None"						{$MaintModeReason = "Machine is not in maintenance mode"; Break}
+		Default						{$MaintModeReason = "Unable to determine Maintenance Mode Reason: $($Machine.MaintenanceModeReason)"; Break}
+	}
+	
 	$xWindowsConnectionSetting = ""
 	If($Machine.SessionSupport -eq "MultiSession")
 	{
@@ -6908,6 +7054,16 @@ Function OutputMachineDetails
 		$xWillShutdownAfterUse = "No"
 	}
 
+	$WillShutdownAfterUseReason = ""
+	Switch($Machine.WillShutdownAfterUseReason)
+	{
+		"None"						{$WillShutdownAfterUseReason = "Machine will not shutdown after use"; Break}
+		"ResetDiskImage"			{$WillShutdownAfterUseReason = "Machine will shutdown after use to reset its disk image"; Break}
+		"ScheduledNaturalReboot"	{$WillShutdownAfterUseReason = "Machine will shutdown after use as part of the scheduled natural reboot process"; Break}
+		"OnDemandNaturalReboot"		{$WillShutdownAfterUseReason = "Machine will shutdown after use as part of an on-demand natural reboot process"; Break}
+		Default						{$WillShutdownAfterUseReason = "Unable to determine Will Shutdown After Use Reason: $($Machine.WillShutdownAfterUseReason)"; Break}
+	}
+	
 	$xSessionSmartAccessTags = @()
 	ForEach($value in $Machine.SessionSmartAccessTags)
 	{
@@ -6921,11 +7077,11 @@ Function OutputMachineDetails
 	
 	Switch($Machine.FaultState)
 	{
-		"None"			{$xMachineFaultState = "None"}
-		"FailedToStart"	{$xMachineFaultState = "Failed to start"}
-		"StuckOnBoot"	{$xMachineFaultState = "Stuck on boot"}
-		"Unregistered"	{$xMachineFaultState = "Unregistered"}
-		"MaxCapacity"	{$xMachineFaultState = "Maximum capacity"}
+		"None"			{$xMachineFaultState = "No fault; machine is healthy"; Break}
+		"FailedToStart"	{$xMachineFaultState = "Last power-on operation for machine failed"; Break}
+		"StuckOnBoot"	{$xMachineFaultState = "Machine does not seem to have booted following power on"; Break}
+		"Unregistered"	{$xMachineFaultState = "Machine has failed to register within expected period, or its registration has been rejected"; Break}
+		"MaxCapacity"	{$xMachineFaultState = "Machine is reporting itself at maximum capacity"; Break}
 		Default			{$xMachineFaultState = "Unable to determine the value of FaultState: $($Machine.FaultState)"; Break}
 	}
 
@@ -7095,7 +7251,7 @@ Function OutputMachineDetails
 		"Unavailable"	{$xPowerState = "Unavailable"; Break}
 		"Unknown"		{$xPowerState = "Unknown"; Break}
 		"Unmanaged"		{$xPowerState = "Unmanaged"; Break}
-		Default			{$xPowerState = "Unabled to determine machine Power State: $($Machine.PowerState)"; Break}
+		Default			{$xPowerState = "Unable to determine machine Power State: $($Machine.PowerState)"; Break}
 	}
 	
 	If([String]::IsNullOrEmpty($Machine.IPAddress))
@@ -7133,7 +7289,31 @@ Function OutputMachineDetails
 	{
 		$xAgentVersion = $Machine.AgentVersion
 	}
+	
+	$LastConnectionFailure = ""
+	Switch($Machine.LastConnectionFailure)
+	{
+		"None"					{$LastConnectionFailure = "None"; Break}
+		"SessionPreparation"	{$LastConnectionFailure = "Session preparation"; Break}
+		"RegistrationTimeout"	{$LastConnectionFailure = "Registration timeout"; Break}
+		"ConnectionTimeout"		{$LastConnectionFailure = "Connection Timeout"; Break}
+		"Licensing"				{$LastConnectionFailure = "Licensing"; Break}
+		"Ticketing"				{$LastConnectionFailure = "Ticketing"; Break}
+		"Other"					{$LastConnectionFailure = "Other"; Break}
+		Default					{$LastConnectionFailure = "Unable to determine Last Connection Failure reason: $($Machine.LastConnectionFailure)"; Break}
+	}
 
+	$ScheduledReboot = ""
+	Switch($Machine.ScheduledReboot)
+	{
+		"None"			{$ScheduledReboot = "No reboot is scheduled"; Break}
+		"Pending"		{$ScheduledReboot = "Machine is awaiting reboot but is available for us"; Break}
+		"Draining"		{$ScheduledReboot = "Machine is awaiting reboot and is unavailable for new sessions; reconnections to existing connections are still allowed, however"; Break}
+		"InProgress"	{$ScheduledReboot = "Machine is actively undergoing a scheduled reboot"; Break}
+		"Natural"		{$ScheduledReboot = "Natural reboot in progress. Machine is awaiting a restart"; Break}
+		Default			{$ScheduledReboot = "Unable to determine Scheduled Reboot reason: $($Machine.ScheduledReboot)"; Break}
+	}
+	
 	If($MSWord -or $PDF)
 	{
 		$Selection.InsertNewPage()
@@ -7197,11 +7377,13 @@ Function OutputMachineDetails
 			}
 			$ScriptInformation += @{Data = "Allocation Type"; Value = $xAllocationType; }
 			$ScriptInformation += @{Data = "Maintenance Mode"; Value = $xInMaintenanceMode; }
+			$ScriptInformation += @{Data = "Maintenance Mode Reason"; Value = $MaintModeReason; }
 			$ScriptInformation += @{Data = "Windows Connection Setting"; Value = $xWindowsConnectionSetting; }
 			$ScriptInformation += @{Data = "Is Assigned"; Value = $Machine.IsAssigned.ToString(); }
 			$ScriptInformation += @{Data = "Is Physical"; Value = $xIsPhysical; }
 			$ScriptInformation += @{Data = "Provisioning Type"; Value = $Machine.ProvisioningType.ToString(); }
-			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $Machine.ScheduledReboot; }
+			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $ScheduledReboot; }
+			$ScriptInformation += @{Data = "Draining Until Shutdown"; Value = $Machine.DrainingUntilShutdown.ToString(); }
 			$ScriptInformation += @{Data = "Zone"; Value = $Machine.ZoneName; }
 			$ScriptInformation += @{Data = "Summary State"; Value = $xSummaryState; }
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
@@ -7403,6 +7585,7 @@ Function OutputMachineDetails
 				[System.Collections.Hashtable[]] $ScriptInformation = @()
 				$ScriptInformation += @{Data = "Last Connection Time"; Value = $xLastConnectionTime ; }
 				$ScriptInformation += @{Data = "Last Connection User"; Value = $xLastConnectionUser; }
+				$ScriptInformation += @{Data = "Last Connection Failure"; Value = $LastConnectionFailure; }
 				$ScriptInformation += @{Data = "Secure ICA Active"; Value = $xSessionSecureIcaActive ; }
 
 				$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -7535,11 +7718,12 @@ Function OutputMachineDetails
 			}
 			$ScriptInformation += @{Data = "Allocation Type"; Value = $xAllocationType; }
 			$ScriptInformation += @{Data = "Maintenance Mode"; Value = $xInMaintenanceMode; }
+			$ScriptInformation += @{Data = "Maintenance Mode Reason"; Value = $MaintModeReason; }
 			$ScriptInformation += @{Data = "Is Assigned"; Value = $Machine.IsAssigned.ToString(); }
 			$ScriptInformation += @{Data = "Is Physical"; Value = $xIsPhysical; }
 			$ScriptInformation += @{Data = "Provisioning Type"; Value = $Machine.ProvisioningType.ToString(); }
 			$ScriptInformation += @{Data = "Zone"; Value = $Machine.ZoneName; }
-			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $Machine.ScheduledReboot; }
+			$ScriptInformation += @{Data = "Scheduled Reboot"; Value = $ScheduledReboot; }
 			$ScriptInformation += @{Data = "Summary State"; Value = $xSummaryState; }
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
 			$ScriptInformation += @{Data = "Tags"; Value = $TagName; }
@@ -7693,6 +7877,7 @@ Function OutputMachineDetails
 				$ScriptInformation += @{Data = "Connected Via (IP)"; Value = $xSessionConnectedViaIP; }
 				$ScriptInformation += @{Data = "Last Connection Time"; Value = $xLastConnectionTime ; }
 				$ScriptInformation += @{Data = "Last Connection User"; Value = $xLastConnectionUser; }
+				$ScriptInformation += @{Data = "Last Connection Failure"; Value = $LastConnectionFailure; }
 				$ScriptInformation += @{Data = "Connection Type"; Value = $xSessionProtocol; }
 				$ScriptInformation += @{Data = "Secure ICA Active"; Value = $xSessionSecureIcaActive ; }
 
@@ -7749,6 +7934,7 @@ Function OutputMachineDetails
 			$ScriptInformation += @{Data = "Power Action Pending"; Value = $Machine.PowerActionPending.ToString(); }
 			$ScriptInformation += @{Data = "Power State"; Value = $xPowerState; }
 			$ScriptInformation += @{Data = "Will Shutdown After Use"; Value = $xWillShutdownAfterUse; }
+			$ScriptInformation += @{Data = "Will Shutdown After Use Reason"; Value = $WillShutdownAfterUseReason; }
 
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
@@ -7889,11 +8075,13 @@ Function OutputMachineDetails
 			}
 			Line 2 "Allocation Type`t`t`t: " $xAllocationType
 			Line 2 "Maintenance Mode`t`t: " $xInMaintenanceMode
+			Line 2 "Maintenance Mode Reason`t`t: " $MaintModeReason
 			Line 2 "Windows Connection Setting`t: " $xWindowsConnectionSetting
 			Line 2 "Is Assigned`t`t`t: " $Machine.IsAssigned.ToString()
 			Line 2 "Is Physical`t`t`t: " $xIsPhysical
 			Line 2 "Provisioning Type`t`t: " $Machine.ProvisioningType.ToString()
-			Line 2 "Scheduled Reboot`t`t: " $Machine.ScheduledReboot
+			Line 2 "Scheduled Reboot`t`t: " $ScheduledReboot
+			Line 2 "Draining Until Shutdown`t`t: " $Machine.DrainingUntilShutdown.ToString()
 			Line 2 "Zone`t`t`t`t: " $Machine.ZoneName
 			Line 2 "Summary State`t`t`t: " $xSummaryState
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
@@ -8009,6 +8197,7 @@ Function OutputMachineDetails
 				Line 1 "Connection"
 				Line 2 "Last Connection Time`t`t: " $xLastConnectionTime 
 				Line 2 "Last Connection User`t`t: " $xLastConnectionUser
+				Line 2 "Last Connection Failure`t: " $LastConnectionFailure
 				Line 2 "Secure ICA Active`t`t: " $xSessionSecureIcaActive 
 				Line 0 ""
 				
@@ -8091,11 +8280,12 @@ Function OutputMachineDetails
 			}
 			Line 2 "Allocation Type`t`t`t: " $xAllocationType
 			Line 2 "Maintenance Mode`t`t: " $xInMaintenanceMode
+			Line 2 "Maintenance Mode Reason`t: " $MaintModeReason
 			Line 2 "Is Assigned`t`t`t: " $Machine.IsAssigned.ToString()
 			Line 2 "Is Physical`t`t`t: " $xIsPhysical
 			Line 2 "Provisioning Type`t`t: " $Machine.ProvisioningType.ToString()
 			Line 2 "Zone`t`t`t`t: " $Machine.ZoneName
-			Line 2 "Scheduled Reboot`t`t: " $Machine.ScheduledReboot
+			Line 2 "Scheduled Reboot`t`t: " $ScheduledReboot
 			Line 2 "Summary State`t`t`t: " $xSummaryState
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
 			Line 2 "Tags`t`t`t`t: " $TagName
@@ -8197,6 +8387,7 @@ Function OutputMachineDetails
 				Line 2 "Connect Via (IP)`t`t: " $xSessionConnectedViaIP
 				Line 2 "Last Connection Time`t`t: " $xLastConnectionTime 
 				Line 2 "Last Connection User`t`t: " $xLastConnectionUser
+				Line 2 "Last Connection Failure`t: " $LastConnectionFailure
 				Line 2 "Connection Type`t`t`t: " $xSessionProtocol
 				Line 2 "Secure ICA Active`t`t: " $xSessionSecureIcaActive 
 				Line 0 ""
@@ -8219,6 +8410,7 @@ Function OutputMachineDetails
 			Line 2 "Power Action Pending`t`t: " $Machine.PowerActionPending.ToString()
 			Line 2 "Power State`t`t`t: " $xPowerState
 			Line 2 "Will Shutdown After Use`t`t: " $xWillShutdownAfterUse
+			Line 2 "Will Shutdown After Use Reason`t: " $WillShutdownAfterUseReason
 			Line 0 ""
 			
 			If($NoSessions -eq $False)
@@ -8310,11 +8502,13 @@ Function OutputMachineDetails
 			}
 			$rowdata += @(,('Allocation Type',($global:htmlsb),$xAllocationType,$htmlwhite))
 			$rowdata += @(,('Maintenance Mode',($global:htmlsb),$xInMaintenanceMode,$htmlwhite))
+			$rowdata += @(,('Maintenance Mode Reason',($global:htmlsb),$MaintModeReason,$htmlwhite))
 			$rowdata += @(,('Windows Connection Setting',($global:htmlsb),$xWindowsConnectionSetting,$htmlwhite))
 			$rowdata += @(,('Is Assigned',($global:htmlsb),$Machine.IsAssigned.ToString(),$htmlwhite))
 			$rowdata += @(,('Is Physical',($global:htmlsb),$xIsPhysical,$htmlwhite))
 			$rowdata += @(,('Provisioning Type',($global:htmlsb),$Machine.ProvisioningType.ToString(),$htmlwhite))
-			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$Machine.ScheduledReboot.ToString(),$htmlwhite))
+			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$ScheduledReboot,$htmlwhite))
+			$rowdata += @(,("Draining Until Shutdown",($global:htmlsb),$Machine.DrainingUntilShutdown.ToString(),$htmlwhite))
 			$rowdata += @(,('Zone',($global:htmlsb),$Machine.ZoneName,$htmlwhite))
 			$rowdata += @(,('Summary State',($global:htmlsb),$xSummaryState,$htmlwhite))
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
@@ -8450,6 +8644,7 @@ Function OutputMachineDetails
 				$rowdata = @()
 				$columnHeaders = @("Last Connection Time",($global:htmlsb),$xLastConnectionTime,$htmlwhite)
 				$rowdata += @(,('Last Connection User',($global:htmlsb),$xLastConnectionUser,$htmlwhite))
+				$rowdata += @(,('Last Connection Failure',($global:htmlsb),$LastConnectionFailure,$htmlwhite))
 				$rowdata += @(,('Secure ICA Active',($global:htmlsb),$xSessionSecureIcaActive,$htmlwhite))
 
 				$msg = ""
@@ -8545,11 +8740,12 @@ Function OutputMachineDetails
 			}
 			$rowdata += @(,('Allocation Type',($global:htmlsb),$xAllocationType,$htmlwhite))
 			$rowdata += @(,('Maintenance Mode',($global:htmlsb),$xInMaintenanceMode,$htmlwhite))
+			$rowdata += @(,('Maintenance Mode Reason',($global:htmlsb),$MaintModeReason,$htmlwhite))
 			$rowdata += @(,('Is Assigned',($global:htmlsb),$Machine.IsAssigned.ToString(),$htmlwhite))
 			$rowdata += @(,('Is Physical',($global:htmlsb),$xIsPhysical,$htmlwhite))
 			$rowdata += @(,('Provisioning Type',($global:htmlsb),$Machine.ProvisioningType.ToString(),$htmlwhite))
 			$rowdata += @(,('Zone',($global:htmlsb),$Machine.ZoneName,$htmlwhite))
-			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$Machine.ScheduledReboot.ToString(),$htmlwhite))
+			$rowdata += @(,('Scheduled Reboot',($global:htmlsb),$ScheduledReboot,$htmlwhite))
 			$rowdata += @(,('Summary State',($global:htmlsb),$xSummaryState,$htmlwhite))
             [string]$TagName = $(If( $xTags -is [array] -and $xTags.Count ) { $xTags[0] } Else { '-' } )
 			$rowdata += @(,('Tags',($global:htmlsb),$TagName,$htmlwhite))
@@ -8663,6 +8859,7 @@ Function OutputMachineDetails
 				$rowdata += @(,('Connect Via (IP)',($global:htmlsb),$xSessionConnectedViaIP,$htmlwhite))
 				$rowdata += @(,('Last Connection Time',($global:htmlsb),$xLastConnectionTime,$htmlwhite))
 				$rowdata += @(,('Last Connection User',($global:htmlsb),$xLastConnectionUser,$htmlwhite))
+				$rowdata += @(,('Last Connection Failure',($global:htmlsb),$LastConnectionFailure,$htmlwhite))
 				$rowdata += @(,('Connection Type',($global:htmlsb),$xSessionProtocol,$htmlwhite))
 				$rowdata += @(,('Secure ICA Active',($global:htmlsb),$xSessionSecureIcaActive,$htmlwhite))
 
@@ -8693,6 +8890,7 @@ Function OutputMachineDetails
 			$rowdata += @(,('Power Action Pending',($global:htmlsb),$Machine.PowerActionPending.ToString(),$htmlwhite))
 			$rowdata += @(,('Power State',($global:htmlsb),$xPowerState,$htmlwhite))
 			$rowdata += @(,('Will Shutdown After Use',($global:htmlsb),$xWillShutdownAfterUse,$htmlwhite))
+			$rowdata += @(,('Will Shutdown After Use Reason',($global:htmlsb),$WillShutdownAfterUseReason,$htmlwhite))
 
 			$msg = ""
 			$columnWidths = @("200px","250px")
@@ -9603,8 +9801,8 @@ Function OutputDeliveryGroupDetails
 			}
 			Else
 			{
-				$xAllConnections = ""
-				$xNSConnection = ""
+				$xAllConnections = "-"
+				$xNSConnection = "-"
 				$xAGFilters = @()
 			}
 		}
@@ -9864,6 +10062,15 @@ Function OutputDeliveryGroupDetails
 			{
 				ForEach($RestartSchedule in $RestartSchedules)
 				{
+					If($Null -eq $RestartSchedule.RestrictToTag)
+					{
+						$RestrictToTag = "-"
+					}
+					Else
+					{
+						$RestrictToTag = $RestartSchedule.RestrictToTag
+					}
+					
 					$ScriptInformation += @{Data = "Restart Schedule"; Value = ""; }
 					Switch($RestartSchedule.WarningRepeatInterval)
 					{
@@ -9874,7 +10081,7 @@ Function OutputDeliveryGroupDetails
 				
 					$ScriptInformation += @{Data = "     Restart machines automatically"; Value = "Yes"; }
 
-					$ScriptInformation += @{Data = "     Restrict to tag"; Value = $RestartSchedule.RestrictToTag; }
+					$ScriptInformation += @{Data = "     Restrict to tag"; Value = $RestrictToTag; }
 					
 					$tmp = ""
 					If($RestartSchedule.Frequency -eq "Daily")
@@ -9921,6 +10128,19 @@ Function OutputDeliveryGroupDetails
 						$ScriptInformation += @{Data = "     Notification message"; Value = $RestartSchedule.WarningMessage; }
 					}
 					$ScriptInformation += @{Data = "     Notification frequency"; Value = $RestartScheduleWarningRepeatInterval; }
+
+					If(validObject $RestartSchedule UseNaturalReboot)
+					{
+						$ScriptInformation += @{Data = "     Use natural reboot"; Value = $RestartSchedule.UseNaturalReboot.ToString(); }
+					}
+					If(validObject $RestartSchedule IgnoreMaintenanceMode)
+					{
+						$ScriptInformation += @{Data = "     Ignore maintenance mode"; Value = $RestartSchedule.IgnoreMaintenanceMode.ToString(); }
+					}
+					If(validObject $RestartSchedule MaxOvertimeStartMins)
+					{
+						$ScriptInformation += @{Data = "     Maximum Overtime Start Minutes"; Value = $RestartSchedule.MaxOvertimeStartMins.ToString(); }
+					}
 				}
 			}
 			Else
@@ -10495,6 +10715,15 @@ Function OutputDeliveryGroupDetails
 			{
 				ForEach($RestartSchedule in $RestartSchedules)
 				{
+					If($Null -eq $RestartSchedule.RestrictToTag)
+					{
+						$RestrictToTag = "-"
+					}
+					Else
+					{
+						$RestrictToTag = $RestartSchedule.RestrictToTag
+					}
+					
 					Line 1 "Restart Schedule"
 					Switch($RestartSchedule.WarningRepeatInterval)
 					{
@@ -10505,7 +10734,7 @@ Function OutputDeliveryGroupDetails
 
 					Line 2 "Restart machines automatically`t`t`t: " "Yes"
 
-					Line 2 "Restrict to tag`t`t`t`t`t: " $RestartSchedule.RestrictToTag
+					Line 2 "Restrict to tag`t`t`t`t`t: " $RestrictToTag
 					
 					$tmp = ""
 					If($RestartSchedule.Frequency -eq "Daily")
@@ -10552,6 +10781,19 @@ Function OutputDeliveryGroupDetails
 						Line 2 "Notification message`t`t`t`t: " $RestartSchedule.WarningMessage
 					}
 					Line 2 "Notification frequency`t`t`t`t: " $RestartScheduleWarningRepeatInterval
+
+					If(validObject $RestartSchedule UseNaturalReboot)
+					{
+						Line 2 "Use natural reboot`t`t`t`t: " $RestartSchedule.UseNaturalReboot.ToString()
+					}
+					If(validObject $RestartSchedule IgnoreMaintenanceMode)
+					{
+						Line 2 "Ignore maintenance mode`t`t`t`t: " $RestartSchedule.IgnoreMaintenanceMode.ToString()
+					}
+					If(validObject $RestartSchedule MaxOvertimeStartMins)
+					{
+						Line 2 "Maximum Overtime Start Minutes`t`t`t: " $RestartSchedule.MaxOvertimeStartMins.ToString()
+					}
 				}
 			}
 			Else
@@ -11111,6 +11353,15 @@ Function OutputDeliveryGroupDetails
 			{
 				ForEach($RestartSchedule in $RestartSchedules)
 				{
+					If($Null -eq $RestartSchedule.RestrictToTag)
+					{
+						$RestrictToTag = "-"
+					}
+					Else
+					{
+						$RestrictToTag = $RestartSchedule.RestrictToTag
+					}
+					
 					$rowdata += @(,('Restart Schedule',($global:htmlsb),"",$htmlwhite))
 					Switch($RestartSchedule.WarningRepeatInterval)
 					{
@@ -11121,7 +11372,7 @@ Function OutputDeliveryGroupDetails
 
 					$rowdata += @(,('     Restart machines automatically',($global:htmlsb),"Yes",$htmlwhite))
 
-					$rowdata += @(,('     Restrict to tag',($global:htmlsb),$RestartSchedule.RestrictToTag,$htmlwhite))
+					$rowdata += @(,('     Restrict to tag',($global:htmlsb),$RestrictToTag,$htmlwhite))
 					
 					$tmp = ""
 					If($RestartSchedule.Frequency -eq "Daily")
@@ -11168,6 +11419,19 @@ Function OutputDeliveryGroupDetails
 						$rowdata += @(,('     Notification message',($global:htmlsb),$RestartSchedule.WarningMessage,$htmlwhite))
 					}
 					$rowdata += @(,('     Notification frequency',($global:htmlsb),$RestartScheduleWarningRepeatInterval,$htmlwhite))
+
+					If(validObject $RestartSchedule UseNaturalReboot)
+					{
+						$rowdata += @(,("     Use natural reboot",($global:htmlsb),$RestartSchedule.UseNaturalReboot.ToString(),$htmlwhite))
+					}
+					If(validObject $RestartSchedule IgnoreMaintenanceMode)
+					{
+						$rowdata += @(,("     Ignore maintenance mode",($global:htmlsb),$RestartSchedule.IgnoreMaintenanceMode.ToString(),$htmlwhite))
+					}
+					If(validObject $RestartSchedule MaxOvertimeStartMins)
+					{
+						$rowdata += @(,("     Maximum Overtime Start Minutes",($global:htmlsb),$RestartSchedule.MaxOvertimeStartMins.ToString(),$htmlwhite))
+					}
 				}
 			}
 			Else
@@ -11636,7 +11900,7 @@ Function OutputDeliveryGroupCatalogs
 	
 	If($? -and $Null -ne $MCs)
 	{
-		If($MCs.Count -gt 1)
+		If($MCs.Count -ge 1)
 		{
 			#Adding -Property CatalogName was needed to get the full unique array Returned
 			[array]$MCs = $MCs | Sort-Object -Property CatalogName -Unique
@@ -11659,7 +11923,7 @@ Function OutputDeliveryGroupCatalogs
 			$rowdata = @()
 		}
 
-		If($MCs.Count -gt 1)
+		If($MCs.Count -ge 1)
 		{
 			ForEach($MC in $MCs)
 			{
@@ -12522,7 +12786,7 @@ Function OutputApplicationDetails
 		$ScriptInformation += @{Data = "Home Zone Name"; Value = $xHomeZoneName; }
 		$ScriptInformation += @{Data = "Home Zone Only"; Value = $Application.HomeZoneOnly.ToString(); }
 		$ScriptInformation += @{Data = "Ignore User Home Zone"; Value = $Application.IgnoreUserHomeZone.ToString(); }
-		$ScriptInformation += @{Data = "Icon from Client"; Value = $Application.IconFromClient; }
+		$ScriptInformation += @{Data = "Icon from Client"; Value = $Application.IconFromClient.ToString(); }
 		$ScriptInformation += @{Data = "Local Launch Disabled"; Value = $Application.LocalLaunchDisabled.ToString(); }
 		$ScriptInformation += @{Data = "Secure Command Line Arguments Enabled"; Value = $Application.SecureCmdLineArgumentsEnabled.ToString(); }
 		$ScriptInformation += @{Data = "Add shortcut to user's desktop"; Value = $Application.ShortcutAddedToDesktop.ToString(); }
@@ -12648,7 +12912,7 @@ Function OutputApplicationDetails
 		Line 1 "Home Zone Name`t`t`t`t: " $xHomeZoneName
 		Line 1 "Home Zone Only`t`t`t`t: " $Application.HomeZoneOnly.ToString()
 		Line 1 "Ignore User Home Zone`t`t`t: " $Application.IgnoreUserHomeZone.ToString()
-		Line 1 "Icon from Client`t`t`t: " $Application.IconFromClient
+		Line 1 "Icon from Client`t`t`t: " $Application.IconFromClient.ToString()
 		Line 1 "Local Launch Disabled`t`t`t: " $Application.LocalLaunchDisabled.ToString()
 		Line 1 "Secure Command Line Arguments Enabled`t: " $Application.SecureCmdLineArgumentsEnabled.ToString()
 		Line 1 "Add shortcut to user's desktop`t`t: " $Application.ShortcutAddedToDesktop.ToString()
@@ -12758,7 +13022,7 @@ Function OutputApplicationDetails
 		$rowdata += @(,("Home Zone Name",($global:htmlsb),$xHomeZoneName,$htmlwhite))
 		$rowdata += @(,("Home Zone Only",($global:htmlsb),$Application.HomeZoneOnly.ToString(),$htmlwhite))
 		$rowdata += @(,("Ignore User Home Zone",($global:htmlsb),$Application.IgnoreUserHomeZone.ToString(),$htmlwhite))
-		$rowdata += @(,("Icon from Client",($global:htmlsb),$Application.IconFromClient,$htmlwhite))
+		$rowdata += @(,("Icon from Client",($global:htmlsb),$Application.IconFromClient.ToString(),$htmlwhite))
 		$rowdata += @(,("Local Launch Disabled",($global:htmlsb),$Application.LocalLaunchDisabled.ToString(),$htmlwhite))
 		$rowdata += @(,("Secure Command Line Arguments Enabled",($global:htmlsb),$Application.SecureCmdLineArgumentsEnabled.ToString(),$htmlwhite))
 		$rowdata += @(,("Add shortcut to user's desktop",($global:htmlsb),$Application.ShortcutAddedToDesktop.ToString(),$htmlwhite))
@@ -12830,22 +13094,26 @@ Function OutputApplicationSessions
 				}
 			}
 			
-			#$RecordingStatus = "Not supported"
-			#$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid
+			$RecordingStatus = "Not supported"
+			$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
 			
-			#If($?)
-			#{
-			#	Switch ($result)
-			#	{
-			#		"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
-			#		"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
-			#		Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
-			#	}
-			#}
-			#Else
-			#{
-			#	$RecordingStatus = "Unknown"
-			#}
+			If($? -and $null -ne $result)
+			{
+				Switch ($result)
+				{
+					"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
+					"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
+					Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
+				}
+			}
+			ElseIf($? -and $null -eq $result)
+			{
+				$RecordingStatus = "No recording status found"
+			}
+			Else
+			{
+				$RecordingStatus = "Unable to determine session recording status: $($result)"
+			}
 			
 			If($MSWord -or $PDF)
 			{
@@ -12855,9 +13123,9 @@ Function OutputApplicationSessions
 				MachineName = $xMachineName;
 				State = $Session.SessionState;
 				ApplicationState = $Session.AppState;
-				Protocol = $Session.Protocol
+				Protocol = $Session.Protocol;
+				RecordingStatus = $RecordingStatus
 				}
-				#RecordingStatus = $RecordingStatus
 			}
 			If($Text)
 			{
@@ -12867,7 +13135,7 @@ Function OutputApplicationSessions
 				Line 2 "State`t`t`t: " $Session.SessionState
 				Line 2 "Application State`t: " $Session.AppState
 				Line 2 "Protocol`t`t: " $Session.Protocol
-				#Line 2 "Recording Status`t: " $RecordingStatus
+				Line 2 "Recording Status`t: " $RecordingStatus
 				Line 0 ""
 			}
 			If($HTML)
@@ -12878,19 +13146,17 @@ Function OutputApplicationSessions
 				$xMachineName,$htmlwhite,
 				$Session.SessionState,$htmlwhite,
 				$Session.AppState,$htmlwhite,
-				$Session.Protocol,$htmlwhite
+				$Session.Protocol,$htmlwhite,
+				$RecordingStatus,$htmlwhite
 				))
-				#$RecordingStatus,$htmlwhite
 			}
 		}
 		
 		If($MSWord -or $PDF)
 		{
-			#-Columns  UserName,ClientName,MachineName,State,ApplicationState,Protocol,RecordingStatus `
-			#-Headers  "User Name","Client Name","Machine Name","State","Application State","Protocol","Recording Status" `
 			$Table = AddWordTable -Hashtable $SessionsWordTable `
-			-Columns  UserName,ClientName,MachineName,State,ApplicationState,Protocol `
-			-Headers  "User Name","Client Name","Machine Name","State","Application State","Protocol" `
+			-Columns  UserName,ClientName,MachineName,State,ApplicationState,Protocol,RecordingStatus `
+			-Headers  "User Name","Client Name","Machine Name","State","Application State","Protocol","Recording Status" `
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
@@ -12903,7 +13169,7 @@ Function OutputApplicationSessions
 			$Table.Columns.Item(4).Width = 35;
 			$Table.Columns.Item(5).Width = 55;
 			$Table.Columns.Item(6).Width = 45;
-			#$Table.Columns.Item(6).Width = 50; #recording status column
+			$Table.Columns.Item(6).Width = 50; #recording status column
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -12918,15 +13184,13 @@ Function OutputApplicationSessions
 			'Machine Name',($global:htmlsb),
 			'State',($global:htmlsb),
 			'Application State',($global:htmlsb),
-			'Protocol',($global:htmlsb)
+			'Protocol',($global:htmlsb),
+			'Recording Status',($global:htmlsb)
 			)
-			#'Recording Status',($global:htmlsb)
 
-			#$columnWidths = @("135","85","135","50","50","55","55")
-			#FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "510"
 			$msg = ""
-			$columnWidths = @("135","85","135","50","50","55")
-			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "455"
+			$columnWidths = @("135","85","135","50","50","55","55")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "510"
 			WriteHTMLLine 0 0 ""
 		}
 	}
@@ -14914,7 +15178,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting VirtualChannelWhiteList State ) -and ($Setting.VirtualChannelWhiteList.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\Virtual channel white list"
+						$txt = "ICA\Virtual channel allow list" #renamed in 2103
 						If(validStateProp $Setting VirtualChannelWhiteList Values )
 						{
 							$tmpArray = $Setting.VirtualChannelWhiteList.Values
@@ -16950,6 +17214,50 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxy.State 
+							}
+						}
+					}
+					If((validStateProp $Setting WebBrowserRedirectionProxyAuth State ) -and ($Setting.WebBrowserRedirectionProxyAuth.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Multimedia\Browser Content Redirection Server Fetch Proxy Auth" #added in 2103
+						If($Setting.WebBrowserRedirectionProxyAuth.State -eq "Enabled")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.WebBrowserRedirectionProxyAuth.Value;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.WebBrowserRedirectionProxyAuth.Value,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxyAuth.Value 
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.WebBrowserRedirectionProxyAuth.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.WebBrowserRedirectionProxyAuth.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.WebBrowserRedirectionProxyAuth.State 
 							}
 						}
 					}
@@ -20486,6 +20794,27 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management"
+					If((validStateProp $Setting PSForFoldersEnabled State ) -and ($Setting.PSForFoldersEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Enable profile streaming for folders" #added in 2012
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.PSForFoldersEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.PSForFoldersEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.PSForFoldersEnabled.State
+						}
+					}
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Advanced settings"
 					If((validStateProp $Setting CEIPEnabled State ) -and ($Setting.CEIPEnabled.State -ne "NotConfigured"))
 					{
@@ -20531,7 +20860,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting FSLogixProfileContainerSupport State ) -and ($Setting.FSLogixProfileContainerSupport.State -ne "NotConfigured"))
 					{
-						$txt = "Profile Management\Advanced settings\Enable multi-session write-back for FSLogix Profile Container"
+						$txt = "Profile Management\Advanced settings\Enable multi-session write-back for profile containers" #renamed in 2103
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -25523,6 +25852,114 @@ Function ProcessCitrixPolicies
 						}
 					}
 				}
+
+				Write-Verbose "$(Get-Date -Format G): `t`t`tWorkspace Environment Management"
+				If((validStateProp $Setting WemCloudConnectorList State ) -and ($Setting.WemCloudConnectorList.State -ne "NotConfigured"))
+				{
+					$txt = "Workspace Environment Management\Citrix Cloud Connectors" #addedin 2103
+					If($Setting.WemCloudConnectorList.State -eq "Enabled")
+					{
+						If(validStateProp $Setting WemCloudConnectorList Values )
+						{
+							$tmpArray = $Setting.WemCloudConnectorList.Values.Split(",")
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $tmpArray)
+							{
+								$cnt++
+								$tmp = "$($Thing)"
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "" $tmp
+									}
+								}
+							}
+							$tmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Citrix Cloud Connectors were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					Else
+					{
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.WemCloudConnectorList.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.WemCloudConnectorList.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.WemCloudConnectorList.State 
+						}
+					}
+				}
+
 				If($MSWord -or $PDF)
 				{
 					If($SettingsWordTable.Count -gt 0) #don't process if array is empty
@@ -28596,7 +29033,7 @@ Function OutputDesktopOSMachine
 		"Unavailable"	{$xPowerState = "Unavailable"; Break}
 		"Unknown"		{$xPowerState = "Unknown"; Break}
 		"Unmanaged"		{$xPowerState = "Unmanaged"; Break}
-		Default			{$xPowerState = "Unabled to determine desktop Power State: $($Desktop.PowerState)"; Break}
+		Default			{$xPowerState = "Unable to determine desktop Power State: $($Desktop.PowerState)"; Break}
 	}
 	
 	If($MSWord -or $PDF)
@@ -28745,7 +29182,7 @@ Function OutputServerOSMachine
 		"Unavailable"	{$xPowerState = "Unavailable"; Break}
 		"Unknown"		{$xPowerState = "Unknown"; Break}
 		"Unmanaged"		{$xPowerState = "Unmanaged"; Break}
-		Default			{$xPowerState = "Unabled to determine desktop Power State: $($Server.PowerState)"; Break}
+		Default			{$xPowerState = "Unable to determine desktop Power State: $($Server.PowerState)"; Break}
 	}
 	
 	If($MSWord -or $PDF)
@@ -28875,22 +29312,26 @@ Function OutputHostingSessions
 			$xSessionType = "Multi"
 		}
 		
-		#$RecordingStatus = "Not supported"
-		#$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
+		$RecordingStatus = "Not supported"
+		$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
 		
-		#If($?)
-		#{
-		#	Switch ($result)
-		#	{
-		#		"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
-		#		"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
-		#		Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
-		#	}
-		#}
-		#Else
-		#{
-		#	$RecordingStatus = "Unknown"
-		#}
+		If($? -and $null -ne $result)
+		{
+			Switch ($result)
+			{
+				"SessionBeingRecorded"	{$RecordingStatus = "Session is being recorded"}
+				"SessionNotRecorded"	{$RecordingStatus = "Session is not being recorded"}
+				Default					{$RecordingStatus = "Unable to determine session recording status: $($result)"}
+			}
+		}
+		ElseIf($? -and $null -eq $result)
+		{
+			$RecordingStatus = "No recording status found"
+		}
+		Else
+		{
+			$RecordingStatus = "Unable to determine session recording status: $($result)"
+		}
 
 		If([String]::IsNullOrEmpty($Session.ClientName))
 		{
@@ -28921,7 +29362,7 @@ Function OutputHostingSessions
 			$ScriptInformation.Add(@{Data = "Session State"; Value = $Session.SessionState; }) > $Null
 			$ScriptInformation.Add(@{Data = "Application State"; Value = $Session.AppState; }) > $Null
 			$ScriptInformation.Add(@{Data = "Session Support"; Value = $xSessionType; }) > $Null
-			#$ScriptInformation.Add(@{Data = "Recording Status"; Value = $RecordingStatus; }) > $Null
+			$ScriptInformation.Add(@{Data = "Recording Status"; Value = $RecordingStatus; }) > $Null
 			$Table = AddWordTable -Hashtable $ScriptInformation `
 			-Columns Data,Value `
 			-List `
@@ -28949,7 +29390,7 @@ Function OutputHostingSessions
 			Line 1 "Session State`t`t: " $Session.SessionState
 			Line 1 "Application State`t: " $Session.AppState
 			Line 1 "Session Support`t`t: " $xSessionType
-			#Line 1 "Recording Status`t`t: " $RecordingStatus
+			Line 1 "Recording Status`t`t: " $RecordingStatus
 			Line 0 ""
 		}
 		If($HTML)
@@ -28963,7 +29404,7 @@ Function OutputHostingSessions
 			$rowdata += @(,('Session State',($global:htmlsb),$Session.SessionState,$htmlwhite))
 			$rowdata += @(,('Application State',($global:htmlsb),$Session.AppState,$htmlwhite))
 			$rowdata += @(,('Session Support',($global:htmlsb),$xSessionType,$htmlwhite))
-			#$rowdata += @(,('Recording Status',($global:htmlsb),$RecordingStatus,$htmlwhite))
+			$rowdata += @(,('Recording Status',($global:htmlsb),$RecordingStatus,$htmlwhite))
 
 			$msg = ""
 			$columnWidths = @("150","200")
