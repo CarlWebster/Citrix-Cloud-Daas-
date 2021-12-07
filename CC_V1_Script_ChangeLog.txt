@@ -6,6 +6,695 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.15 7-Dec-2021
+#	Added additional error checking for empty arrays before trying to output a Word table
+#	Added extra error checking, validation, and messages when retrieving Citrix Cloud credentials
+#		Reworked the logic for using Get-XDAuthentication and retrieving the CustomerID
+#	Added Function OutputReportFooter
+#	Added Functions ProcessControllerServiceConfig and OutputControllerServiceConfig
+#		Outputs data from Get-BrokerServiceConfigurationData
+#
+#		There are 66 possible settings configurable by Set-BrokerServiceConfigurationData
+#
+#		Since you have no access to set these registry keys and values on a Cloud Controller,
+#		use Set-BrokerServiceConfigurationData to configure the setting and value
+#
+#		Set-BrokerServiceConfigurationData Core.MaxHeartbeatIntervalMs  -SettingValue 360000
+#		Running this will set the MaxHeartbeatIntervalMs to 6 minutes
+#
+#			Core.AllowMultipleRemotePCAssignments
+#				Type: bool
+#				Default: true
+#				Info: 
+#				Summary: Controls whether to permit multiple automated user assignments to RemotePC machines.
+#			Core.AutoTagRuleIntervalsTimeSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds Minimum=60
+#				Summary: Time interval that Auto Tag Rule site service will run auto tagging Process.
+#			Core.DisableActiveSessionReconnect
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Indicates whether the ability to connect to an active desktop session from a different 
+#						 endpoint is disabled. By default it is possible to connect to an active session from a 
+#						 different endpoint device without first disconnecting the session from the original endpoint.
+#			Core.FirstHeartbeatDistributionWidthSecs
+#				Type: int
+#				Default: 0
+#				Info: Seconds Minimum=0 Maximum=1800
+#				Summary: When set, causes intervals between the first and second ping messages immediately after registration 
+#						 to be randomized over the specified distribution period but always centered on the normal ping interval 
+#						 (that is, half the value of HeartbeatPeriodMs). Thus, a distribution width of 60 seconds causes pings 
+#						 to be randomized over intervals of HeartbeatPeriodMs/2 +/- 30 seconds. A value of zero disables interval 
+#						 randomization.
+#
+#						 The distribution width used is reduced if the specified value would result in ping intervals of less than 
+#						 MinHeartbeatPeriodMs, or within 30 seconds of the ping timeout defined by HeartbeatPeriodMs or 
+#						 MaxHeartbeatIntervalMs.
+#			Core.FreeSessionThresholdForLoadEvaluation
+#				Type: int
+#				Default: 20
+#				Info: Minimum=0
+#				Summary: Threshold for number of free sessions that is checked after a session terminates, at or below which the 
+#						 effective load index of the machine is immediately recalculated using the new session count. This additional 
+#						 evaluation maintains the figures used for load balancing in a more timely fashion as the machine approaches 
+#						 its configured session limit.
+#
+#						 This setting is only applicable to multi-session machines.
+#			Core.HeartbeatDistributionWidthSecs
+#				Type: int
+#				Default: 0
+#				Info: Seconds Minimum=0 Maximum=1800
+#				Summary: When set, causes intervals between ping messages to be randomized over the specified distribution period but 
+#						 always centered on the normal ping interval (that is, half the value of HeartbeatPeriodMs). Thus, a distribution 
+#						 width of 60 seconds causes pings to be randomized over intervals of HeartbeatPeriodMs/2 +/- 30 seconds. A value 
+#						 of zero disables interval randomization.
+#
+#						 The distribution width used is reduced if the specified value would result in ping intervals of less than 
+#						 MinHeartbeatPeriodMs, or within 30 seconds of the ping timeout defined by HeartbeatPeriodMs or 
+#						 MaxHeartbeatIntervalMs.
+#			Core.HeartbeatPeriodMs
+#				Type: int
+#				Default: 600000
+#				Info: Milliseconds
+#				Summary: Controls both the interval and timeouts used for the keep-alive 'pings' from the VDA.
+#
+#						 This value is sent from the DDC to VDA and causes the VDA to ping the DDC at an interval half that of the time 
+#						 specified by this setting. By default the DDC will consider contact to have been lost, and discard the VDA's 
+#						 registration, if no ping is received within the full time specified (i.e. the timeout is double the ping interval).
+#
+#						 This setting is dynamic, that is, changing it immediately alters both the active ping interval for all VDAs and 
+#						 the maximum interval enforced by the DDC.
+#
+#						 The maximum period over which no ping is received before contact is considered to have been lost can be controlled 
+#						 independently of the VDA ping interval itself using the MaxHeartbeatIntervalMs setting.
+#			Core.LaunchDelayedRetryPeriodSec
+#				Type: int
+#				Default: 30
+#				Info: Seconds Minimum=0
+#				Summary: Period after which users of the XML service are hinted to retry launches that are delayed due to a power on request 
+#						 just being sent to that VDA to satisfy launch
+#			Core.LaunchRetryPeriodSec
+#				Type: int
+#				Default: 5
+#				Info: Seconds Minimum=0
+#				Summary: Period after which users of the XML service are hinted to retry launches that are delayed due to circumstances such 
+#						 as VMs needing to be started to satisfy the launch.
+#			Core.LogonToleranceIsHardLimit
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: When set, indicates that the concurrent logon tolerance policy value used during brokering of shared sessions to 
+#						 RDS VDAs should be treated as a hard limit. The launch fails if no VDA is available that is not under the limit.
+#			Core.MachineSinBinStayTimeSecs
+#				Type: int
+#				Default: 60
+#				Info: Seconds Minimum=0
+#				Summary: Period during which new brokering requests are inhibited to a machine following a failed launch (applicable to 
+#						 shared desktops only).
+#			Core.MaxDisconnectWaitTimeSecs
+#				Type: int
+#				Default: 10
+#				Info: Seconds Minimum=0
+#				Summary: Maximum time that the VDA will wait for VDI sessions to disconnect when requested as part of user-driven restart 
+#						 request from StoreFront. This timeout value is sent to the VDA as part of the disconnect request and thus has no 
+#						 impact on the overall request timeout if there are network connectivity issues (see DisconnectOperationTimeOutSecs).
+#			Core.MaxLogoffWaitTimeSecs
+#				Type: int
+#				Default: 10
+#				Info: Seconds Minimum=0
+#				Summary: Maximum time that the VDA will wait for RDS sessions to logoff when requested as part of user-driven restart 
+#						 request from StoreFront. This timeout value is sent to the VDA as part of the logoff request and thus has no 
+#						 impact on the overall request timeout if there are network connectivity issues (see LogoffOperationTimeOutSecs).
+#			Core.MaxRegistrationCompletionTimeSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds Minimum=1
+#				Summary: Maximum time within which the registration sequence for a single machine must complete. This refers to both 
+#						 immediate hard registrations, and soft to hard registration transitions. If the registration fails to complete 
+#						 within this time then the machine's partial registration is discarded by the broker.
+#			Core.MaxSessionEstablishmentTimeSecs
+#				Type: int
+#				Default: 200
+#				Info: Seconds Minimum=10
+#				Summary: Used for logon ticket lifetime, VDA listening timeout, and deadline imposed by the broker for evidence of client 
+#						 connection.
+#			Core.MaxTimeForPrepareSecs
+#				Type: int
+#				Default: 60
+#				Info: Seconds Minimum=5
+#				Summary: A deadline imposed by the broker for launch preamble ahead of the PrepareSession call to the VDA. Following 
+#						 successful PrepareSession, the MaxSessionEstablishmentTimeSecs setting will be applied to replace this 
+#						 initial timeout.
+#			Core.MaxTotalConcurrentMachineCommands
+#				Type: int
+#				Default: 70
+#				Info: Minimum=10
+#				Summary: Maximum Synchronous Machine Commands allowed to be executing concurrently via the SDK. If a request for a 
+#						 further machine command is received that would cause this limit to be exceeded then the request is rejected 
+#						 without being performed.
+#			Core.MaxWorkers
+#				Type: int
+#				Default: 10000
+#				Info: Minimum=0
+#				Summary: The limit for the number of registered VDAs that the controller will accept.
+#			Core.NonContactableSessionGracePeriodSecs
+#				Type: int
+#				Default: 30
+#				Info: Seconds Minimum=0
+#				Summary: Grace period after which a session would otherwise be considered non-contactable before automatic session 
+#						 hiding during reconnect can occur. The grace period prevents transient failures from causing sessions to 
+#						 be hidden if a reconnect should occur just after the failure.
+#
+#						 The grace period does not apply to sessions on managed machines where contact has also been lost with the 
+#						 hypervisor. Losing contact with both the VDA and its hypervisor causes immediate session hiding during reconnect.
+#			Core.RoTPublicKeysUpdateMaxDelayHours
+#				Type: int
+#				Default: 168
+#				Info: Hours Minimum=1
+#				Summary: The maximum number of hours to wait before applying an update of the Root of Trust public keys to the Broker 
+#						 database.
+#			Core.TestVdaCommunicationsTimeoutSecs
+#				Type: int
+#				Default: 5
+#				Info: Seconds Minimum=1
+#				Summary: The timeout when verifying the connection between the broker and a VDA during a registration request.
+#			Core.UserDrivenResetDebounceTimeSecs
+#				Type: int
+#				Default: 480
+#				Info: Seconds Minimum=0
+#				Summary: The period after a user driven reset request during which a further reset request for the same VDA 
+#						 is ignored. This is used to avoid a user continuously resetting the same desktop without it ever 
+#						 having a chance to complete the restart and re-register. If the VDA shuts down, powers on, and 
+#						 re-registers within the debounce period then the debounce timer is cancelled and a further reset 
+#						 is allowed.
+#
+#						 Only applies to single-session VDAs.
+#			Core.UserDrivenResetTimeoutMs
+#				Type: int
+#				Default: 15000
+#				Info: Milliseconds Minimum=0
+#				Summary: How long to allow for a user-driven reset power-off action to complete (success or fail).
+#			Core.UserDrivenShutDownTimeoutMs
+#				Type: int
+#				Default: 15000
+#				Info: Milliseconds Minimum=0
+#				Summary: How long to allow for a user-driven shutdown action to complete (success or fail).
+#			Core.UserNotify2SigningKeyLifetimeHours
+#				Type: int
+#				Default: 1440
+#				Info: Minimum=1
+#				Summary: Duration in hours since last key rotation after which the UserNotify2 signing keys will 
+#						 be rotated. Default 1440 in hours is 60 days.
+#			Hosting.AutoscalePowerActionQueuingPeriodSeconds
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=0
+#				Summary: Period over which an Autoscale power action queuing operation should take for each desktop group. 
+#						 When this limit is reached for a given desktop group, Autoscale will effectively carry-on where 
+#						 it left off at the next poll.
+#
+#						 A value of zero removes the constraint of how long a power action queuing operation should take 
+#						 per desktop group.
+#			Hosting.ComplexPowerActionTimeoutSecs
+#				Type: int
+#				Default: 1200
+#				Info: Seconds Minimum=300
+#				Summary: Maximum time in seconds to wait for a notification that an active power action has either completed 
+#						 successfully or failed. If no such notification is received then the action is marked as Lost (cancelled).
+#
+#						 This timeout applies to 'long' actions such as Shutdown or Restart where the action includes waiting for 
+#						 potentially lengthy Processing within the target VDA.
+#
+#						 See also SimplePowerActionTimeoutSecs.
+#			Hosting.HclConnectionStateCachePeriodSecs
+#				Type: int
+#				Default: 30
+#				Info: Minimum=0 Maximum=120
+#				Summary: Period over which the HCL's connection state to the actual hypervisor is cached. A value of zero disables 
+#						 caching causing the connection state to be reevaluated on every access.
+#			Hosting.HypervisorConnectionMaxPollFailures
+#				Type: int
+#				Default: 4
+#				Info: Minimum=1
+#				Summary: If the periodic poll to allow the HCL machine manager to be recreated when needed, itself repeatedly fails 
+#						 due to an error other than invalid credentials, then this value defines the maximum failures before the 
+#						 current site service is aborted thus allowing a new one to start, potentially on a different DDC.
+#			Hosting.HypervisorConnectionPollMaxPeriodSecs
+#				Type: int
+#				Default: 300
+#				Info: Seconds Minimum=30 Maximum=900
+#				Summary: If the periodic poll to allow the HCL machine manager to be recreated when needed, itself repeatedly 
+#						 fails due to invalid credentials, the poll interval is increased each time with the maximum interval 
+#						 being capped at this value. Repeatedly attempting to create/discard the machine manager is expensive 
+#						 and invalid credentials are likely to require admin intervention to fix.
+#			Hosting.LegacyPeakTransitionDisconnectedBehaviour
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Controls whether to retain the legacy power policy peak transition disconnected behavior for all 
+#						 desktop groups.
+#			Hosting.MaxFailedRegistrationsAllowed
+#				Type: int
+#				Default: 2
+#				Info: 
+#				Summary: How many times a VM can fail to register before we put it into maintenance mode. A negative value 
+#						 means that we never automatically put a VM into maintenance mode.
+#			Hosting.MaxRegistrationDelayMin
+#				Type: int
+#				Default: 20
+#				Info: minutes
+#				Summary: How long to wait in minutes after a VM is powered on before a failure to receive a registration 
+#						 from the VM is deemed a problem.
+#
+#						 This setting is also used in combination with the RebootSchedule/MaxShutdownDelayMin setting to 
+#						 define the maximum allowed time for a machine (either physical or a VM) to successfully reboot 
+#						 during reboot schedule Processing.
+#			Hosting.MaxTimeBeforeStuckOnBootFaultSecs
+#				Type: int
+#				Default: 300
+#				Info: Seconds
+#				Summary: How long to wait in seconds after a machine starts for a notification that its VM tools are 
+#						 running. After this time with no notification, the machine's fault state is changed to 
+#						 StuckOnBoot.
+#			Hosting.MaxTimeBeforeUnregisteredFaultSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds
+#				Summary: How long to wait in seconds after a machine started but remains unregistered with the 
+#						 Broker (with or without attempting to register). After this timeout a machine's fault 
+#						 state would be set to Unregistered.
+#			Hosting.ParallelDesktopGroupScalingMaxThreads
+#				Type: int
+#				Default: 5
+#				Info: Minimum=0 Maximum=100
+#				Summary: Maximum number of threads to use when scaling multiple desktop groups.
+#			Hosting.ParallelPowerStateReadMaxThreads
+#				Type: int
+#				Default: 5
+#				Info: Minimum=0 Maximum=100
+#				Summary: Maximum number of threads to use when reading multiple machine states from the HCL in parallel. 
+#						 Note: (1) Value does not apply to HCL plugins that support bulk power state operations (e.g. Azure). 
+#						 (2) For Cloud, value is capped at 1 as the RemoteHCL does not support multiple concurrent operations, 
+#						 thus there's no advantage in using multiple threads. 
+#						 (3) A value of zero forces use of a simple loop for all such operations. This puts all machine state 
+#						 reads and database writes into a single thread. This uses the minimum resources but at the expense of 
+#						 throughput, and delayed database updates.
+#			Hosting.SimplePowerActionTimeoutSecs
+#				Type: int
+#				Default: 600
+#				Info: Seconds Minimum=60
+#				Summary: Maximum time in seconds to wait for a notification that an active power action has either completed 
+#						 successfully or failed. If no such notification is received then the action is marked as Lost (cancelled).
+#
+#						 This timeout applies to 'short' actions such as TurnOn, Resume, etc. where the action only involves 
+#						 operation of the hypervisor with no dependency on Processing within the target VDA.
+#
+#						 See also ComplexPowerActionTimeoutSecs.
+#			IdleSessions.AutoSessionDisconnectGracePeriodSecs
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=0
+#				Summary: Grace period after which a reconnected session can be considered for disconnection by dynamic 
+#						 session time-outs. The grace period protects a session from auto-disconnecting for the configured 
+#						 grace period after a reconnect, allowing the end-user to actually do something.
+#
+#						 This grace period does not impact newly launched sessions.
+#			IdleSessions.MaxIdleSessionToTerminatePercent
+#				Type: int
+#				Default: 1
+#				Info: Minimum=1 Maximum=100
+#				Summary: Maximum number of sessions to terminate when load threshold on the machine and desktop group are hit.
+#			IdleSessions.MaxRetriesPerSession
+#				Type: int
+#				Default: 3
+#				Info: Minimum=1
+#				Summary: Maximum time a logoff/disconnect operation is retried before the session is put into a sin bin.
+#			IdleSessions.MaxSessionOperationWaitTimeSecs
+#				Type: int
+#				Default: 30
+#				Info: Minimum=30
+#				Summary: Maximum time a logoff/disconnect operation is to be performed in for the list of sessions on each worker.
+#			Lhc.ConfigSyncIntervalSeconds
+#				Type: int
+#				Default: 300
+#				Info: Seconds Minimum=60 Maximum=3600
+#				Summary: The interval Config Sync Service(CSS) will sync configuration from cloud ddc to connector.
+#			Logging.ConnectionLogLifetimeHours
+#				Type: int
+#				Default: 40
+#				Info: Hours Minimum=0
+#				Summary: Time for which connection log entries are kept before being purged.
+#			Logging.HypervisorAlertLifetimeHours
+#				Type: int
+#				Default: 168
+#				Info: Hours Minimum=0
+#				Summary: Time for which hypervisor alert entries are kept before being purged.
+#			Logging.HypervisorSummaryReportIntervalSecs
+#				Type: int
+#				Default: 300
+#				Info: Seconds Minimum=60
+#				Summary: Time in seconds between summary reports of hypervisor power action queue lengths being written to CDF 
+#						 and optionally Splunk.
+#			Logging.SlowDBAccessLogThresholdMs
+#				Type: int
+#				Default: 2000
+#				Info: Milliseconds Minimum=1
+#				Summary: Upper threshold for the period that a successful database transaction takes to complete before a message 
+#						 is written to CDF and optionally to Splunk warning of slow database access. This threshold does not apply 
+#						 to SDK 'Get' queries that are covered by the SlowSdkDBAccessLogThresholdMs setting.
+#			Logging.SlowSdkDBAccessLogThresholdMs
+#				Type: int
+#				Default: 5000
+#				Info: Milliseconds Minimum=1
+#				Summary: Upper threshold for the period that a successful SDK Get database query takes to complete before a message 
+#						 is written to CDF and optionally to Splunk warning of slow database access.
+#			MachineCommandQueues.VdaCommandBufferExpiryTime
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=0 Maximum=600
+#				Summary: Maximum amount of time before commands must be sent to any of the buffered services if they have not 
+#						 already been dispatched.
+#			MachineCommandQueues.VdaCommandBufferSizeLimitKB
+#				Type: int
+#				Default: 128
+#				Info: kibibytes Minimum=32 Maximum=1024
+#				Summary: Maximum size of aggregated payloads before the commands that are buffered must be sent to the service.
+#			NameCache.DisableAutomaticDomainTrustSearch
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Disables automatic traversal of the trust relationships to the Citrix Broker Service controller's 
+#						 computer domain used to identify domains and forests available for performing name lookups. If 
+#						 disabled, only Domain Controllers in the controller’s domain, or Global Catalogs in the controller's 
+#						 forest are used for name lookups. When disabled, machine and user names from remote forests are 
+#						 typically not available.
+#			NameCache.DisableDomainCaching
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Prevents persistent connections being held open to a Domain Controller in each domain visible to 
+#						 the Citrix Broker Service, but incurs additional setup cost each time a name lookup is performed 
+#						 against a domain.
+#			NameCache.MachineNameLookupTimeoutMs
+#				Type: int
+#				Default: 3000
+#				Info: Milliseconds Minimum=0
+#				Summary: Maximum time to wait for machine name resolution during creation of a desktop.
+#			NameCache.NameRefreshExponentialBackoffMaximumMins
+#				Type: int
+#				Default: 7200
+#				Info: Minutes Minimum=1
+#				Summary: Maximum period after which cached AD user/group account name, or machine name details are refreshed 
+#						 in the case where the SAM name of the cached entity could not be obtained (the cache may thus either 
+#						 contain no SAM name information, or potentially an out of date value).
+#			NameCache.NameRefreshMaximumPeriodSecs
+#				Type: int
+#				Default: 1800
+#				Info: Seconds Minimum=0
+#				Summary: Maximum time allowed for a name cache refresh to complete.
+#			NameCache.NameRefreshPeriodAfterErrorMins
+#				Type: int
+#				Default: 60
+#				Info: Minutes Minimum=1
+#				Summary: Starting period after which cached AD user/group account name, or machine name details are refreshed 
+#						 in the case where the SAM name of the cached entity could not be obtained (the cache may thus either 
+#						 contain no SAM name information, or potentially an out of date value). This period is increased 
+#						 exponentially depending on the number of consecutive lookup failures.
+#			NameCache.NameRefreshPeriodMins
+#				Type: int
+#				Default: 1440
+#				Info: Minutes Minimum=5
+#				Summary: Period after which cached AD user/group account name, or machine name details are refreshed in the 
+#						 case where the SAM name of the cached entity was successfully obtained.
+#			NameCache.UserNameLookupTimeoutMs
+#				Type: int
+#				Default: 3000
+#				Info: Milliseconds Minimum=0
+#				Summary: Maximum time to wait for user/group account name resolution during creation of SDK objects that 
+#						 expose informational account names.
+#			RebootSchedule.MaxShutdownDelayMin
+#				Type: int
+#				Default: 10
+#				Info: Minutes Minimum=1 Maximum=60
+#				Summary: Maximum time allowed for a VM to shutdown during reboot cycle Processing before the reboot of 
+#						 the VM is deemed to have failed.
+#
+#						 This setting is also used in combination with the MaxRegistrationDelayMin setting to define 
+#						 the maximum allowed time for a machine (either physical or VM) to successfully reboot during 
+#						 reboot schedule Processing.
+#			RebootSchedule.RebootCycleDataLifetimeHours
+#				Type: int
+#				Default: 336
+#				Info: Hours Minimum=0
+#				Summary: Time for which data for completed/cancelled/abandoned reboot cycles is retained before being purged.
+#			RebootSchedule.ShutdownTimeoutRecovery
+#				Type: bool
+#				Default: false
+#				Info: 
+#				Summary: Causes VDAs that fail to shutdown within their allowed timeout period to be either powered off or 
+#						 reset as applicable. This avoids potentially leaving VDAs hung in shutdown Processing, or (for RDS 
+#						 VDAs) powered off after a reboot cycle, however it may result in loss of work for the end user if 
+#						 the VDA is simply too slow at shutting down.
+#			Xms.StableServerFarmDataCachePeriodSecs
+#				Type: int
+#				Default: 120
+#				Info: Seconds Minimum=1 Maximum=600
+#				Summary: Period over which a cached ServerFarmData response is considered valid for reuse when the Broker 
+#						 service is in stable operation.
+#			Xms.UnstableServerFarmDataCachePeriodSecs
+#				Type: int
+#				Default: 15
+#				Info: Seconds Minimum=1 Maximum=600
+#				Summary: Period over which a cached ServerFarmData response is considered valid for reuse when the Broker 
+#						 service is not in stable operation. This includes periods when the service is starting-up or 
+#						 shutting down or when database connectivity has been lost.
+#			Xms.XmlStaIdentity
+#				Type: string
+#				Default: 
+#				Info: 
+#				Summary: Must be defined for the STA to function. Must contain only upper case letter and digit characters. 
+#						 Must be less than 32 characters long. Usually of the form 'STAXXXXXXXX' where XXXXXX is a 
+#						 hexadecimal number.
+#			Xms.XmlStaRefreshableTicketLifetimeInSeconds
+#				Type: int
+#				Default: 500
+#				Info: Seconds
+#				Summary: The time for which a refreshable ticket remains live (without being refreshed).
+#			Xms.XmlStaTicketLifetimeInSeconds
+#				Type: int
+#				Default: 100
+#				Info: Seconds
+#				Summary: The time for which a non-refreshable ticket remains live.
+#	Added Parameter ReportFooter
+#		Outputs a footer section at the end of the report.
+#		Report Footer
+#			Report information:
+#				Created with: <Script Name> - Release Date: <Script Release Date>
+#				Script version: <Script Version>
+#				Started on <Date Time in Local Format>
+#				Elapsed time: nn days, nn hours, nn minutes, nn.nn seconds
+#				Ran from domain <Domain Name> by user <Username>
+#				Ran from the folder <Folder Name>
+#	Added support for Minimum Catalog Level 2106 (L7_30)
+#	Added to all Citrix cmdlets that don't use CCParams2: AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#	Added to CCParams2, AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#	Added User policy
+#		ICA\Audio\Adaptive audio
+#	Before running the Function ProcessHosting, test to verify the XDHyp: PSDrive exists and if it doesn't exist, 
+#		don't run the Function ProcessHosting
+#	Changed from using LocalFarmGPO to LocalSiteGPO for the Citrix Policy PSDrive at the request of Citrix
+#	Changed if $VDARegistryKeys is $True, only set $MachineCatalogs to $True if $MachineCatalogs and $DeliveryGroups are both $False
+#		If $DeliveryGroups is $True, $VDARegistryKeys is $True, and $MachineCatalogs is $False, 
+#			$MachineCatalogs was set $True which prevented machine details and VDA Registry keys from processing for the delivery groups
+#	Changed more empty/blank values to use "-" to match all the other empty values
+#	Changed the date format for the transcript and error log files from yyyy-MM-dd_HHmm format to the FileDateTime format
+#		The format is yyyyMMddTHHmmssffff (case-sensitive, using a 4-digit year, 2-digit month, 2-digit day, 
+#		the letter T as a time separator, 2-digit hour, 2-digit minute, 2-digit second, and 4-digit millisecond). 
+#		For example: 20221225T0840107271.
+#	Fixed a logic error in Function ProcessPolicySummary.
+#		Instead of getting both Computer and User policies at one time (which didn't work), get them separately
+#	Fixed a variable name typo in Function OutputMachines for text output
+#	Fixed numerous issues with Text and HTML output
+#	Fixed the German Table of Contents (Thanks to Rene Bigler)
+#		From 
+#			'de-'	{ 'Automatische Tabelle 2'; Break }
+#		To
+#			'de-'	{ 'Automatisches Verzeichnis 2'; Break }
+#	For Function OutputMachineDetails, added a parameter $ADSearchBase
+#		Before calling that function from Function ProcessMachineCatalogs and OutputDeliveryGroup, added the following lines:
+#			$TrustedDomain = [System.DirectoryServices.ActiveDirectory.Domain]::GetCurrentDomain().Name
+#			$context = New-Object System.DirectoryServices.ActiveDirectory.DirectoryContext( "domain", $TrustedDomain )
+#			$domain = [System.DirectoryServices.ActiveDirectory.Domain]::GetDomain( $context )
+#			$ADSearchBase = $domain.GetDirectoryEntry().DistinguishedName.Value
+#		To support this, added two functions from Michael B. Smith: getObject and __simpleSearch
+#		Before calling Resolve-DNSName, test if the machine exists in Active Directory
+#		If it doesn't exist in AD, don't test DNS
+#	In Function AbortScript, add test for the winword process and terminate it if it is running
+#		Added stopping the transcript log if the log was enabled and started
+#	In Function GetRolePermissions, added new permissions
+#		GroupName              Id        Name                                                                               
+#		---------              --        ----                                                                               
+#		Citrix Catalog Service EA_Acct   Catalog Service Identity operations                                                
+#		Citrix Catalog Service EA_Broker Catalog Service Broker operations                                                  
+#		Citrix Catalog Service EA_Hyp    Catalog Service Hypervisor operations                                              
+#		Citrix Catalog Service EA_Prov   Remove Desktop from Delivery Group (1)                                             
+#	In Function GetVDARegistryKeys, sorted the VDA registry key paths in alpha order
+#	In Function OutputDeliveryGroupDetails, added -EA 0 to Get-BrokerMachineConfiguration
+#		Added properties:
+#			AutomaticRestartForUntaggedMachines
+#			AutoscaleLogOffWarningMessage
+#			AutoscaleLogOffWarningTitle
+#			AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak
+#			AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak   
+#			AutoscalingEnabled         
+#
+#			It seems most people had no idea that Citrix added AutoScale in CVADS.
+#			https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/Broker/Set-BrokerDesktopGroup/
+#			https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/Broker/New-BrokerDesktopGroup/
+#			https://docs.citrix.com/en-us/citrix-virtual-apps-desktops-service/manage-deployment/autoscale/schedule-based-and-load-based-settings.html#miscellaneous-settings
+#			Go to July 2021 https://docs.citrix.com/en-us/citrix-virtual-apps-desktops-service/whats-new.html
+#		Only get a delivery group's StoreFront server data if there is any machine configuration data
+#	In Function OutputMachines, fix the headings and output for Text
+#		Added new properties for MCS catalogs
+#			CleanOnBoot
+#			DedicatedTenancy
+#			IdentityPoolName
+#			ResetAdministratorPasswords
+#			ZoneHealthy
+#		Added error check to verify that the variables $TempDiskCacheSize and $TempMemoryCacheSize exist before using them
+#		Added the catalog's custom properties for the Provisioning Scheme
+#		These are the custom properties documented at
+#		https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#			Custom Properties For Azure
+#				DedicatedHostGroupId
+#				DiskEncryptionSetId
+#				IdentityDiskStorageType
+#				LicenseType
+#				MachinesPerStorageAccount
+#				OsType
+#				PersistOsDisk
+#				PersistVm
+#				PersistWBC
+#				ResourceGroups
+#				SchemaVersion
+#				SharedImageGalleryReplicaMaximum
+#				SharedImageGalleryReplicaRatio
+#				SharedImageGalleryStorageAccountType (not documented but found in testing)
+#				StorageAccountsPerResourceGroup
+#				StorageAccountType
+#				UseEphemeralOsDisk
+#				UseManagedDisks
+#				UseSharedImageGallery
+#				WBCDiskStorageType
+#				Zones
+#
+#			Custom Properties For Aws
+#				AwsCaptureInstanceProperties
+#				AwsOperationalResourcesTagging
+#
+#			Custom Properties For Gcp
+#				CatalogZones
+#				CryptoKeyId
+#
+#		Added Image History for the catalog's Provisioning Scheme
+#			Provisioning Scheme Name
+#			Date
+#			Master Image VM
+#			Master Image Note
+#			Functional Level
+#			Image Status
+#		Fixed the wrong variable name used to get MetadataMap.Keys data for Word/PDF and Text output
+#		Reordered the output in alphabetical order
+#		Reworked creating several variables to reduce the number of lines of code, which for me, makes the code more readable
+#	In Function OutputRoleDefinitions, fixed a logic error that prevented the correct HTML output if both MSWord/PDF and HTML were used
+#		Sort output by folder name and then permission name
+#	In Function OutputSiteSettings, add the following items:
+#		Bypass Authentication for Cached Resources
+#			Allows client to display cached resources without authentication
+#		Cloud Site License
+#			Configures the single cloud license chosen to be used as the default one for the site
+#		Cloud Valid Licenses
+#			The valid cloud license SKUs
+#		Credential Forwarding to Cloud Allowed
+#			The indicator that whether the Connector is allowed to forward user credentials to cloud
+#		Default Reuse Machines Without Shutdown In Outage
+#			The default ReuseMachinesWithoutShutdownInOutage used for new desktop groups when no explicit value is provided
+#		Delete Resource Leases on Logoff
+#			Forces client to delete all leases on explicit logoff
+#		Enable automatic assignment of multiple users for Remote PC Access
+#		Load Balance Multi-Session Catalogs
+#			Use vertical scaling when finding an RDS machine for a session launch
+#		Resource Lease Validity Period in Days
+#			Validity period for a lease
+#		Resource Leasing Enabled
+#			Enables lease syncing on client
+#		Telemetry Headless Launch Enabled
+#			Enables client to perform headless telemetry launches
+#		Telemetry Launch Minimum Time Interval in Minutes
+#			Configures minimum time interval (in minutes) between headless telemetry launches
+#		Telemetry Launch Shadow Delay in Minutes
+#			Configures delay (in minutes) between ICA-HDX launch and headless telemetry launch
+#	In Function OutputAppendixA, only output data when the arrays contain data
+#	In Function OutputSiteSettings, removed "Is Secondary Broker", as that is an internal Citrix setting
+#	In Function ProcessAdministrators, sort Administrators by Name
+#	In Function ProcessScriptSetup, added tests for the SDK and Group Policy Snapin versions
+#		If the SDK version is less than 7.32, end the script
+#		If the Group Policy Snapin version is less than 7.30, end the script
+#	In Function ProcessScriptSetup, added a variable for the Remote SDK and Group Policy Snapin versions
+#		If Policies are specified, verify both the User and Computer nodes exist in the LocalSiteGPO PSDrive
+#		If either is missing, retry five times
+#		If either is still missing after five retries, end the script
+#	In Functions ShowScriptOptions and ProcessScriptEnd, added the authentication profile name and SDK and Group Policy Snapin versions
+#	In Functions AbortScript and SaveandCloseDocumentandShutdownWord, add code from Guy Leech to test for the "Id" property before using it
+#	Moved testing for authentication to after initializing tracsript logging
+#		That should allow me to see in the transcript log if you successfully authenticated
+#	Removed the App-V Publishing section from the script as Citrix Cloud uses App Packages, not App-V
+#		I'll figure out how to add App Packages later
+#	Removed the requirement for the Citrix.GroupPolicy.Commands.psm1 module file (Thanks to Guy Leech for the help)
+#		Added the following functions from the module to the script and cleaned up the Citrix code
+#			CreateDictionary
+#			CreateObject
+#			FilterString
+#			Get-CitrixGroupPolicy
+#			Get-CitrixGroupPolicyConfiguration
+#			Get-CitrixGroupPolicyFilter
+#	Replaced most script Exit calls with AbortScript to stop the transcript log if the log was enabled and started
+#	Reworked the use of LocalSiteGPO PSDrive to prevent multiple creations and deletions
+#	Some console output cleanup
+#	There is an "odd" issue with the LocalSiteGPO PSDrive where it suddenly loses the child nodes of either the User or Computer parent nodes
+#		When this happens, the script cannot continue. I added a fatal terminating error to the script for when this issue happens.
+#		If you use -DEV to record errors, PowerShell records a terminating error: 
+#			PS>TerminatingError(Get-ChildItem): "FailedToAuthenticate: AuthHeader MISSING"
+#		I look for this issue by looking for an array count of 0 and aborting the script:
+#		Get-CitrixGroupPolicy :
+#
+#       		FATAL ERROR.
+#        		The User node is missing for the PSDrive named LocalSiteGPO.
+#
+#        		Script cannot Continue.
+#
+#
+#		At C:\webster\CC_Inventory_V1.ps1:nnnnn char:nn
+#		+ ... Policies += Get-CitrixGroupPolicy -DriveName LocalSiteGPO -PolicyName ...
+#		+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#		+ CategoryInfo          : NotSpecified: (:) [Write-Error], WriteErrorException
+#		+ FullyQualifiedErrorId : Microsoft.PowerShell.Commands.WriteErrorException,Get-CitrixGroupPolicy
+#
+#		VERBOSE: mm/dd/yyyy hh:mm:ss AM: System Cleanup
+#		VERBOSE: mm/dd/yyyy hh:mm:ss AM: Script has been aborted
+#
+#		If you immediately rerun the script in the same PoSH session, the error usually is gone
+#		I try to catch this at the beginning of the script, but sometimes one of the nodes just disappears
+#	Updated for CVAD 2109/7.31 and CVAD 2112/7.32
+#	Updated Functions SaveandCloseTextDocument and SaveandCloseHTMLDocument to add a "Report Complete" line
+#	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
+#	Updated the help text
+#	Updated the expired link for the ReadMe file 
+#		https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+#	Updated the ReadMe file
+
 #Version 1.14 29-Jul-2021
 #	Added Computer policy
 #		ICA\Multi-Stream Connections\Multi-Port Policy
