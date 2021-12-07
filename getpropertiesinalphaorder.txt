@@ -1,0 +1,5 @@
+﻿Get-ProvScheme | select-object -property * -first 1 | % {$_.psobject.properties | select name, value | sort name}
+
+Get-BrokerCatalog | select-object -property * -first 1 | % {$_.psobject.properties | select name, value | sort name}
+
+Get-BrokerDesktopGroup | select-object -property * -first 1 | % {$_.psobject.properties | select name, value | sort name}
