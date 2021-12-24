@@ -1240,9 +1240,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.15
+	VERSION: 1.16
 	AUTHOR: Carl Webster
-	LASTEDIT: December 7, 2021
+	LASTEDIT: December 24, 2021
 #>
 
 #endregion
@@ -1430,6 +1430,34 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.16 24-Dec-2021
+#	Added an additional error check after attempting to create the LocalSiteGPO PSDrive (thanks to Steven Taylor)
+#		If the PSDrive creation fails without an error, set $Policies and $Script:DoPolcies to $False and allow 
+#		the script to continue
+#	Added Computer policy
+#		HDX Analytics\HDX Insight for SD-WAN
+#		ICA\Multi-Stream Connections\Multi-Stream virtual channel stream assignment
+#			Drag and Drop - Stream 1
+#		Profile Management\Advanced settings\Customize storage path for VHDX files
+#	Added two more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.LaunchCheckFaultStates
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When true, indicates that selection of a VDA for a new session should not consider ones in fault 
+#					 state FailedToStart.
+#		Core.PhantomRegistrationSecs
+#			Type: int
+#			Default: 0
+#			Info: Seconds Minimum=0
+#			Summary: The time after reporting a VDA as being powered off that its registration request will be rejected. 
+#					 A value of 0 disables this behavior.
+#	Added User policy
+#		ICA\Graphics\Screen sharing
+#	Fixed the version check for the Group Policy Snapin (thanks to Steven Taylor)
+#		Added the download location for the up-to-date Group Policy Snapin download to the error message
+#	Updated the ReadMe file
+#
 #Version 1.15 7-Dec-2021
 #	Added additional error checking for empty arrays before trying to output a Word table
 #	Added extra error checking, validation, and messages when retrieving Citrix Cloud credentials
@@ -2479,9 +2507,9 @@ $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.15'
+$script:MyVersion   = '1.16'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "12/7/2021"
+$tmpdate            = [datetime] "12/24/2021"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -5455,6 +5483,7 @@ Function SaveandCloseTextDocument
 	Line 0 ""
 	Line 0 "Report Complete"
 	Write-Output $global:Output.ToString() | Out-File $Script:TextFileName 4>$Null
+	$global:output = $Null
 }
 
 Function SaveandCloseHTMLDocument
@@ -16552,6 +16581,54 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
+					Write-Verbose "$(Get-Date -Format G): `t`t`tHDX Analytics"
+					If((validStateProp $Setting EnableHDXInsight State ) -and ($Setting.EnableHDXInsight.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "HDX Analytics\HDX Insight for SD-WAN"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableHDXInsight.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableHDXInsight.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableHDXInsight.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tHDX Analytics"
+					If((validStateProp $Setting EnableHDXInsight State ) -and ($Setting.EnableHDXInsight.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "HDX Analytics\HDX Insight for SD-WAN"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableHDXInsight.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableHDXInsight.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableHDXInsight.State
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA"
 					If((validStateProp $Setting ApplicationLaunchWaitTimeout State ) -and ($Setting.ApplicationLaunchWaitTimeout.State -ne "NotConfigured"))
 					{
@@ -18724,6 +18801,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.OptimizeFor3dWorkload.State 
 						}
 					}
+					If((validStateProp $Setting ScreenSharing State ) -and ($Setting.ScreenSharing.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "ICA\Graphics\Screen sharing"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ScreenSharing.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ScreenSharing.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ScreenSharing.State 
+						}
+					}
 					If((validStateProp $Setting UseHardwareEncodingForVideoCodec State ) -and ($Setting.UseHardwareEncodingForVideoCodec.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Use hardware encoding for video codec"
@@ -19986,7 +20085,7 @@ Function ProcessCitrixPolicies
 						CTXSENS,1;	Sensor and Location                         1
 						CTXSCRD,1;	Smart Card                                  1
 						CTXTW,1;	Thinwire Graphics                           1
-						CTXDND,1;	CTXDND                                      1
+						CTXDND,1;	Drag and Drop                               1 #updated in 2112
 						CTXNSAP,2;	App Flow                                    2
 						CTXCSB,2;	Browser Content Redirection                 2
 						CTXCDM,2;	Client Drive Mapping                        2
@@ -20096,7 +20195,7 @@ Function ProcessCitrixPolicies
 									}
 								"CTXDND"	
 									{
-										$tmp = "Virtual Channel: CTXDND - Stream Number: $StreamNumber"; Break
+										$tmp = "Virtual Channel: Drag and Drop - Stream Number: $StreamNumber"; Break #updated in 2112
 									}
 								"CTXNSAP"	
 									{
@@ -23118,6 +23217,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.CEIPEnabled.State
+						}
+					}
+					If((validStateProp $Setting VhdStorePath_Part State ) -and ($Setting.VhdStorePath_Part.State -ne "NotConfigured"))
+					{
+						#added in 2112
+						$txt = "Profile Management\Advanced settings\Customize storage path for VHDX files"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdStorePath_Part.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdStorePath_Part.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdStorePath_Part.State
 						}
 					}
 					If((validStateProp $Setting DisableDynamicConfig State ) -and ($Setting.DisableDynamicConfig.State -ne "NotConfigured"))
@@ -33737,21 +33858,19 @@ Function ProcessScriptSetup
 	`n`n
 	Missing Citrix PowerShell Snap-ins Detected. 
 	`n`n
-	Install the Citrix Group Policy Management Console from the CVAD 2106 or later installation media. 
+	Please install the Citrix Group Policy Management Console from the CVAD 2112 or later installation media. 
+	`n`n
 	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
+	`n`n
 	x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
+	`n`n
+	Or from https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html
+	`n`n
+	Look for the section: Group Policy YYMM
+	`n`n
 	Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
 	`n`n
-	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
-	`n`n
-	If you are running XA/XD 7.8 through CVAD 2006, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
-	`n`n
-	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
-	`n`n
-	Script will now close.
+	Script will abort.
 	`n
 		"
 		AbortScript
@@ -33762,19 +33881,28 @@ Function ProcessScriptSetup
 		#code courtesy of Guy Leech
 		$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
 		
-		If($Script:GPSnapinVersion -lt 7.30)
+		If([version]$Script:GPSnapinVersion -lt "7.30") #1.16 fixed version check
 		{
+			#1.16 added download location to error message
 			Write-Error "
 	`n`r
 	CVADS Group Policy snapin is not the correct version.
 	`n`n
 	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.30.
 	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2106 or later installation media
+	Please install the Citrix Group Policy Management Console from the CVAD 2112 or later installation media. 
+	`n`n
+	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
 	`n`n
 	x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
 	`n`n
-	Script will now close.
+	Or from https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html
+	`n`n
+	Look for the section: Group Policy YYMM
+	`n`n
+	Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
+	`n`n
+	Script will abort.
 	`n
 		"
 			AbortScript
@@ -33961,6 +34089,21 @@ Script cannot continue
 			-controller $GLOBAL:XDSDKProxy `
 			-BearerToken $GLOBAL:XDAuthToken `
 			-Scope Global *>$Null
+			
+			If(!$? -and $Null -eq $ThisError) #added in 1.16
+			{
+				#WE SHOULD NOT BE HERE
+				#for some odd reason, we cannot create the LocalSiteGPO PSDrive and no error was returned in $ThisError, turn policies off
+				$Policies = $False
+				$Script:DoPolicies = $False
+
+				Write-Host "" -ForegroundColor White
+				Write-Host "*******************************************************************************************" -ForegroundColor Red
+				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off." -ForegroundColor Red
+				Write-Host "*******************************************************************************************" -ForegroundColor Red
+				Write-Host "" -ForegroundColor White
+				Break
+			}
 			
 			If($ThisError.Count -eq 0)
 			{

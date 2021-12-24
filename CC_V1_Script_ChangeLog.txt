@@ -6,6 +6,34 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.16 24-Dec-2021
+#	Added an additional error check after attempting to create the LocalSiteGPO PSDrive (thanks to Steven Taylor)
+#		If the PSDrive creation fails without an error, set $Policies and $Script:DoPolcies to $False and allow 
+#		the script to continue
+#	Added Computer policy
+#		HDX Analytics\HDX Insight for SD-WAN
+#		ICA\Multi-Stream Connections\Multi-Stream virtual channel stream assignment
+#			Drag and Drop - Stream 1
+#		Profile Management\Advanced settings\Customize storage path for VHDX files
+#	Added two more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.LaunchCheckFaultStates
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When true, indicates that selection of a VDA for a new session should not consider ones in fault 
+#					 state FailedToStart.
+#		Core.PhantomRegistrationSecs
+#			Type: int
+#			Default: 0
+#			Info: Seconds Minimum=0
+#			Summary: The time after reporting a VDA as being powered off that its registration request will be rejected. 
+#					 A value of 0 disables this behavior.
+#	Added User policy
+#		ICA\Graphics\Screen sharing
+#	Fixed the version check for the Group Policy Snapin (thanks to Steven Taylor)
+#		Added the download location for the up-to-date Group Policy Snapin download to the error message
+#	Updated the ReadMe file
+
 #Version 1.15 7-Dec-2021
 #	Added additional error checking for empty arrays before trying to output a Word table
 #	Added extra error checking, validation, and messages when retrieving Citrix Cloud credentials
