@@ -1,104 +1,81 @@
-# CitrixCloud
-	Creates an inventory of a Citrix Cloud Site using Microsoft PowerShell, Word, plain 
-	text, or HTML.
+# Citrix Cloud (DaaS)
+Creates an inventory of a Citrix Cloud (now DaaS) Site using Microsoft PowerShell, Word, plain text, or HTML.
 	
-	This script requires at least PowerShell version 5.
+This script requires at least PowerShell version 5.
 	
-	The default output is HTML.
+The default output is HTML.
 	
-	Run this script on a computer with the Remote SDK installed.
+Run this script on a computer with the Remote SDK installed.
 	
-	https://download.apps.cloud.com/CitrixPoshSdk.exe
+https://download.apps.cloud.com/CitrixPoshSdk.exe
 	
-	This script was developed and run from two Windows 10 VMs. One was domain-joined and 
-    the other was in a Workgroup.
+This script was developed and run from two Windows 10 VMs. One was domain-joined and the other was in a Workgroup.
 	
-	This script supports only Citrix Cloud, not the on-premises CVAD products.
+This script supports only Citrix Cloud (now DaaS), not the on-premises CVAD products.
 	
-	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+If you are running XA/XD 7.0 through 7.7, please use: 
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
 
-	If you are running XA/XD 7.8 through CVAD 2006, please use:
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+If you are running XA/XD 7.8 through CVAD 2006, please use:
+https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
 
-	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 and later, please use:
+https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
 
-	To prevent multiple Citrix Cloud authentication prompts, follow the instructions in 
-	the Authentication section of the ReadMe file to create a profile named Default.
+To prevent multiple Citrix Cloud (now DaaS) authentication prompts, follow the instructions in the Authentication section of the ReadMe file to create a profile named Default.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
 	
-	By default, the script only gives summary information for:
-		Administrators
-		App-V Publishing
-		Application Groups
-		Applications
-		Delivery Groups
-		Hosting
-		Logging
-		Machine Catalogs
-		Policies
-		StoreFront
-		Zones
+By default, the script only gives summary information for:
+	Administrators
+	App-V Publishing
+	Application Groups
+	Applications
+	Delivery Groups
+	Hosting
+	Logging
+	Machine Catalogs
+	Policies
+	StoreFront
+	Zones
 
-	The Summary information is what is shown in the top half of Citrix Studio for:
-		Machine Catalogs
-		Delivery Groups
-		Applications
-		Policies
-		Logging
-		Administrators
-		Hosting
-		StoreFront
-		App-V Publishing
-		Zones
+The Summary information is what is shown in the top half of Citrix Studio for:
+	Machine Catalogs
+	Delivery Groups
+	Applications
+	Policies
+	Logging
+	Administrators
+	Hosting
+	StoreFront
+	App-V Publishing
+	Zones
 
-	Using the MachineCatalogs parameter can cause the report to take a very long time to 
-	complete and can generate an extremely long report.
+Using the MachineCatalogs parameter can cause the report to take a very long time to complete and can generate an extremely long report.
 	
-	Using the DeliveryGroups parameter can cause the report to take a very long time to 
-	complete and can generate an extremely long report.
+Using the DeliveryGroups parameter can cause the report to take a very long time to complete and can generate an extremely long report.
 
-	Using both the MachineCatalogs and DeliveryGroups parameters can cause the report to 
-	take an extremely long time to complete and generate an exceptionally long report.
+Using both the MachineCatalogs and DeliveryGroups parameters can cause the report to take an extremely long time to complete and generate an exceptionally long report.
 
-	Creates an output file named after the CC Site (which by default is cloudxdsite) unless 
-	you use the SiteName parameter.
+Creates an output file named after the Citrix Cloud(now DaaS) Site (which by default is cloudxdsite) unless you use the SiteName parameter.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
-	Includes support for the following language versions of Microsoft Word:
-		Catalan
-		Chinese
-		Danish
-		Dutch
-		English
-		Finnish
-		French
-		German
-		Norwegian
-		Portuguese
-		Spanish
-		Swedish
-
-NOTE: This script requires PowerShell V5 or later.
-Support for non-English Versions of Microsoft Word
-The script supports the following languages:
-•	Catalan
-•	Chinese
-•	Danish
-•	Dutch
-•	English
-•	Finnish
-•	French
-•	German
-•	Norwegian
-•	Portuguese
-•	Spanish
-•	Swedish
+Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
+Includes support for the following language versions of Microsoft Word:
+	Catalan
+	Chinese
+	Danish
+	Dutch
+	English
+	Finnish
+	French
+	German
+	Norwegian
+	Portuguese
+	Spanish
+	Swedish
  
 Prerequisites
-Let us ensure we have the requirements before using PowerShell to document anything in a Citrix Virtual Apps and Desktops service (CVADS) Site.
+Let us ensure we have the requirements before using PowerShell to document anything in a Citrix DaaS Site.
 1.	Verify script execution is Enabled on the computer running this script. By default, PowerShell script execution is blocked.
 a.	Start, Run, gpedit.msc
 b.	Computer Configuration/Administrative Templates/Windows Components/Windows PowerShell/Turn on Script Execution: Enabled
