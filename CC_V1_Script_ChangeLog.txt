@@ -6,6 +6,67 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.17 21-Apr-2022
+#	Added from the April 2022 update:
+#		Support for upgrading VDA machines (preview)
+#		Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment
+#		You can upgrade them on a per-catalog or a per-machine basis
+#		***The feature applies only to physical machines***
+#	Added one setting configurable by Set-BrokerServiceConfigurationData
+#		Core.SaaSLicenseComponentCheckPeriodHours
+#			Type: int
+#			Default: 24
+#			Info: Hours Minimum=1 Maximum=24
+#			Summary: The time between checks in hours for SaaS license component check
+#	Added to a delivery group's Autoscale section:
+#		Arranged and renamed the output to reflect what is shown in the console
+#		General
+#			Delay powering off machines by __ minutes
+#			Machine instance cost per hour ($)
+#		Schedule and Peak Times
+#		Load-based Settings
+#			During peak times capacity buffer (%)
+#			During off-peak times capacity buffer (%)
+#		Dynamic Session Timeout
+#			During peak times idle session timeout (seconds)
+#			During off-peak times idle session timeout (seconds)
+#			During peak times disconnected session timeout (seconds)
+#			During off-peak times disconnected session timeout (seconds)
+#		Force User Logoff
+#		Autoscaling Tagged Machines
+#			Enable Autoscale for machine with tag
+#			Control when Autoscale starts powering on tagged machines
+#			When usage of untagged machines reaches (%) During peak times
+#			When usage of untagged machines reaches (%) During off-peak times
+#	Clean up some console output
+#	For Function OutputMachineDetails, added a parameter $WhatType for Machine or Desktop
+#	For the Summary Page, fixed the Word section headings from Heading4 to Heading2
+#	In Function GetRolePermissions:
+#		Renamed the App-V permissions group to Application Packages
+#		Added new permissions
+#			AppLib_PackageDiscovery_Create
+#			AppLib_PackageDiscoveryProfile_Create
+#			AppLib_PackageDiscoveryProfile_Remove
+#			Catalog_CreateFolder
+#			Catalog_EditFolder
+#			Catalog_MoveFolder
+#			Catalog_RemoveFolder
+#			AutoTagRule_Create
+#			AutoTagRule_Delete
+#			AutoTagRule_Edit
+#			AutoTagRule_Read
+#			VdaUpgrade_CatalogManage
+#			VdaUpgrade_MachineManage
+#	In Function ProcessLicensing, update the product names, editions, and licensing models
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html
+#	In Function ProcessScriptSetup:
+#		If the SDK version is less than 7.34, end the script
+#		If the Group Policy Snapin version is less than 7.33, end the script
+#	Replaced all Get-WmiObject with Get-CimInstance
+#	Updated for CVAD 2203/7.33 and CVAD 2206/7.34
+#	Updated the help text
+#	Updated the ReadMe file
+
 #Version 1.16 24-Dec-2021
 #	Added an additional error check after attempting to create the LocalSiteGPO PSDrive (thanks to Steven Taylor)
 #		If the PSDrive creation fails without an error, set $Policies and $Script:DoPolcies to $False and allow 

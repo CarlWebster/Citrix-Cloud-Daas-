@@ -5,9 +5,9 @@
 
 <#
 .SYNOPSIS
-	Creates an inventory of a Citrix Cloud Site.
+	Creates an inventory of a Citrix Cloud (now DaaS) Site.
 .DESCRIPTION
-	Creates an inventory of a Citrix Cloud Site using Microsoft PowerShell, Word, plain 
+	Creates an inventory of a Citrix Cloud (now DaaS) Site using Microsoft PowerShell, Word, plain 
 	text, or HTML.
 	
 	This script requires at least PowerShell version 5.
@@ -21,7 +21,7 @@
 	This script was developed and run from two Windows 10 VMs. One was domain-joined and 
     the other was in a Workgroup.
 	
-	This script supports only Citrix Cloud, not the on-premises CVAD products.
+	This script supports only Citrix Cloud (now DaaS), not the on-premises CVAD products.
 	
 	If you are running XA/XD 7.0 through 7.7, please use: 
 	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
@@ -32,8 +32,9 @@
 	If you are running CVAD 2006 and later, please use:
 	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
 
-	To prevent multiple Citrix Cloud authentication prompts, follow the instructions in 
-	the Authentication section of the ReadMe file to create a profile named Default.
+	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, follow the 
+	instructions in the Authentication section of the ReadMe file to create a profile named 
+	Default.
 	
 	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
 	
@@ -71,8 +72,8 @@
 	Using both the MachineCatalogs and DeliveryGroups parameters can cause the report to 
 	take an extremely long time to complete and generate an exceptionally long report.
 
-	Creates an output file named after the CC Site (which by default is cloudxdsite) unless 
-	you use the SiteName parameter.
+	Creates an output file named after the Citrix Cloud (now DaaS) Site (which by default is 
+	cloudxdsite) unless you use the SiteName parameter.
 	
 	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
@@ -106,8 +107,8 @@
 	
 	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
 
-	To prevent multiple Citrix Cloud authentication prompts, create a profile named 
-	Default.
+	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, create a profile 
+	named Default.
 
 	This parameter is blank by default.
 	This parameter has an alias of PN.
@@ -359,7 +360,7 @@
 	This parameter requires Microsoft Word to be installed.
 	This parameter uses the Word SaveAs PDF capability.
 .PARAMETER CompanyAddress
-	Company Address to use for the Cover Page, if the Cover Page has the Address field.
+	Company Address to use for the Cover Page if the Cover Page has the Address field.
 	
 	The following Cover Pages have an Address field:
 		Banded (Word 2013/2016)
@@ -375,7 +376,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CA.
 .PARAMETER CompanyEmail
-	Company Email to use for the Cover Page, if the Cover Page has the Email field. 
+	Company Email to use for the Cover Page if the Cover Page has the Email field. 
 	
 	The following Cover Pages have an Email field:
 		Facet (Word 2013/2016)
@@ -383,7 +384,7 @@
 	This parameter is only valid with the MSWORD and PDF output parameters.
 	This parameter has an alias of CE.
 .PARAMETER CompanyFax
-	Company Fax to use for the Cover Page, if the Cover Page has the Fax field. 
+	Company Fax to use for the Cover Page if the Cover Page has the Fax field. 
 	
 	The following Cover Pages have a Fax field:
 		Contrast (Word 2010)
@@ -481,7 +482,8 @@
 	
 	Creates an HTML report by default.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -504,7 +506,8 @@
 	Administrator for the User Name.
 	Creates a Microsoft Word report.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -542,7 +545,7 @@
 
 	Creates an HTML report named MyCCSite_YYYY-MM-DD_HHMM.html.
 
-	Uses the profile named Default, which prevents any extraneous Citrix Cloud 
+	Uses the profile named Default, which prevents any extraneous Citrix Cloud (now DaaS) 
 	authentication prompts.
 
 	For more information on running a PowerShell script as a scheduled task, see:	
@@ -562,7 +565,8 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -570,7 +574,8 @@
 
 	Saves the document as a formatted text file.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -578,7 +583,8 @@
 
 	Saves the document as an HTML file.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -586,7 +592,8 @@
 	
 	Creates an HTML report with full details for all machines in all Machine Catalogs.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) c
+	redentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -595,7 +602,8 @@
 	Creates an HTML report with full details for all desktops in all Desktop (Delivery) 
 	Groups.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -617,7 +625,8 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -638,7 +647,8 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -647,7 +657,8 @@
 	Creates an HTML report with full details for all machines in all Machine Catalogs and 
 	all desktops in all Delivery Groups.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -655,7 +666,8 @@
 	
 	Creates an HTML report with full details for all applications.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -663,18 +675,20 @@
 	
 	Creates an HTML report with full details for Policies.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -NoPolicies
 	
 	Creates an HTML report with no Policy information.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -682,24 +696,26 @@
 	
 	Creates an HTML report with no Citrix AD-based Policy information.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Policies -NoADPolicies
 	
 	Creates an HTML report with full details on Site policies created in Studio but 
 	no Citrix AD-based Policy information.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2022 -EndDate 
 	09/30/2022	
@@ -707,7 +723,8 @@
 	Creates an HTML report with Configuration Logging details for the dates 09/01/2022 
 	through 09/30/2022.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -729,7 +746,8 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -737,7 +755,8 @@
 	
 	Creates an HTML report with full details on Administrator Scopes and Roles.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -745,7 +764,8 @@
 	
 	Creates an HTML report with full details for Hosts, Host Connections, and Resources.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -753,7 +773,8 @@
 	
 	Creates an HTML report with full details for StoreFront.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -768,12 +789,13 @@
 		Hosts, Host Connections, and Resources
 		StoreFront
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MC -DG -Apps -Policies -Hosting -PDF
 	
@@ -794,12 +816,13 @@
 	Sideline for the Cover Page format.
 	Administrator for the User Name.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript.\CC_Inventory_V1.ps1 -MSWord -CompanyName "Carl Webster 
 	Consulting" -CoverPage "Mod" -UserName "Carl Webster"
@@ -810,7 +833,8 @@
 		Mod for the Cover Page format.
 		Carl Webster for the User Name.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -823,7 +847,8 @@
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the User Name (alias UN).
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -840,7 +865,8 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -855,7 +881,8 @@
 		Dr. Watson for the User Name.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -867,7 +894,8 @@
 	June 1, 2022 at 6PM is 2022-06-01_1800.
 	Output filename will be CCSiteName_2022-06-01_1800.docx
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -889,7 +917,8 @@
 	June 1, 2022 at 6PM is 2022-06-01_1800.
 	Output filename will be CCSiteName_2022-06-01_1800.pdf
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -898,7 +927,8 @@
 	Creates an HTML report.
 	Output file is saved in the path \\FileServer\ShareName
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -907,19 +937,21 @@
 	Creates an HTML report that contains only policy information.
 	Processes only the Policies section of the report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times for 
-	Citrix Cloud credentials.
+	Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Section Groups -DG
 	
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with Delivery Group details.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -928,7 +960,8 @@
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with no Delivery Group details.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -938,7 +971,8 @@
 	Adds the information on VDA registry keys to Appendix A.
 	Forces the MachineCatalogs parameter to $True if DeliveryGroups is not selected.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -947,7 +981,8 @@
 	Creates an HTML report.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -956,7 +991,8 @@
 	Creates an HTML report.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -967,7 +1003,8 @@
 	Adds the information on VDA registry keys to Appendix A.
 	Only processes machine details for the machine catalogs.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -977,7 +1014,8 @@
 	Creates an HTML report with only machine catalog data.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -987,7 +1025,8 @@
 	Creates an HTML report with only delivery group data.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1009,12 +1048,13 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MaxDetails -HTML -MSWord -PDF -Text
 	
@@ -1044,12 +1084,13 @@
 		NoPolicies          = False
 		Section             = "All"
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Dev -ScriptInfo -Log
 	
@@ -1064,7 +1105,8 @@
 	Creates a text file for transcript logging named 
 	CCDocScriptTranscript_yyyyMMddTHHmmssffff.txt.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1076,7 +1118,8 @@
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1122,12 +1165,13 @@
 		NoPolicies          = False
 		Section             = "All"
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
-	for Citrix Cloud credentials.
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer mail.domain.tld -From 
 	CCAdmin@domain.tld -To ITGroup@domain.tld	
@@ -1142,7 +1186,8 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1172,7 +1217,8 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1195,7 +1241,8 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1210,7 +1257,8 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .EXAMPLE
@@ -1230,7 +1278,8 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud credentials.
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
+	credentials.
     If a profile named Default exists, the script uses the credentials stored in the Default 
     profile.
 .INPUTS
@@ -1240,9 +1289,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.16
+	VERSION: 1.17
 	AUTHOR: Carl Webster
-	LASTEDIT: December 24, 2021
+	LASTEDIT: April 21, 2022
 #>
 
 #endregion
@@ -1430,6 +1479,67 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.17 21-Apr-2022
+#	Added from the April 2022 update:
+#		Support for upgrading VDA machines (preview)
+#		Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment
+#		You can upgrade them on a per-catalog or a per-machine basis
+#		***The feature applies only to physical machines***
+#	Added one setting configurable by Set-BrokerServiceConfigurationData
+#		Core.SaaSLicenseComponentCheckPeriodHours
+#			Type: int
+#			Default: 24
+#			Info: Hours Minimum=1 Maximum=24
+#			Summary: The time between checks in hours for SaaS license component check
+#	Added to a delivery group's Autoscale section:
+#		Arranged and renamed the output to reflect what is shown in the console
+#		General
+#			Delay powering off machines by __ minutes
+#			Machine instance cost per hour ($)
+#		Schedule and Peak Times
+#		Load-based Settings
+#			During peak times capacity buffer (%)
+#			During off-peak times capacity buffer (%)
+#		Dynamic Session Timeout
+#			During peak times idle session timeout (seconds)
+#			During off-peak times idle session timeout (seconds)
+#			During peak times disconnected session timeout (seconds)
+#			During off-peak times disconnected session timeout (seconds)
+#		Force User Logoff
+#		Autoscaling Tagged Machines
+#			Enable Autoscale for machine with tag
+#			Control when Autoscale starts powering on tagged machines
+#			When usage of untagged machines reaches (%) During peak times
+#			When usage of untagged machines reaches (%) During off-peak times
+#	Clean up some console output
+#	For Function OutputMachineDetails, added a parameter $WhatType for Machine or Desktop
+#	For the Summary Page, fixed the Word section headings from Heading4 to Heading2
+#	In Function GetRolePermissions:
+#		Renamed the App-V permissions group to Application Packages
+#		Added new permissions
+#			AppLib_PackageDiscovery_Create
+#			AppLib_PackageDiscoveryProfile_Create
+#			AppLib_PackageDiscoveryProfile_Remove
+#			Catalog_CreateFolder
+#			Catalog_EditFolder
+#			Catalog_MoveFolder
+#			Catalog_RemoveFolder
+#			AutoTagRule_Create
+#			AutoTagRule_Delete
+#			AutoTagRule_Edit
+#			AutoTagRule_Read
+#			VdaUpgrade_CatalogManage
+#			VdaUpgrade_MachineManage
+#	In Function ProcessLicensing, update the product names, editions, and licensing models
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html
+#	In Function ProcessScriptSetup:
+#		If the SDK version is less than 7.34, end the script
+#		If the Group Policy Snapin version is less than 7.33, end the script
+#	Replaced all Get-WmiObject with Get-CimInstance
+#	Updated for CVAD 2203/7.33 and CVAD 2206/7.34
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 1.16 24-Dec-2021
 #	Added an additional error check after attempting to create the LocalSiteGPO PSDrive (thanks to Steven Taylor)
 #		If the PSDrive creation fails without an error, set $Policies and $Script:DoPolcies to $False and allow 
@@ -2507,9 +2617,9 @@ $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.16'
+$script:MyVersion   = '1.17'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "12/24/2021"
+$tmpdate            = [datetime] "04/21/2022"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -2956,7 +3066,7 @@ $Script:CustomerID = $CCCreds.CustomerID
 [int]$Script:TotalStoreFrontServers      = 0
 
 [int]$Script:TotalZones                  = 0
-[string]$Script:RunningOS                = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
+[string]$Script:RunningOS = (Get-CIMInstance -ClassName Win32_OperatingSystem -EA 0 -Verbose:$False).Caption
 	
 $Script:VDARegistryItems                 = New-Object System.Collections.ArrayList
 $Script:WordALLVDARegistryItems          = New-Object System.Collections.ArrayList
@@ -2969,7 +3079,7 @@ $Script:HTMLALLVDARegistryItems          = New-Object System.Collections.ArrayLi
 #a workgroup computer cannot access the registry on domain-joined computers nor access SYSVOL
 #
 #http://powershell-guru.com/powershell-tip-63-check-if-a-computer-is-member-of-a-domain-or-workgroup/
-If(!((Get-WmiObject -Class Win32_ComputerSystem).PartOfDomain))
+If(!((Get-CimInstance -ClassName win32_computersystem -Verbose:$False).PartOfDomain))
 {
 	#member of workgroup, not a domain
 	Write-Host "
@@ -3018,12 +3128,12 @@ If($MSWord -or $PDF)
 	[int]$wdSeekMainDocument      = 0
 	[int]$wdSeekPrimaryFooter     = 4
 	[int]$wdStory                 = 6
-	[int]$wdColorBlack            = 0
-	[int]$wdColorGray05           = 15987699 
+	#[int]$wdColorBlack            = 0
+	#[int]$wdColorGray05           = 15987699 
 	[int]$wdColorGray15           = 14277081
-	[int]$wdColorRed              = 255
+	#[int]$wdColorRed              = 255
 	[int]$wdColorWhite            = 16777215
-	[int]$wdColorYellow           = 65535
+	#[int]$wdColorYellow           = 65535
 	[int]$wdWord2007              = 12
 	[int]$wdWord2010              = 14
 	[int]$wdWord2013              = 15
@@ -3044,7 +3154,7 @@ If($MSWord -or $PDF)
 	[int]$wdAutoFitContent = 1
 	#[int]$wdAutoFitWindow = 2
 	#http://msdn.microsoft.com/en-us/library/office/ff821928%28v=office.15%29.aspx
-	[int]$wdAdjustNone         = 0
+	#[int]$wdAdjustNone         = 0
 	[int]$wdAdjustProportional = 1
 	#[int]$wdAdjustFirstColumn = 2
 	#[int]$wdAdjustSameWidth   = 3
@@ -3063,14 +3173,12 @@ If($MSWord -or $PDF)
 	[int]$wdStyleHeading4         = -5
 	[int]$wdStyleNoSpacing        = -158
 	[int]$wdTableGrid             = -155
-	[int]$wdTableLightListAccent3 = -206
+	#[int]$wdTableLightListAccent3 = -206
 
 	[int]$wdLineStyleNone       = 0
 	[int]$wdLineStyleSingle     = 1
 	[int]$wdHeadingFormatTrue   = -1
 	#[int]$wdHeadingFormatFalse = 0 
-	
-	[string]$Script:RunningOS = (Get-WmiObject -class Win32_OperatingSystem -EA 0).Caption
 }
 Else
 {
@@ -3079,6 +3187,9 @@ Else
 
 If($HTML)
 {
+	#Prior versions used Set-Variable. That hid the variables
+	#from @code. So MBS switched to using $global:
+
     $global:htmlredmask       = "#FF0000" 4>$Null
     $global:htmlcyanmask      = "#00FFFF" 4>$Null
     $global:htmlbluemask      = "#0000FF" 4>$Null
@@ -7590,6 +7701,116 @@ Function OutputMachines
 			}
 		}
 		
+		If($Script:VDAUpdateService -eq $True -and $Catalog.MachinesArePhysical -eq $True)
+		{
+			#added in V1.17
+			#https://docs.citrix.com/en-us/citrix-daas/whats-new.html
+			<#
+				April 2022
+				New and enhanced features
+				Support for upgrading VDA machines (preview). 
+				Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment. 
+				You can upgrade them on a per-catalog or a per-machine basis. 
+				***The feature applies only to physical machines.***
+			#>
+			
+			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.Name -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			
+			If(!$? -or $Null -eq $VDAUpgrade)
+			{
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 3 0 "VDA Upgrade"
+					WriteWordLine 0 0 "VDA upgrade is not configured for this catalog"
+					WriteWordLine 0 0 ""
+				}
+				If($Text)
+				{
+					Line 1 "VDA Upgrade"
+					Line 2 "VDA upgrade is not configured for this catalog"
+					Line 0 ""
+				}
+				If($HTML)
+				{
+					WriteHTMLLine 3 0 "VDA Upgrade"
+					WriteHTMLLine 0 0 "VDA upgrade is not configured for this catalog"
+					WriteHTMLLine 0 0 ""
+				}
+			}
+			Else
+			{
+				If($null -eq $VDAUpgrade.RecentSchedule)
+				{
+					$VDAUpgradeRecentSchedule = "Not set"
+				}
+				Else
+				{
+					$VDAUpgradeRecentSchedule = $VDAUpgrade.RecentSchedule.ToLocalTime()
+				}
+				
+				If($MSWord -or $PDF)
+				{
+					WriteWordLine 3 0 "VDA Upgrade"
+					[System.Collections.Hashtable[]] $CatalogInformation = @()
+					$CatalogInformation += @{Data = "Current schedule state"; Value = $VDAUpgrade.CurrentScheduleState.ToString(); }
+					$CatalogInformation += @{Data = "Duration in hours"; Value = $VDAUpgrade.DurationInHours.ToString(); }
+					$CatalogInformation += @{Data = "Failed upgrades"; Value = $VDAUpgrade.FailedUpgrades.ToString(); }
+					$CatalogInformation += @{Data = "In progress upgrades"; Value = $VDAUpgrade.InProgressUpgrades.ToString(); }
+					$CatalogInformation += @{Data = "Recent schedule"; Value = $VDAUpgradeRecentSchedule; }
+					$CatalogInformation += @{Data = "Scheduled time"; Value = $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(); }
+					$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgrade.UpgradeState.ToString(); }
+					$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgrade.UpgradeType.ToString(); }
+				
+					$Table = AddWordTable -Hashtable $CatalogInformation `
+					-Columns Data,Value `
+					-List `
+					-Format $wdTableGrid `
+					-AutoFit $wdAutoFitFixed;
+
+					SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+					$Table.Columns.Item(1).Width = 225;
+					$Table.Columns.Item(2).Width = 275;
+
+					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+					FindWordDocumentEnd
+					$Table = $Null
+					WriteWordLine 0 0 ""
+				}
+				If($Text)
+				{
+					Line 1 "VDA Upgrade"
+					Line 2 "Current schedule state`t: " $VDAUpgrade.CurrentScheduleState.ToString()
+					Line 2 "Duration in hours`t: " $VDAUpgrade.DurationInHours.ToString()
+					Line 2 "Failed upgrades`t`t: " $VDAUpgrade.FailedUpgrades.ToString()
+					Line 2 "In progress upgrades`t: " $VDAUpgrade.InProgressUpgrades.ToString()
+					Line 2 "Recent schedule`t`t: " $VDAUpgradeRecentSchedule
+					Line 2 "Scheduled time`t`t: " $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime()
+					Line 2 "Upgrade state`t`t: " $VDAUpgrade.UpgradeState.ToString()
+					Line 2 "Upgrade type`t`t: " $VDAUpgrade.UpgradeType.ToString()
+					Line 0 ""
+				}
+				If($HTML)
+				{
+					WriteHTMLLine 3 0 "VDA Upgrade"
+					$rowdata = @()
+					$columnHeaders = @("Current schedule state",($global:htmlsb),$VDAUpgrade.CurrentScheduleState.ToString(),$htmlwhite)
+					$rowdata += @(,('Duration in hours',($global:htmlsb),$VDAUpgrade.DurationInHours.ToString(),$htmlwhite))
+					$rowdata += @(,('Failed upgrades',($global:htmlsb),$VDAUpgrade.FailedUpgrades.ToString(),$htmlwhite))
+					$rowdata += @(,('In progress upgrades',($global:htmlsb),$VDAUpgrade.InProgressUpgrades.ToString(),$htmlwhite))
+					$rowdata += @(,('Recent schedule',($global:htmlsb),$VDAUpgradeRecentSchedule,$htmlwhite))
+					$rowdata += @(,('Scheduled time',($global:htmlsb),$VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(),$htmlwhite))
+					$rowdata += @(,('Upgrade state',($global:htmlsb),$VDAUpgrade.UpgradeState.ToString(),$htmlwhite))
+					$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgrade.UpgradeType.ToString(),$htmlwhite))
+
+					$msg = ""
+					$columnWidths = @("200","500")
+					FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+				}
+			}
+		}
+		
 		#scopes
 		$Scopes = (Get-BrokerCatalog -Name $Catalog.Name @CCParams2).Scopes
 		
@@ -7806,7 +8027,7 @@ Function OutputMachines
 
 				ForEach($Machine in $Machines)
 				{
-					OutputMachineDetails $Machine $ADSearchBase
+					OutputMachineDetails $Machine $ADSearchBase "Machine"
 				}
 			}
 		}
@@ -8002,7 +8223,8 @@ Function OutputMachineDetails
 {
 	Param(
 		[object] $Machine,
-		[string] $ADSearchBase
+		[string] $ADSearchBase,
+		[string] $WhatType
 	)
 	
 	#if HostedMachineName is empty, like for RemotePC and unregistered machines, use the first part of DNSName
@@ -8029,7 +8251,7 @@ Function OutputMachineDetails
 		$xMachineName = "error, there was no name found for the machine"
 	}
 
-	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput Machine $xMachineName"
+	Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tOutput $WhatType $xMachineName"
 	
 	#first see if VDA is Linux
 	If($Machine.OSType -Like "*linux*")
@@ -10587,7 +10809,7 @@ Function OutputDeliveryGroup
 	
 	If($DeliveryGroups)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing details"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing details"
 		$txt = "Delivery Group Details: "
 		If($MSWord -or $PDF)
 		{
@@ -10603,7 +10825,7 @@ Function OutputDeliveryGroup
 		}
 		OutputDeliveryGroupDetails $Group
 		
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing applications"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing applications"
 		OutputDeliveryGroupApplicationDetails $Group
 
 		#retrieve machines in delivery group
@@ -10617,6 +10839,7 @@ Function OutputDeliveryGroup
 			}
 			ElseIf($DeliveryGroups -and -not $MachineCatalogs)
 			{
+				Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing desktops"
 				If($MSWord -or $PDF)
 				{
 					WriteWordLine 4 0 "Desktops"
@@ -10637,7 +10860,7 @@ Function OutputDeliveryGroup
 
 				ForEach($Machine in $Machines)
 				{
-					OutputMachineDetails $Machine $ADSearchBase
+					OutputMachineDetails $Machine $ADSearchBase "Desktop"
 				}
 			}
 			ElseIf(-not $DeliveryGroups -and $MachineCatalogs)
@@ -10664,22 +10887,22 @@ Function OutputDeliveryGroup
 			OutputWarning $txt
 		}
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing machine catalogs"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing machine catalogs"
 		OutputDeliveryGroupCatalogs $Group
 
 		If($DeliveryGroupsUtilization)
 		{
-			Write-Verbose "$(Get-Date -Format G): `t`t`tCreating Delivery Group Utilization report"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tCreating Delivery Group Utilization report"
 			OutputDeliveryGroupUtilization $Group
 		}
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Tags"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Tags"
 		OutputDeliveryGroupTags $Group
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing Application Groups"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing Application Groups"
 		OutputDeliveryGroupApplicationGroups $Group
 
-		Write-Verbose "$(Get-Date -Format G): `t`tProcessing administrators"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tProcessing administrators"
 		$Admins = GetAdmins "DesktopGroup" $Group.Name
 		
 		If($? -and ($Null -ne $Admins))
@@ -10700,7 +10923,7 @@ Function OutputDeliveryGroup
 	
 	If($DeliveryGroupsUtilization)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`t`tCreating Delivery Group Utilization report"
+		Write-Verbose "$(Get-Date -Format G): `t`t`t`tCreating Delivery Group Utilization report"
 		OutputDeliveryGroupUtilization $Group
 	}
 }
@@ -11216,7 +11439,7 @@ Function OutputDeliveryGroupDetails
 	
 	If($MSWord -or $PDF)
 	{
-		WriteWordLine 4 0 "Details: " $Group.Name
+		WriteWordLine 3 0 "Details: " $Group.Name
 		[System.Collections.Hashtable[]] $ScriptInformation = @()
 		$ScriptInformation += @{Data = "Description"; Value = $GroupDescription; }
 		If(![String]::IsNullOrEmpty($Group.PublishedName))
@@ -11858,31 +12081,6 @@ Function OutputDeliveryGroupDetails
 		{
 			$ScriptInformation += @{Data = "Reuse Machines Without Shutdown in Outage"; Value = "$($Group.ReuseMachinesWithoutShutdownInOutage) (Doesn't match Site setting)"; }
 		}
-		$ScriptInformation += @{Data = "Autoscale Enabled"; Value = $Group.AutoscalingEnabled.ToString(); }
-		If($Group.AutoscalingEnabled)
-		{
-			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
-			{
-				$GroupAutoscaleLogOffWarningMessage = "-"
-			}
-			Else
-			{
-				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
-			}
-			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
-			{
-				$GroupAutoscaleLogOffWarningTitle = "-"
-			}
-			Else
-			{
-				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
-			}
-
-			$ScriptInformation += @{Data = "     LogOff Warning Message"; Value = $GroupAutoscaleLogOffWarningMessage; }
-			$ScriptInformation += @{Data = "     LogOff Warning Title"; Value = $GroupAutoscaleLogOffWarningTitle; }
-			$ScriptInformation += @{Data = "     Max Seconds Before Forced LogOff During OffPeak"; Value = $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString(); }
-			$ScriptInformation += @{Data = "     Max Seconds Before Forced LogOff During Peak"; Value = $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString(); }
-		}
 		
 		$ScriptInformation += @{Data = "All connections not through NetScaler Gateway"; Value = $xAllConnections; }
 		$ScriptInformation += @{Data = "Connections through NetScaler Gateway"; Value = $xNSConnection; }
@@ -11907,13 +12105,302 @@ Function OutputDeliveryGroupDetails
 		SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 		$Table.Columns.Item(1).Width = 250;
-		$Table.Columns.Item(2).Width = 200;
+		$Table.Columns.Item(2).Width = 250;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 		FindWordDocumentEnd
 		$Table = $Null
 		WriteWordLine 0 0 ""
+
+		If($Group.AutoscalingEnabled)
+		{
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
+			{
+				$GroupAutoscaleLogOffWarningMessage = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
+			}
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
+			{
+				$GroupAutoscaleLogOffWarningTitle = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
+			}
+
+			WriteWordLine 3 0 "Manage Autoscale"
+			WriteWordLine 4 0 "General"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$ScriptInformation += @{Data = "Autoscale Enabled"; Value = $Group.AutoscalingEnabled.ToString(); }
+			$ScriptInformation += @{Data = "Delay powering off machines by"; Value = "$($Group.PowerOffDelay.ToString()) minutes"; }
+			$ScriptInformation += @{Data = "Machine instance cost per hour ($)"; Value = $Group.MachineCost.ToString(); }
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+
+			WriteWordLine 4 0 "Schedule and Peak Times"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$AutoScalePwrMgmts = Get-BrokerPowerTimeScheme @CCParams2 -DesktopGroupUid $Group.Uid
+			
+			If(!$?)
+			{
+				WriteWordLine 0 0 "Unable to retrieve Schedule and Peak Times"
+			}
+			ElseIf($Null -eq $AutoScalePwrMgmts)
+			{
+				WriteWordLine 0 0 "Successfully retrieved Schedule and Peak Times, but none were found"
+			}
+			Else
+			{
+				$val = 0
+				ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+				{
+					For($i=0;$i -le 23;$i++)
+					{
+						If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+						{
+							$val++
+						}
+					}
+				}
+
+				If($val -eq 0 )
+				{
+					$ScriptInformation += @{Data = "There are no autoscale schedule and peak times"; Value = ""; }
+				}
+				Else
+				{
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+							{
+								If($val -eq 0)
+								{
+									$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) - number machines powered on, and when"; Value = "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"; }
+								}
+								Else
+								{
+									$ScriptInformation += @{Data = ""; Value = "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"; }
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no autoscale schedule and peak times"; Value = ""; }
+						}
+					}
+
+					$ScriptInformation += @{Data = ""; Value = ""; }
+
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PeakHours[$i])
+							{
+								If($val -eq 0)
+								{
+									$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) - Peak hours"; Value = "$($i.ToString("00")):00"; }
+								}
+								Else
+								{
+									$ScriptInformation += @{Data = ""; Value = "$($i.ToString("00")):00"; }
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$ScriptInformation += @{Data = "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no Peak hours"; Value = ""; }
+						}
+					}
+				}
+			
+				$Table = AddWordTable -Hashtable $ScriptInformation `
+				-Columns Data,Value `
+				-List `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
+
+				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+				$Table.Columns.Item(1).Width = 300;
+				$Table.Columns.Item(2).Width = 200;
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
+				WriteWordLine 0 0 ""
+			}
+
+			WriteWordLine 4 0 "Load-based Settings"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$ScriptInformation += @{Data = "During peak times capacity buffer (%)"; Value = $Group.PeakBufferSizePercent.ToString(); }
+			$ScriptInformation += @{Data = "During off-peak times capacity buffer (%)"; Value = $Group.OffPeakBufferSizePercent.ToString(); }
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+
+			WriteWordLine 4 0 "Dynamic Session Timeout"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			If($Group.DisconnectPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During peak times idle session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During peak times idle session timeout (seconds)"; Value = $Group.DisconnectPeakIdleSessionAfterSeconds.ToString(); }
+			}
+			If($Group.DisconnectOffPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During off-peak times idle session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During off-peak times idle session timeout (seconds)"; Value = $Group.DisconnectOffPeakIdleSessionAfterSeconds.ToString(); }
+			}
+			If($Group.LogoffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During peak times disconnected session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During peak times disconnected session timeout (seconds)"; Value = $Group.LogoffPeakDisconnectedSessionAfterSeconds.ToString(); }
+			}
+			If($Group.LogoffOffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$ScriptInformation += @{Data = "During off-peak times disconnected session timeout (seconds)"; Value = "Disabled"; }
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "During off-peak times disconnected session timeout (seconds)"; Value = $Group.LogoffOffPeakDisconnectedSessionAfterSeconds.ToString(); }
+			}
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+
+			WriteWordLine 4 0 "Force User Logoff"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$ScriptInformation += @{Data = "Max Seconds Before Forced LogOff During Peak"; Value = $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString(); }
+			$ScriptInformation += @{Data = "Max Seconds Before Forced LogOff During Off-Peak"; Value = $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString(); }
+			$ScriptInformation += @{Data = "LogOff Notification title"; Value = $GroupAutoscaleLogOffWarningTitle; }
+			$ScriptInformation += @{Data = "LogOff Notification message"; Value = $GroupAutoscaleLogOffWarningMessage; }
+		
+			$Table = AddWordTable -Hashtable $ScriptInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 300;
+			$Table.Columns.Item(2).Width = 200;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
+			
+			WriteWordLine 4 0 "Autoscaling Tagged Machines"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			
+			If($Null -eq $Group.RestrictAutoscaleTagUid)
+			{
+				WriteWordLine 0 0 "Enable Autoscale for machines with tag is not used"
+			}
+			Else
+			{
+				$ScriptInformation += @{Data = "Enable Autoscale for machines with tag"; Value = "Enabled"; }
+				$ScriptInformation += @{Data = "Tag"; Value = (Get-BrokerTag -Uid $Group.RestrictAutoscaleTagUid).Name; }
+				If($Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak -eq -1 -and $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak -eq -1)
+				{
+					#Do nothing
+				}
+				Else
+				{
+					$ScriptInformation += @{Data = "Control when Autoscale starts powering on tagged machines"; Value = "Enabled"; }
+					$ScriptInformation += @{Data = "When usage of untagged machines reaches (%)"; Value = ""; }
+					$ScriptInformation += @{Data = "     During peak times"; Value = $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak.ToString(); }
+					$ScriptInformation += @{Data = "     During off-peak times"; Value = $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak.ToString(); }
+				}
+			
+				$Table = AddWordTable -Hashtable $ScriptInformation `
+				-Columns Data,Value `
+				-List `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
+
+				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+				$Table.Columns.Item(1).Width = 300;
+				$Table.Columns.Item(2).Width = 200;
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
+			}
+			WriteWordLine 0 0 ""
+		}
+		Else
+		{
+			WriteWordLine 4 0 "Manage Autoscale"
+			WriteWordLIne 0 0 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+		}
 	}
 	If($Text)
 	{
@@ -12558,7 +13045,21 @@ Function OutputDeliveryGroupDetails
 		{
 			Line 1 "Reuse Machines Without Shutdown in Outage`t`t: $($Group.ReuseMachinesWithoutShutdownInOutage) (Doesn't match Site setting)"
 		}
-		Line 1 "Autoscale Enabled`t`t`t`t`t: " $Group.AutoscalingEnabled.ToString()
+		
+		Line 1 "All connections not through NetScaler Gateway`t`t: " $xAllConnections
+		Line 1 "Connections through NetScaler Gateway`t`t`t: " $xNSConnection
+		[string]$AGF = $(If( $xAGFilters -is [array] -and $xAGFilters.Count ) { $xAGFilters[0] } Else { '-' } )
+		Line 1 "Connections meeting any of the following filters`t: " $AGF
+		$cnt = -1
+		ForEach($tmp in $xAGFilters)
+		{
+			$cnt++
+			If($cnt -gt 0)
+			{
+				Line 8 "  " $tmp
+			}
+		}
+		Line 0 ""
 		If($Group.AutoscalingEnabled)
 		{
 			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
@@ -12578,30 +13079,180 @@ Function OutputDeliveryGroupDetails
 				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
 			}
 
-			Line 2 "LogOff Warning Message`t`t`t`t: " $GroupAutoscaleLogOffWarningMessage
-			Line 2 "LogOff Warning Title`t`t`t`t: " $GroupAutoscaleLogOffWarningTitle
-			Line 2 "Max Seconds Before Forced LogOff During Off-Peak: " $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString()
-			Line 2 "Max Seconds Before Forced LogOff During Peak`t: " $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString()
-		}
-		
-		Line 1 "All connections not through NetScaler Gateway`t`t: " $xAllConnections
-		Line 1 "Connections through NetScaler Gateway`t`t`t: " $xNSConnection
-		[string]$AGF = $(If( $xAGFilters -is [array] -and $xAGFilters.Count ) { $xAGFilters[0] } Else { '-' } )
-		Line 1 "Connections meeting any of the following filters`t: " $AGF
-		$cnt = -1
-		ForEach($tmp in $xAGFilters)
-		{
-			$cnt++
-			If($cnt -gt 0)
+			Line 0 "Manage Autoscale"
+			Line 1 "General"
+			Line 2 "Autoscale Enabled`t`t`t: " $Group.AutoscalingEnabled.ToString()
+			Line 2 "Delay powering off machines by`t`t: " "$($Group.PowerOffDelay.ToString()) minutes"
+			Line 2 "Machine instance cost per hour ($)`t: " $Group.MachineCost.ToString()
+			Line 0 ""
+
+			Line 1 "Schedule and Peak Times"
+			$AutoScalePwrMgmts = Get-BrokerPowerTimeScheme @CCParams2 -DesktopGroupUid $Group.Uid
+			
+			If(!$?)
 			{
-				Line 8 "  " $tmp
+				Line 0 "Unable to retrieve Schedule and Peak Times"
 			}
+			ElseIf($Null -eq $AutoScalePwrMgmts)
+			{
+				Line 0 "Successfully retrieved Schedule and Peak Times, but none were found"
+			}
+			Else
+			{
+				$val = 0
+				ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+				{
+					For($i=0;$i -le 23;$i++)
+					{
+						If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+						{
+							$val++
+						}
+					}
+				}
+
+				If($val -eq 0 )
+				{
+					Line 2 "There are no autoscale schedule and peak times"
+					Line 0 ""
+				}
+				Else
+				{
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+							{
+								If($val -eq 0)
+								{
+									Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek)"
+									Line 3 "Number machines powered on, and when: " "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"
+								}
+								Else
+								{
+									Line 7 "      $($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00"
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no autoscale schedule and peak times"
+						}
+						Line 0 ""
+					}
+
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PeakHours[$i])
+							{
+								If($val -eq 0)
+								{
+									Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek)"
+									Line 3 "Peak hours: " "$($i.ToString("00")):00"
+								}
+								Else
+								{
+									Line 4 "    $($i.ToString("00")):00"
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							Line 2 "For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no Peak hours"
+						}
+						Line 0 ""
+					}
+				}
+			}
+
+			Line 1 "Load-based Settings"
+			Line 2 "During peak times capacity buffer (%)`t : " $Group.PeakBufferSizePercent.ToString()
+			Line 2 "During off-peak times capacity buffer (%): " $Group.OffPeakBufferSizePercent.ToString()
+			Line 0 ""
+
+			Line 1 "Dynamic Session Timeout"
+			If($Group.DisconnectPeakIdleSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During peak times idle session timeout (seconds)`t`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During peak times idle session timeout (seconds)`t`t: " $Group.DisconnectPeakIdleSessionAfterSeconds.ToString()
+			}
+			If($Group.DisconnectOffPeakIdleSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During off-peak times idle session timeout (seconds)`t`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During off-peak times idle session timeout (seconds)`t`t: " $Group.DisconnectOffPeakIdleSessionAfterSeconds.ToString()
+			}
+			If($Group.LogoffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During peak times disconnected session timeout (seconds)`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During peak times disconnected session timeout (seconds)`t: " $Group.LogoffPeakDisconnectedSessionAfterSeconds.ToString()
+			}
+			If($Group.LogoffOffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				Line 2 "During off-peak times disconnected session timeout (seconds)`t: " "Disabled"
+			}
+			Else
+			{
+				Line 2 "During off-peak times disconnected session timeout (seconds)`t: " $Group.LogoffOffPeakDisconnectedSessionAfterSeconds.ToString()
+			}
+			Line 0 ""
+
+			Line 1 "Force User Logoff"
+			Line 2 "Max Seconds Before Forced LogOff During Peak`t: " $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString()
+			Line 2 "Max Seconds Before Forced LogOff During Off-Peak: " $Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString()
+			Line 2 "LogOff Notification title`t`t`t: " $GroupAutoscaleLogOffWarningTitle
+			Line 2 "LogOff Notification message`t`t`t: " $GroupAutoscaleLogOffWarningMessage
+			Line 0 ""
+			
+			Line 1 "Autoscaling Tagged Machines"
+			If($Null -eq $Group.RestrictAutoscaleTagUid)
+			{
+				Line 2 "Enable Autoscale for machines with tag is not used"
+			}
+			Else
+			{
+				Line 2 "Enable Autoscale for machines with tag`t`t`t : " "Enabled"
+				Line 2 "Tag`t`t`t`t`t`t`t : " (Get-BrokerTag -Uid $Group.RestrictAutoscaleTagUid).Name
+				If($Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak -eq -1 -and $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak -eq -1)
+				{
+					#Do nothing
+				}
+				Else
+				{
+					Line 2 "Control when Autoscale starts powering on tagged machines: Enabled"
+					Line 2 "When usage of untagged machines reaches (%)"
+					Line 2 "     During peak times`t`t: " $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak.ToString()
+					Line 2 "     During off-peak times`t: " $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak.ToString()
+				}
+			}
+			Line 0 ""
 		}
-		Line 0 ""
+		Else
+		{
+			Line 0 "Manage Autoscale"
+			Line 1 "General"
+			Line 2 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+			Line 0 ""
+		}
 	}
 	If($HTML)
 	{
-		WriteHTMLLine 4 0 "Details: " $Group.Name
+		WriteHTMLLine 3 0 "Details: " $Group.Name
 		$rowdata = @()
 		$columnHeaders = @("Description",($global:htmlsb),$GroupDescription,$htmlwhite)
 		If(![String]::IsNullOrEmpty($Group.PublishedName))
@@ -13239,31 +13890,6 @@ Function OutputDeliveryGroupDetails
 		{
 			$rowdata += @(,("Reuse Machines Without Shutdown in Outage",($global:htmlsb),"$($Group.ReuseMachinesWithoutShutdownInOutage.ToString()) (Doesn't match Site setting)",$htmlwhite))
 		}
-		$rowdata += @(,("Autoscale Enabled",($global:htmlsb),$Group.AutoscalingEnabled.ToString(),$htmlwhite))
-		If($Group.AutoscalingEnabled)
-		{
-			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
-			{
-				$GroupAutoscaleLogOffWarningMessage = "-"
-			}
-			Else
-			{
-				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
-			}
-			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
-			{
-				$GroupAutoscaleLogOffWarningTitle = "-"
-			}
-			Else
-			{
-				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
-			}
-
-			$rowdata += @(,("     LogOff Warning Message",($global:htmlsb),$GroupAutoscaleLogOffWarningMessage,$htmlwhite))
-			$rowdata += @(,("     LogOff Warning Title",($global:htmlsb),$GroupAutoscaleLogOffWarningTitle,$htmlwhite))
-			$rowdata += @(,("     Max Seconds Before Forced LogOff During Off-Peak",($global:htmlsb),$Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString(),$htmlwhite))
-			$rowdata += @(,("     Max Seconds Before Forced LogOff During Peak",($global:htmlsb),$Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString(),$htmlwhite))
-		}
 
 		$rowdata += @(,('All connections not through NetScaler Gateway',($global:htmlsb),$xAllConnections,$htmlwhite))
 		$rowdata += @(,('Connections through NetScaler Gateway',($global:htmlsb),$xNSConnection,$htmlwhite))
@@ -13282,6 +13908,215 @@ Function OutputDeliveryGroupDetails
 		$msg = ""
 		$columnWidths = @("350","350")
 		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+		If($Group.AutoscalingEnabled)
+		{
+			WriteHTMLLine 3 0 "Manage Autoscale"
+			WriteHTMLLine 4 0 "General"
+			$rowdata = @()
+			$columnHeaders = @("Autoscale Enabled",($global:htmlsb),$Group.AutoscalingEnabled.ToString(),$htmlwhite)
+			$rowdata += @(,("Delay powering off machines by",($global:htmlsb),"$($Group.PowerOffDelay.ToString()) minutes",$htmlwhite))
+			$rowdata += @(,("Machine instance cost per hour ($)",($global:htmlsb),$Group.MachineCost.ToString(),$htmlwhite))
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningMessage))
+			{
+				$GroupAutoscaleLogOffWarningMessage = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningMessage = $Group.AutoscaleLogOffWarningMessage
+			}
+			If([String]::IsNullOrEmpty($Group.AutoscaleLogOffWarningTitle))
+			{
+				$GroupAutoscaleLogOffWarningTitle = "-"
+			}
+			Else
+			{
+				$GroupAutoscaleLogOffWarningTitle = $Group.AutoscaleLogOffWarningTitle
+			}
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+			WriteHTMLLine 4 0 "Schedule and Peak Times"
+			[System.Collections.Hashtable[]] $ScriptInformation = @()
+			$AutoScalePwrMgmts = Get-BrokerPowerTimeScheme @CCParams2 -DesktopGroupUid $Group.Uid
+			
+			If(!$?)
+			{
+				WriteHTMLLine 0 0 "Unable to retrieve Schedule and Peak Times"
+			}
+			ElseIf($Null -eq $AutoScalePwrMgmts)
+			{
+				WriteHTMLLine 0 0 "Successfully retrieved Schedule and Peak Times, but none were found"
+			}
+			Else
+			{
+				$val = 0
+				ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+				{
+					For($i=0;$i -le 23;$i++)
+					{
+						If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+						{
+							$val++
+						}
+					}
+				}
+
+				If($val -eq 0 )
+				{
+					$rowdata += @(,("There are no autoscale schedule and peak times",($global:htmlsb), "",$htmlwhite))
+				}
+				Else
+				{
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PoolSize[$i] -gt 0)
+							{
+								If($val -eq 0)
+								{
+									$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) - number machines powered on, and when",($global:htmlsb), "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00",$htmlwhite))
+								}
+								Else
+								{
+									$rowdata += @(,("",($global:htmlsb), "$($AutoScalePwrMgmt.PoolSize[$i].ToString("####0")) - $($i.ToString("00")):00",$htmlwhite))
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no autoscale schedule and peak times",($global:htmlsb), "",$htmlwhite))
+						}
+					}
+
+					$rowdata += @(,("",($global:htmlsb), "",$htmlwhite))
+
+					ForEach($AutoScalePwrMgmt in $AutoScalePwrMgmts)
+					{
+						$val = 0
+						For($i=0;$i -le 23;$i++)
+						{
+							If($AutoScalePwrMgmt.PeakHours[$i])
+							{
+								If($val -eq 0)
+								{
+									$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) - Peak hours",($global:htmlsb), "$($i.ToString("00")):00",$htmlwhite))
+								}
+								Else
+								{
+									$rowdata += @(,("",($global:htmlsb), "$($i.ToString("00")):00",$htmlwhite))
+								}
+								$val++
+							}
+						}
+						If($val -eq 0 )
+						{
+							$rowdata += @(,("For schedule $($AutoScalePwrMgmt.DaysOfWeek) there are no Peak hours",($global:htmlsb), "",$htmlwhite))
+						}
+					}
+				}
+				$msg = ""
+				$columnWidths = @("350","350")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			}
+
+			WriteHTMLLine 4 0 "Load-based Settings"
+			$rowdata = @()
+			$columnHeaders = @("During peak times capacity buffer (%)",($global:htmlsb),$Group.PeakBufferSizePercent.ToString(),$htmlwhite)
+			$rowdata += @(,("During off-peak times capacity buffer (%)",($global:htmlsb),$Group.OffPeakBufferSizePercent.ToString(),$htmlwhite))
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+			WriteHTMLLine 4 0 "Dynamic Session Timeout"
+			$rowdata = @()
+			If($Group.DisconnectPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$columnHeaders = @("During peak times idle session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite)
+			}
+			Else
+			{
+				$columnHeaders = @("During peak times idle session timeout (seconds)",($global:htmlsb),$Group.DisconnectPeakIdleSessionAfterSeconds.ToString(),$htmlwhite)
+			}
+			If($Group.DisconnectOffPeakIdleSessionAfterSeconds -eq 0)
+			{
+				$rowdata += @(,("During off-peak times idle session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite))
+			}
+			Else
+			{
+				$rowdata += @(,("During off-peak times idle session timeout (seconds)",($global:htmlsb),$Group.DisconnectOffPeakIdleSessionAfterSeconds.ToString(),$htmlwhite))
+			}
+			If($Group.LogoffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$rowdata += @(,("During peak times disconnected session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite))
+			}
+			Else
+			{
+				$rowdata += @(,("During peak times disconnected session timeout (seconds)",($global:htmlsb),$Group.LogoffPeakDisconnectedSessionAfterSeconds.ToString(),$htmlwhite))
+			}
+			If($Group.LogoffOffPeakDisconnectedSessionAfterSeconds -eq 0)
+			{
+				$rowdata += @(,("During off-peak times disconnected session timeout (seconds)",($global:htmlsb),"Disabled",$htmlwhite))
+			}
+			Else
+			{
+				$rowdata += @(,("During off-peak times disconnected session timeout (seconds)",($global:htmlsb),$Group.LogoffOffPeakDisconnectedSessionAfterSeconds.ToString(),$htmlwhite))
+			}
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+
+			WriteHTMLLine 4 0 "Force User Logoff"
+			$rowdata = @()
+			$columnHeaders = @("Max Seconds Before Forced LogOff During Peak",($global:htmlsb),$Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringPeak.ToString(),$htmlwhite)
+			$rowdata += @(,("Max Seconds Before Forced LogOff During Off-Peak",($global:htmlsb),$Group.AutoscaleMaxSecondsBeforeForcedLogOffDuringOffPeak.ToString(),$htmlwhite))
+			$rowdata += @(,("LogOff Notification title",($global:htmlsb),$GroupAutoscaleLogOffWarningTitle,$htmlwhite))
+			$rowdata += @(,("LogOff Notification message",($global:htmlsb),$GroupAutoscaleLogOffWarningMessage,$htmlwhite))
+
+			$msg = ""
+			$columnWidths = @("350","350")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			
+			WriteHTMLLine 4 0 "Autoscaling Tagged Machines"
+			$rowdata = @()
+			
+			If($Null -eq $Group.RestrictAutoscaleTagUid)
+			{
+				WriteHTMLLine 0 0 "Enable Autoscale for machines with tag is not used"
+			}
+			Else
+			{
+				$columnHeaders = @("Enable Autoscale for machines with tag",($global:htmlsb),"Enabled",$htmlwhite)
+				$rowdata += @(,("Tag",($global:htmlsb), (Get-BrokerTag -Uid $Group.RestrictAutoscaleTagUid).Name,$htmlwhite))
+				If($Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak -eq -1 -and $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak -eq -1)
+				{
+					#Do nothing
+				}
+				Else
+				{
+					$rowdata += @(,("Control when Autoscale starts powering on tagged machines",($global:htmlsb), "Enabled",$htmlwhite))
+					$rowdata += @(,("When usage of untagged machines reaches (%)",($global:htmlsb), "",$htmlwhite))
+					$rowdata += @(,("     During peak times",($global:htmlsb), $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringPeak.ToString(),$htmlwhite))
+					$rowdata += @(,("     During off-peak times",($global:htmlsb), $Group.RestrictAutoscaleMinIdleUntaggedPercentDuringOffPeak.ToString(),$htmlwhite))
+				}
+
+				$msg = ""
+				$columnWidths = @("350","350")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+			}
+		}
+		Else
+		{
+			WriteHTMLLine 4 0 "Manage Autoscale"
+			WriteHTMLLine 0 0 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+		}
 	}
 }
 
@@ -13319,7 +14154,7 @@ Function OutputDeliveryGroupApplicationDetails
 
 		ForEach($Application in $AllApplications)
 		{
-			Write-Verbose "$(Get-Date -Format G): `t`t`tAdding Application $($Application.ApplicationName)"
+			Write-Verbose "$(Get-Date -Format G): `t`t`t`tAdding Application $($Application.ApplicationName)"
 
 			$xEnabled = "Enabled"
 			If($Application.Enabled -eq $False)
@@ -15488,7 +16323,7 @@ Function ProcessPolicies
 		WriteHTMLLine 0 0 $txt1 "" "Calibri" 1
 		WriteHTMLLine 0 0 $txt2
 	}
-	Write-Verbose "$(Get-Date -Format G): Processing Citrix Cloud Policies"
+	Write-Verbose "$(Get-Date -Format G): Processing Citrix Cloud (now DaaS) Policies"
 	
 	ProcessPolicySummary 
 	
@@ -30781,7 +31616,7 @@ Function OutputRoleDefinitions
 			WriteWordLine 0 0 "Details - " $Role.Name
 			WriteWordLine 0 0 $Role.Description
 
-			$comp = ""
+			$wcomp = ""
 			$w = 0
 		}
 		If($Text)
@@ -30798,7 +31633,7 @@ Function OutputRoleDefinitions
 			WriteHTMLLine 0 0 "Details - " $Role.Name
 			WriteHTMLLine 0 0 $Role.Description
 
-			$comp = ""
+			$wcomp = ""
 			$h = 0
 		}
 
@@ -30965,16 +31800,19 @@ Function GetRolePermissions
 			"ApplicationGroup_RemoveFromDesktopGroup"					{$Results.Add("Remove Delivery Group from Application Group", "Application Groups")}
 			"ApplicationGroup_RemoveScope"								{$Results.Add("Remove Application Group from Scope", "Application Groups")}
 			
-			"AppLib_AddApplication"										{$Results.Add("Add App-V applications", "App-V")}
-			"AppLib_AddPackage"											{$Results.Add("Add App-V Application Libraries and Packages", "App-V")}
-			"AppLib_IsolationGroup_Create"								{$Results.Add("Create App-V Isolation Group", "App-V")}
-			"AppLib_IsolationGroup_Remove"								{$Results.Add("Remove App-V Isolation Groups", "App-V")}
-			"AppLib_Read"												{$Results.Add("Read App-V Application Libraries and Packages", "App-V")}
-			"AppLib_RemoveApplication"									{$Results.Add("Remove App-V applications", "App-V")}
-			"AppLib_RemovePackage"										{$Results.Add("Remove App-V Application Libraries and Packages", "App-V")}
-			"AppV_AddServer"											{$Results.Add("Add App-V publishing server", "App-V")}
-			"AppV_DeleteServer"											{$Results.Add("Delete App-V publishing server", "App-V")}
-			"AppV_Read"													{$Results.Add("Read App-V servers", "App-V")}
+			"AppLib_AddApplication"										{$Results.Add("Add App-V applications", "Application Packages")}
+			"AppLib_AddPackage"											{$Results.Add("Add App-V Application Libraries and Packages", "Application Packages")}
+			"AppLib_IsolationGroup_Create"								{$Results.Add("Create App-V Isolation Group", "Application Packages")}
+			"AppLib_IsolationGroup_Remove"								{$Results.Add("Remove App-V Isolation Groups", "Application Packages")}
+			"AppLib_PackageDiscovery_Create"							{$Results.Add("PackageDiscovery_Create", "Application Packages")}
+			"AppLib_PackageDiscoveryProfile_Create"						{$Results.Add("PackageDiscoveryProfile_Create", "Application Packages")}
+			"AppLib_PackageDiscoveryProfile_Remove"						{$Results.Add("PackageDiscoveryProfile_Remove", "Application Packages")}
+			"AppLib_Read"												{$Results.Add("Read App-V Application Libraries and Packages", "Application Packages")}
+			"AppLib_RemoveApplication"									{$Results.Add("Remove App-V applications", "Application Packages")}
+			"AppLib_RemovePackage"										{$Results.Add("Remove App-V Application Libraries and Packages", "Application Packages")}
+			"AppV_AddServer"											{$Results.Add("Add App-V publishing server", "Application Packages")}
+			"AppV_DeleteServer"											{$Results.Add("Delete App-V publishing server", "Application Packages")}
+			"AppV_Read"													{$Results.Add("Read App-V servers", "Application Packages")}
 			
 			"EA_Acct"													{$Results.Add("Catalog Service Identity operations", "Citrix Catalog Service")}
 			"EA_Broker"													{$Results.Add("Catalog Service Broker operations", "Citrix Catalog Service")}
@@ -31102,22 +31940,29 @@ Function GetRolePermissions
 			"Catalog_ChangeUserAssignment"								{$Results.Add("Change users assigned to a machine", "Machine Catalogs")}
 			"Catalog_ConsumeMachines"									{$Results.Add("Allow machines to be consumed by a Delivery Group", "Machine Catalogs")}
 			"Catalog_Create"											{$Results.Add("Create Machine Catalog", "Machine Catalogs")}
+			"Catalog_CreateFolder"										{$Results.Add("Create Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_Delete"											{$Results.Add("Delete Machine Catalog", "Machine Catalogs")}
+			"Catalog_EditFolder"										{$Results.Add("Edit Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_EditProperties"									{$Results.Add("Edit Machine Catalog Properties", "Machine Catalogs")}
 			"Catalog_Manage_ChangeTags"									{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
 			"Catalog_ManageAccounts"									{$Results.Add("Manage Active Directory Accounts", "Machine Catalogs")}
+			"Catalog_MoveFolder"										{$Results.Add("Move Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_PowerOperations_RDS"								{$Results.Add("Perform power operations on Windows Server machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_PowerOperations_VDI"								{$Results.Add("Perform power operations on Windows Desktop machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_Read"												{$Results.Add("View Machine Catalogs", "Machine Catalogs")}
+			"Catalog_RemoveFolder"										{$Results.Add("Remove Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_RemoveMachine"										{$Results.Add("Remove Machines from Machine Catalog", "Machine Catalogs")}
 			"Catalog_RemoveScope"										{$Results.Add("Remove Machine Catalog from Scope", "Machine Catalogs")}
 			"Catalog_SessionManagement"									{$Results.Add("Perform session management on machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_UpdateMasterImage"									{$Results.Add("Perform Machine update", "Machine Catalogs")}
 
+			"AutoTagRule_Create"										{$Results.Add("Create AutoTagRule", "Other permissions")}
+			"AutoTagRule_Delete"										{$Results.Add("Delete AutoTagRule", "Other permissions")}
+			"AutoTagRule_Edit"											{$Results.Add("Edit AutoTagRule", "Other permissions")}
+			"AutoTagRule_Read"											{$Results.Add("Read AutoTagRule", "Other permissions")}
 			"Configuration_Read"										{$Results.Add("Read Site Configuration (Configuration_Read)", "Other permissions")}
 			"Configuration_Restricted_Write"							{$Results.Add("Customer Update Site Configuration", "Other permissions")}
 			"Configuration_Unrestricted_Write"							{$Results.Add("Update Site Configuration", "Other permissions")}
-			#"Configuration_Write"										{$Results.Add("Update Site Configuration (Configuration_Write)", "Other permissions")}
 			"Database_Read"												{$Results.Add("Read database status information", "Other permissions")}
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
@@ -31130,6 +31975,8 @@ Function GetRolePermissions
 			"Tag_Edit"													{$Results.Add("Edit tags", "Other permissions")}
 			"Tag_Read"													{$Results.Add("Read tags", "Other permissions")}
 			"Trust_ServiceKeys"											{$Results.Add("Manage Trust Service Keys", "Other permissions")}
+			"VdaUpgrade_CatalogManage"									{$Results.Add("Manage VDA Upgrade Catalog Schedules", "Other permissions")}
+			"VdaUpgrade_MachineManage"									{$Results.Add("Manage VDA Upgrade Machine Schedules", "Other permissions")}
 
 			"Policies_Manage"											{$Results.Add("Manage Policies", "Policies")}
 			"Policies_Read"												{$Results.Add("View Policies", "Policies")}
@@ -32696,46 +33543,42 @@ Function OutputLicensingOverview
 
 	Switch ($Script:CCSite2.ProductCode)
 	{
-		"CVADS"	{$LicensedProduct = "Citrix virtual apps and desktops service"; Break}
+		<#
+			PS C:\webster> Get-ConfigProduct
+
+			Code  Name
+			----  ----
+			CVADS Citrix virtual apps and desktops service
+			XDT   XenDesktop
+			VADS  Virtual apps and desktops service
+			VAS   Virtual apps service
+			VDS   Virtual desktops service
+		#>
+		"CVADS"	{$LicensedProduct = "Citrix DaaS"; Break}
 		"XDT"	{$LicensedProduct = "XenDesktop"; Break}
-		"VADS"	{$LicensedProduct = "Virtual apps and desktops service"; Break}
-		"VAS"	{$LicensedProduct = "Virtual apps service"; Break}
-		"VAD"	{$LicensedProduct = "Virtual desktops service"; Break}
+		"VADS"	{$LicensedProduct = "Citrix DaaS"; Break}
+		"VAS"	{$LicensedProduct = "Citrix DaaS"; Break}
+		"VDS"	{$LicensedProduct = "Citrix DaaS"; Break}
 		Default	{$LicensedProduct = "Unable to determine licensed product: $Script:CCSite2.ProductCode"; Break}
 	}
 	
-	If($Script:CCSite2.ProductCode -eq "XDT")
+	If($Script:CCSite2.ProductCode -eq "CVADS")
 	{
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"ADV" 	{$LicenseEditionType = "Advanced Edition"; Break}
-			"APP" 	{$LicenseEditionType = "App Edition"; Break}
-			"BAS" 	{$LicenseEditionType = "Basic Edition"; Break}
-			"ENT" 	{$LicenseEditionType = "Enterprise Edition"; Break}
-			"PLT" 	{$LicenseEditionType = "Platinum Edition"; Break}
-			"STD" 	{$LicenseEditionType = "VDI Edition"; Break}
-			Default {$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "VADS" -or $Script:CCSite2.ProductCode -eq "VAS")
-	{
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"Advanced" 	{$LicenseEditionType = "Advanced Edition"; Break}
-			"Premium" 	{$LicenseEditionType = "Premium Edition"; Break}
-			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "VDS")
-	{
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"Premium" 	{$LicenseEditionType = "Premium Edition"; Break}
-			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "CVADS")
-	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: CVADS
+			AzureVdi
+			DaaS
+			ExpressAdmin
+			Full
+			FullTrial
+			MultitenantCustomer
+			XAOnly
+			XDOnly
+		#>
 		Switch ($Script:CCSite2.ProductEdition)
 		{
 			"AzureVdi"				{$LicenseEditionType = "Azure VDI"; Break}
@@ -32747,6 +33590,92 @@ Function OutputLicensingOverview
 			"XAOnly"				{$LicenseEditionType = "XenApp Only"; Break}
 			"XDOnly"				{$LicenseEditionType = "XenDesktop Only"; Break}
 			Default					{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
+	ELseIf($Script:CCSite2.ProductCode -eq "XDT")
+	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: XDT
+			PLT
+			ENT
+			APP
+			ADV
+			STD
+			BAS
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"ADV" 	{$LicenseEditionType = "Advanced Edition"; Break}
+			"APP" 	{$LicenseEditionType = "App Edition"; Break}
+			"BAS" 	{$LicenseEditionType = "Basic Edition"; Break}
+			"ENT" 	{$LicenseEditionType = "Enterprise Edition"; Break}
+			"PLT" 	{$LicenseEditionType = "Premium Edition"; Break}
+			"STD" 	{$LicenseEditionType = "VDI Edition"; Break}
+			Default {$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
+	ElseIf($Script:CCSite2.ProductCode -eq "VADS")
+	{
+		<#
+		PS C:\webster> Get-ConfigProductEdition
+
+		cmdlet Get-ConfigProductEdition at command pipeline position 1
+		Supply values for the following parameters:
+		ProductCode: VADS
+			Advanced
+			Premium
+			StandardForAzure
+			PremiumForGCP
+			StandardForGCP
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"Advanced"		 	{$LicenseEditionType = "Citrix DaaS Advanced Plus"; Break}
+			"Premium"		 	{$LicenseEditionType = "Citrix DaaS Premium and Citrix DaaS Premium Plus"; Break}
+			"StandardForAzure" 	{$LicenseEditionType = "Citrix DaaS Standard for Azure"; Break}
+			"PremiumForGCP" 	{$LicenseEditionType = "Citrix DaaS Premium for Google Cloud"; Break}
+			"StandardForGCP" 	{$LicenseEditionType = "Citrix DaaS Standard for Google Cloud"; Break}
+			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
+	ElseIf($Script:CCSite2.ProductCode -eq "VAS")
+	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: VAS
+			Advanced
+			Premium
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"Advanced" 	{$LicenseEditionType = "Citrix DaaS Advanced"; Break}
+			"Premium" 	{$LicenseEditionType = "Citrix DaaS Premium"; Break}
+			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
+		}
+	}
+	ElseIf($Script:CCSite2.ProductCode -eq "VDS")
+	{
+		<#
+			PS C:\webster> Get-ConfigProductEdition
+
+			cmdlet Get-ConfigProductEdition at command pipeline position 1
+			Supply values for the following parameters:
+			ProductCode: VDS
+			Premium
+			Essentials
+		#>
+		Switch ($Script:CCSite2.ProductEdition)
+		{
+			"Premium" 		{$LicenseEditionType = "Premium Edition"; Break}
+			"Essentials"	{$LicenseEditionType = "Essentials Edition"; Break}
+			Default			{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
 		}
 	}
 
@@ -33433,7 +34362,7 @@ Function OutputSummaryPage
 	If($MSWord -or $PDF)
 	{
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Machine Catalogs"
+		WriteWordLine 2 0 "Machine Catalogs"
 		$ScriptInformation.Add(@{Data = "Total Multi-session OS Catalogs"; Value = $Script:TotalServerOSCatalogs.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Single-session OS Catalogs'; Value = $Script:TotalDesktopOSCatalogs.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total RemotePC Catalogs'; Value = $Script:TotalRemotePCCatalogs.ToString(); }) > $Null
@@ -33457,7 +34386,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 		
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Delivery Groups"
+		WriteWordLine 2 0 "Delivery Groups"
 		$ScriptInformation.Add(@{Data = "Total Application Groups"; Value = $Script:TotalApplicationGroups.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Desktop Groups'; Value = $Script:TotalDesktopGroups.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Apps & Desktop Groups'; Value = $Script:TotalAppsAndDesktopGroups.ToString(); }) > $Null
@@ -33481,7 +34410,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Applications"
+		WriteWordLine 2 0 "Applications"
 		$ScriptInformation.Add(@{Data = "Total Published Applications"; Value = $Script:TotalPublishedApplications.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total App-V Applications'; Value = $Script:TotalAppvApplications.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = '     Total Applications'; Value = ($Script:TotalPublishedApplications + $Script:TotalAppvApplications).ToString(); }) > $Null
@@ -33506,7 +34435,7 @@ Function OutputSummaryPage
 		If($Policies -eq $True)
 		{
 			$ScriptInformation = New-Object System.Collections.ArrayList
-			WriteWordLine 4 0 "Policies"
+			WriteWordLine 2 0 "Policies"
 			$ScriptInformation.Add(@{Data = "Total Computer Policies"; Value = $Script:TotalComputerPolicies.ToString(); }) > $Null
 			$ScriptInformation.Add(@{Data = 'Total User Policies'; Value = $Script:TotalUserPolicies.ToString(); }) > $Null
 			$ScriptInformation.Add(@{Data = '     Total Policies'; Value = $Script:TotalPolicies.ToString(); }) > $Null
@@ -33514,7 +34443,7 @@ Function OutputSummaryPage
 			$ScriptInformation.Add(@{Data = 'Site Policies'; Value = $Script:TotalSitePolicies.ToString(); }) > $Null
 			If($NoADPolicies -eq $False)
 			{
-				$ScriptInformation.Add(@{Data = "Citrix AD Policies Processed "; Value = "$($Script:TotalADPolicies) *"; }) > $Null
+				$ScriptInformation.Add(@{Data = "Citrix AD Policies Processed"; Value = "$($Script:TotalADPolicies) *"; }) > $Null
 				$ScriptInformation.Add(@{Data = 'Citrix AD Policies not Processed'; Value = $Script:TotalADPoliciesNotProcessed.ToString(); }) > $Null
 			}
 
@@ -33538,7 +34467,7 @@ Function OutputSummaryPage
 		}
 		
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Administrators"
+		WriteWordLine 2 0 "Administrators"
 		$ScriptInformation.Add(@{Data = "Total Cloud Admins"; Value = $Script:TotalCloudAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Total Delivery Group Admins"; Value = $Script:TotalDeliveryGroupAdmins.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = 'Total Full Admins'; Value = $Script:TotalFullAdmins.ToString(); }) > $Null
@@ -33582,7 +34511,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Hosting Connections"
+		WriteWordLine 2 0 "Hosting Connections"
 		$ScriptInformation.Add(@{Data = "     Total Hosting Connections"; Value = $Script:TotalHostingConnections.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -33603,7 +34532,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "StoreFront"
+		WriteWordLine 2 0 "StoreFront"
 		$ScriptInformation.Add(@{Data = "     Total StoreFront Servers"; Value = $Script:TotalStoreFrontServers.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -33624,7 +34553,7 @@ Function OutputSummaryPage
 		WriteWordLine 0 0 ""
 
 		$ScriptInformation = New-Object System.Collections.ArrayList
-		WriteWordLine 4 0 "Zones"
+		WriteWordLine 2 0 "Zones"
 		$ScriptInformation.Add(@{Data = "     Total Zones"; Value = $Script:TotalZones.ToString(); }) > $Null
 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
@@ -33758,7 +34687,7 @@ Function OutputSummaryPage
 			$rowdata += @(,('Site Policies',($global:htmlsb),$Script:TotalSitePolicies.ToString(),$htmlwhite))
 			If($NoADPolicies -eq $False)
 			{
-				$rowdata += @(,("Citrix AD Policies Processed ",($global:htmlsb),"$($Script:TotalADPolicies) *",$htmlwhite))
+				$rowdata += @(,("Citrix AD Policies Processed",($global:htmlsb),"$($Script:TotalADPolicies) *",$htmlwhite))
 				$rowdata += @(,('Citrix AD Policies not Processed',($global:htmlsb),$Script:TotalADPoliciesNotProcessed.ToString(),$htmlwhite))
 			}
 
@@ -33877,20 +34806,20 @@ Function ProcessScriptSetup
 	}
 	Else
 	{
-		#1.15, add snapin version check. If the snapin version is less than 7.30, end the script
+		#1.17, add snapin version check. If the snapin version is less than 7.33, end the script
 		#code courtesy of Guy Leech
 		$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
 		
-		If([version]$Script:GPSnapinVersion -lt "7.30") #1.16 fixed version check
+		If([version]$Script:GPSnapinVersion -lt "7.33") #1.16 fixed version check
 		{
 			#1.16 added download location to error message
 			Write-Error "
 	`n`r
 	CVADS Group Policy snapin is not the correct version.
 	`n`n
-	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.30.
+	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.33.
 	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2112 or later installation media. 
+	Please install the Citrix Group Policy Management Console from the CVAD 2203 or later installation media. 
 	`n`n
 	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
 	`n`n
@@ -33949,7 +34878,7 @@ Function ProcessScriptSetup
 	}
 	Else
 	{
-		#1.15, add SDK version check. If the SDK version is less than 7.32, end the script
+		#1.17, add SDK version check. If the SDK version is less than 7.34, end the script
 		#code courtesy of Guy Leech
 		$Script:SDKVersion = (((Get-Module -Name Citrix.Broker.Commands | `
 			Select-Object ImplementingAssembly) -as [string]) -split '[=,]') | `
@@ -33957,13 +34886,13 @@ Function ProcessScriptSetup
 			Sort-Object -Descending | `
 			Select-Object -first 1
 		
-		If($Script:SDKVersion -lt 7.32)
+		If($Script:SDKVersion -lt 7.34)
 		{
 			Write-Error "
 	`n`r
 	CVADS Remote Powershell SDK is not the correct version.
 	`n`n
-	Your SDK version is $Script:SDKVersion and must be at least version 7.32.
+	Your SDK version is $Script:SDKVersion and must be at least version 7.34.
 	`n`n
 	Please download the latest Remote SDK version from https://download.apps.cloud.com/CitrixPoshSdk.exe
 	`n`n
@@ -34058,6 +34987,20 @@ Script cannot continue
 	{
 		Write-Error "Unable to import the Citrix.Storefront.Commands module. Script cannot continue."
 		AbortScript
+	}
+	
+	Write-Verbose "$(Get-Date -Format G): `tCitrix.VdaUpdateService.Commands"
+	Import-Module "Citrix.VdaUpdateService.Commands" -EA 0 4>$Null
+	If(!$?)
+	{
+		Write-Host "" -ForegroundColor White
+		Write-Host "Unable to import the Citrix.VdaUpdateService.Commands module. Citrix hasn't updated your DaaS instance yet." -ForegroundColor White
+		Write-Host "" -ForegroundColor White
+		$Script:VDAUpdateService = $False
+	}
+	Else
+	{
+		$Script:VDAUpdateService = $True
 	}
 
 	$Script:DoPolicies = $False
@@ -34277,6 +35220,8 @@ Script cannot continue
 	$tmp = $Script:CCSiteVersion
 	Switch ($tmp)
 	{
+		"7.34"	{$Script:CCSiteVersion = "2206"; Break}
+		"7.33"	{$Script:CCSiteVersion = "2203"; Break}
 		"7.32"	{$Script:CCSiteVersion = "2112"; Break}
 		"7.31"	{$Script:CCSiteVersion = "2109"; Break}
 		"7.30"	{$Script:CCSiteVersion = "2106"; Break}
@@ -34322,6 +35267,7 @@ Script cannot continue
 	$Script:DDCConfigData = Get-BrokerServiceConfigurationData @CCParams2 -SortBy SettingName
 	
 	Write-Verbose "$(Get-Date -Format G): Initial Site data has been gathered"
+	
 }
 #endregion
 
