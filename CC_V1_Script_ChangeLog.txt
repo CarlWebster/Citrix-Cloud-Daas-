@@ -6,6 +6,70 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.18 27-Jun-2022
+#	Adding the missing $Script:Title variable if -Section Logging was selected
+#	Additional Word/PDF output cleanup
+#	Change almost every "Administrator" related table to a smaller font for Word/PDF output
+#		Some of the new default names are very long and caused a few tables to go off the right side of the page
+#	For Machine Catalogs, add the Folder Name. This meant I had to change several cmdlets to use the CatalogName 
+#		property and a couple to use Name instead of CatalogName. The Name property, in my testing, has the new 
+#		folder name prepended to it
+#	General code cleanup
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			AppGroupApplications_CreateFolder
+#			AppGroupApplications_EditFolder
+#			AppGroupApplications_MoveFolder
+#			AppGroupApplications_RemoveFolder
+#			ApplicationGroup_CreateFolder
+#			ApplicationGroup_EditFolder
+#			ApplicationGroup_MoveFolder
+#			ApplicationGroup_RemoveFolder
+#			AppLib_RemoveAppVServer
+#			C365_EA_Acct
+#			C365_EA_Broker
+#			C365_EA_Hyp
+#			C365_EA_Prov
+#	In Function OutputMachine, add the Additional Data as discussed in the June 2022 What's New
+#		Retrieve region name information for Azure VMs, managed disks, snapshots, Azure VHD, and ARM template. 
+#		You can now display the region name information for an Azure VM, managed disks, snapshots, Azure VHD, 
+#		and ARM template. This information is displayed for the resources on the master image when a machine 
+#		catalog is assigned. For more information, see 
+#		https://docs.citrix.com/en-us/citrix-daas/install-configure/resource-location/azure-resource-manager.html#retrieve-region-name-information-for-azure-vms-managed-disks-snapshots-azure-vhd-and-arm-template
+#		In the call to function OutputMachineDetails, added two parameters to help support VDAUpgrade
+#	In Function OutputMachineDetails:
+#		Added two parameters to help support VDAUpgrade
+#		Added VDA Upgrade section
+#	The June 2022 update to Citrix Cloud added support for single-session restart schedules
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+#		Removed the restriction for showing restart schedules for multi-session OS only
+#	Updated the catalog's custom properties for the Provisioning Scheme
+#		These are the new custom properties documented at
+#		https://developer-docs.citrix.com/projects/citrix-daas-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#			New Custom Properties For Azure
+#				EnableIntuneEnroll
+#				InitialPageFileSizeInMB
+#				MaxPageFileSizeInMB
+#				PageFileDiskDriveLetter
+#				StorageType
+#				UseTempDiskForWBC
+#
+#			New Custom Properties For Gcp
+#				IdentityDiskStorageType
+#				PersistOsDisk
+#				PersistWBC
+#				StorageType
+#				WBCDiskStorageType
+#	Updated the ReadMe file
+#	When checking for VDA Upgrade capability, add testing for MCS catalogs
+#		Citrix added support for MCS catalogs in the June 2022 update
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+#		Extended support for VDA upgrade. Using the Full Configuration interface, 
+#		you can now upgrade MCS-provisioned persistent machines. You can upgrade 
+#		them on a per-catalog or a per-machine basis.
+#
+#		Added a per-machine VDA Upgrade section for eligible machines
+
 #Version 1.17 21-Apr-2022
 #	Added from the April 2022 update:
 #		Support for upgrading VDA machines (preview)
