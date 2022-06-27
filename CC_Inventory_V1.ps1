@@ -17,6 +17,8 @@
 	Run this script on a computer with the Remote SDK installed.
 	
 	https://download.apps.cloud.com/CitrixPoshSdk.exe
+	or
+	https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html
 	
 	This script was developed and run from two Windows 10 VMs. One was domain-joined and 
     the other was in a Workgroup.
@@ -1289,9 +1291,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.17
+	VERSION: 1.18
 	AUTHOR: Carl Webster
-	LASTEDIT: April 21, 2022
+	LASTEDIT: June 20, 2022
 #>
 
 #endregion
@@ -1479,6 +1481,70 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.18 27-Jun-2022
+#	Adding the missing $Script:Title variable if -Section Logging was selected
+#	Additional Word/PDF output cleanup
+#	Change almost every "Administrator" related table to a smaller font for Word/PDF output
+#		Some of the new default names are very long and caused a few tables to go off the right side of the page
+#	For Machine Catalogs, add the Folder Name. This meant I had to change several cmdlets to use the CatalogName 
+#		property and a couple to use Name instead of CatalogName. The Name property, in my testing, has the new 
+#		folder name prepended to it
+#	General code cleanup
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			AppGroupApplications_CreateFolder
+#			AppGroupApplications_EditFolder
+#			AppGroupApplications_MoveFolder
+#			AppGroupApplications_RemoveFolder
+#			ApplicationGroup_CreateFolder
+#			ApplicationGroup_EditFolder
+#			ApplicationGroup_MoveFolder
+#			ApplicationGroup_RemoveFolder
+#			AppLib_RemoveAppVServer
+#			C365_EA_Acct
+#			C365_EA_Broker
+#			C365_EA_Hyp
+#			C365_EA_Prov
+#	In Function OutputMachine, add the Additional Data as discussed in the June 2022 What's New
+#		Retrieve region name information for Azure VMs, managed disks, snapshots, Azure VHD, and ARM template. 
+#		You can now display the region name information for an Azure VM, managed disks, snapshots, Azure VHD, 
+#		and ARM template. This information is displayed for the resources on the master image when a machine 
+#		catalog is assigned. For more information, see 
+#		https://docs.citrix.com/en-us/citrix-daas/install-configure/resource-location/azure-resource-manager.html#retrieve-region-name-information-for-azure-vms-managed-disks-snapshots-azure-vhd-and-arm-template
+#		In the call to function OutputMachineDetails, added two parameters to help support VDAUpgrade
+#	In Function OutputMachineDetails:
+#		Added two parameters to help support VDAUpgrade
+#		Added VDA Upgrade section
+#	The June 2022 update to Citrix Cloud added support for single-session restart schedules
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+#		Removed the restriction for showing restart schedules for multi-session OS only
+#	Updated the catalog's custom properties for the Provisioning Scheme
+#		These are the new custom properties documented at
+#		https://developer-docs.citrix.com/projects/citrix-daas-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#			New Custom Properties For Azure
+#				EnableIntuneEnroll
+#				InitialPageFileSizeInMB
+#				MaxPageFileSizeInMB
+#				PageFileDiskDriveLetter
+#				StorageType
+#				UseTempDiskForWBC
+#
+#			New Custom Properties For Gcp
+#				IdentityDiskStorageType
+#				PersistOsDisk
+#				PersistWBC
+#				StorageType
+#				WBCDiskStorageType
+#	Updated the ReadMe file
+#	When checking for VDA Upgrade capability, add testing for MCS catalogs
+#		Citrix added support for MCS catalogs in the June 2022 update
+#		https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+#		Extended support for VDA upgrade. Using the Full Configuration interface, 
+#		you can now upgrade MCS-provisioned persistent machines. You can upgrade 
+#		them on a per-catalog or a per-machine basis.
+#
+#		Added a per-machine VDA Upgrade section for eligible machines
+#
 #Version 1.17 21-Apr-2022
 #	Added from the April 2022 update:
 #		Support for upgrading VDA machines (preview)
@@ -2128,7 +2194,7 @@ Param(
 #		Added error check to verify that the variables $TempDiskCacheSize and $TempMemoryCacheSize exist before using them
 #		Added the catalog's custom properties for the Provisioning Scheme
 #		These are the custom properties documented at
-#		https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+#		https://developer-docs.citrix.com/projects/citrix-daas-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
 #			Custom Properties For Azure
 #				DedicatedHostGroupId
 #				DiskEncryptionSetId
@@ -2617,9 +2683,9 @@ $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.17'
+$script:MyVersion   = '1.18'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "04/21/2022"
+$tmpdate            = [datetime] "06/20/2022"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -4164,7 +4230,7 @@ Function UpdateDocumentProperties
 	Param([string]$AbstractTitle, [string]$SubjectTitle)
 	#updated 8-Jun-2017 with additional cover page fields
 	#Update document properties
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		If($Script:CoverPagesExist)
 		{
@@ -4742,7 +4808,7 @@ Function AddHTMLTable
 	$columnHeaders = @("User Name",$htmlsb,$UserName,$htmlwhite)
 	$rowdata += @(,('Save as PDF',$htmlsb,$PDF.ToString(),$htmlwhite))
 	$rowdata += @(,('Save as TEXT',$htmlsb,$TEXT.ToString(),$htmlwhite))
-	$rowdata += @(,('Save as WORD',$htmlsb,$MSWORD.ToString(),$htmlwhite))
+	$rowdata += @(,('Save as WORD',$htmlsb,$MSWord.ToString(),$htmlwhite))
 	$rowdata += @(,('Save as HTML',$htmlsb,$HTML.ToString(),$htmlwhite))
 	$rowdata += @(,('Add DateTime',$htmlsb,$AddDateTime.ToString(),$htmlwhite))
 	$rowdata += @(,('Hardware Inventory',$htmlsb,$Hardware.ToString(),$htmlwhite))
@@ -5654,7 +5720,7 @@ Function OutputReportFooter
 		$runtime.Seconds,
 		$runtime.Milliseconds)
 
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		$Script:selection.InsertNewPage()
 		WriteWordLine 1 0 "Report Footer"
@@ -5692,7 +5758,7 @@ Function OutputReportFooter
 
 Function ProcessDocumentOutput
 {
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		SaveandCloseDocumentandShutdownWord
 	}
@@ -5838,7 +5904,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Save As PDF        : $($PDF)"
 	Write-Verbose "$(Get-Date -Format G): Save As HTML       : $($HTML)"
 	Write-Verbose "$(Get-Date -Format G): Save As TEXT       : $($TEXT)"
-	Write-Verbose "$(Get-Date -Format G): Save As WORD       : $($MSWORD)"
+	Write-Verbose "$(Get-Date -Format G): Save As WORD       : $($MSWord)"
 	Write-Verbose "$(Get-Date -Format G): ScriptInfo         : $($ScriptInfo)"
 	Write-Verbose "$(Get-Date -Format G): Section            : $($Section)"
 	Write-Verbose "$(Get-Date -Format G): Site Name          : $($CCSiteName)"
@@ -5859,7 +5925,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): PoSH version       : $($Host.Version)"
 	Write-Verbose "$(Get-Date -Format G): PSCulture          : $($PSCulture)"
 	Write-Verbose "$(Get-Date -Format G): PSUICulture        : $($PSUICulture)"
-	If($MSWORD -or $PDF)
+	If($MSWord -or $PDF)
 	{
 		Write-Verbose "$(Get-Date -Format G): Word language      : $($Script:WordLanguageValue)"
 		Write-Verbose "$(Get-Date -Format G): Word version       : $($Script:WordProduct)"
@@ -5984,10 +6050,11 @@ Function OutputAdminsForDetails
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 275;
-		$Table.Columns.Item(2).Width = 200;
+		$Table.Columns.Item(1).Width = 220;
+		$Table.Columns.Item(2).Width = 220;
 		$Table.Columns.Item(3).Width = 60;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
@@ -6363,7 +6430,7 @@ Function ProcessMachineCatalogs
 		WriteHTMLLine 1 0 $txt
 	}
 
-	$AllMachineCatalogs = Get-BrokerCatalog @CCParams2 -SortBy Name 
+	$AllMachineCatalogs = Get-BrokerCatalog @CCParams2 -SortBy 'AdminFolderName,Name'
 
 	If($? -and $Null -ne $AllMachineCatalogs)
 	{
@@ -6394,11 +6461,11 @@ Function OutputMachines
 	}
 	If($Text)
 	{
-		Line 0 "                                                                                  No. of   Allocated Allocation                                        "
-		Line 0 "Machine Catalog                              Machine Type                         Machines Machines  Type       User Data     Provisioning Method      "
-		Line 0 "======================================================================================================================================================="
-		#       12345678901234567890123456789012345678901234S123456789012345678901234567890123456S12345678S123456789S1234567890S1234567890123S1234567890123456789012345
-		#       XXXXXX-Azure-XXXXXXXXXEast-Dedicated-Win10MS Single-session OS (Remote PC Access)                               On local Disk Machine creation services
+		Line 0 "                                                                                                             No. of   Allocated Allocation                                        "
+		Line 0 "Folder Name                Machine Catalog                              Machine Type                         Machines Machines  Type       User Data     Provisioning Method      "
+		Line 0 "=================================================================================================================================================================================="
+		#       12345678901234567890123456S12345678901234567890123456789012345678901234S123456789012345678901234567890123456S12345678S123456789S1234567890S1234567890123S1234567890123456789012345
+		#       This is a long folder nameXXXXXX-Azure-XXXXXXXXXEast-Dedicated-Win10MS Single-session OS (Remote PC Access)                               On local Disk Machine creation services
 	}
 	If($HTML)
 	{
@@ -6459,7 +6526,10 @@ Function OutputMachines
 			Default  {$xProvisioningType = "Provisioning method could not be determined: $($Catalog.ProvisioningType)"; Break}
 		}
 
-		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		#Citrix broke this cmdlet when they added folder names
+		#change to use the catalog's UID
+		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogUID $Catalog.Uid -SortBy DNSName)
 		If($? -and ($Null -ne $Machines))
 		{
 			$NumberOfMachines = $Machines.Count.ToString()
@@ -6468,7 +6538,8 @@ Function OutputMachines
 		If($MSWord -or $PDF)
 		{
 			$WordTable += @{
-				MachineCatalogName = $Catalog.Name; 
+				AdminFolderName    = $Catalog.AdminFolderName; 
+				MachineCatalogName = $Catalog.CatalogName; 
 				MachineType        = $xCatalogType; 
 				NoOfMachines       = $NumberOfMachines;
 				AllocatedMachines  = $Catalog.UsedCount.ToString(); 
@@ -6479,8 +6550,9 @@ Function OutputMachines
 		}
 		If($Text)
 		{
-			Line 0 ( "{0,-44} {1,-36} {2,8} {3,9} {4,-10} {5,-13} {6,-25}" -f `
-			$Catalog.Name, 
+			Line 0 ( "{0, -26} {1,-44} {2,-36} {3,8} {4,9} {5,-10} {6,-13} {7,-25}" -f `
+			$Catalog.AdminFolderName, 
+			$Catalog.CatalogName, 
 			$xCatalogType, 
 			$NumberOfMachines, 
 			$Catalog.UsedCount.ToString(), 
@@ -6491,7 +6563,8 @@ Function OutputMachines
 		If($HTML)
 		{
 			$rowdata += @(,(
-				$Catalog.Name,$htmlwhite,
+				$Catalog.AdminFolderName,$htmlwhite,
+				$Catalog.CatalogName,$htmlwhite,
 				$xCatalogType,$htmlwhite,
 				$NumberOfMachines,$htmlwhite,
 				$Catalog.UsedCount.ToString(),$htmlwhite,
@@ -6507,6 +6580,7 @@ Function OutputMachines
 		If($WordTable.Count -eq 0)
 		{
 			$WordTable += @{
+				AdminFolderName    = ""; 
 				MachineCatalogName = "None found"; 
 				MachineType        = ""; 
 				NoOfMachines       = "";
@@ -6518,21 +6592,21 @@ Function OutputMachines
 		}
 		
 		$Table = AddWordTable -Hashtable $WordTable `
-		-Columns  MachineCatalogName, MachineType, NoOfMachines, AllocatedMachines, AllocationType, UserData, ProvisioningMethod `
-		-Headers  "Machine Catalog", "Machine type", "No. of machines", "Allocated machines", "Allocation Type", "User data", "Provisioning method" `
+		-Columns  AdminFolderName, MachineCatalogName, MachineType, NoOfMachines, AllocatedMachines, AllocationType, UserData, ProvisioningMethod `
+		-Headers  "Folder Name", "Machine Catalog", "Machine type", "No. of machines", "Allocated machines", "Allocation Type", "User data", "Provisioning method" `
 		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitFixed;
+		-AutoFit $wdAutoFitContent;
 
 		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 105;
-		$Table.Columns.Item(2).Width = 100;
-		$Table.Columns.Item(3).Width = 75;
-		$Table.Columns.Item(4).Width = 50;
-		$Table.Columns.Item(5).Width = 55;
-		$Table.Columns.Item(6).Width = 50;
-		$Table.Columns.Item(7).Width = 65;
+		#$Table.Columns.Item(1).Width = 105;
+		#$Table.Columns.Item(2).Width = 100;
+		#$Table.Columns.Item(3).Width = 75;
+		#$Table.Columns.Item(4).Width = 50;
+		#$Table.Columns.Item(5).Width = 55;
+		#$Table.Columns.Item(6).Width = 50;
+		#$Table.Columns.Item(7).Width = 65;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -6546,6 +6620,7 @@ Function OutputMachines
 	If($HTML)
 	{
 		$columnHeaders = @(
+			'Folder Name',($global:htmlsb),
 			'Machine Catalog',($global:htmlsb),
 			'Machine type',($global:htmlsb),
 			'No. of machines',($global:htmlsb),
@@ -6555,14 +6630,14 @@ Function OutputMachines
 			'Provisioning method',($global:htmlsb)
 		)
 
-		$columnWidths = @("125","175","75","50","55","75","145")
+		$columnWidths = @("55","125","175","75","50","55","75","145")
 		$msg = ""
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "755"
 	}
 	
 	ForEach($Catalog in $Catalogs)
 	{
-		Write-Verbose "$(Get-Date -Format G): `t`tAdding Catalog $($Catalog.Name)"
+		Write-Verbose "$(Get-Date -Format G): `t`tAdding Catalog $($Catalog.CatalogName)"
 		$xCatalogType      = ""
 		$xAllocationType   = ""
 		$xPersistType      = ""
@@ -6647,7 +6722,10 @@ Function OutputMachines
 		}
 		
 		$MachineData = $Null
-		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		#Citrix broke this cmdlet when they added folder names
+		#change to use the catalog's UID
+		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
+		$Machines = @(Get-BrokerMachine @CCParams2 -CatalogUID $Catalog.Uid -SortBy DNSName)
 		If($? -and ($Null -ne $Machines))
 		{
 			$NumberOfMachines = $Machines.Count.ToString()
@@ -6819,7 +6897,7 @@ Function OutputMachines
 		}
 		Else
 		{
-			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.Name)" -ForegroundColor White
+			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.CatalogName)" -ForegroundColor White
 			$CleanOnBoot                 = "Unable to retrieve details"
 			$CPUCount                    = "Unable to retrieve details"
 			$DedicatedTenancy            = "Unable to retrieve details"
@@ -6876,11 +6954,20 @@ Function OutputMachines
 		{
 			$Description = $Catalog.Description
 		}
+		
+		If(![String]::IsNullOrEmpty($Catalog.AdminFolderName))
+		{
+			$AdminFolderName = $Catalog.AdminFolderName
+		}
+		Else
+		{
+			$AdminFolderName = ""
+		}
 
 		If($MSWord -or $PDF)
 		{
 			$Selection.InsertNewPage()
-			WriteWordLine 2 0 "Machine Catalog: $($Catalog.Name)"
+			WriteWordLine 2 0 "Machine Catalog: $AdminFolderName$($Catalog.CatalogName)"
 			[System.Collections.Hashtable[]] $CatalogInformation = @()
 			
 			If($Catalog.ProvisioningType -eq "MCS")
@@ -7067,7 +7154,7 @@ Function OutputMachines
 		}
 		If($Text)
 		{
-			Line 0 "Machine Catalog: $($Catalog.Name)"
+			Line 0 "Machine Catalog: $AdminFolderName$($Catalog.CatalogName)"
 			If($Catalog.ProvisioningType -eq "MCS")
 			{
 				Line 1 "Account naming scheme`t`t`t: " $IdentityNamingScheme
@@ -7237,7 +7324,7 @@ Function OutputMachines
 		}
 		If($HTML)
 		{
-			WriteHTMLLine 2 0 "Machine Catalog: $($Catalog.Name)"
+			WriteHTMLLine 2 0 "Machine Catalog: $AdminFolderName$($Catalog.CatalogName)"
 			$rowdata = @()
 			$columnHeaders = @("Description",($global:htmlsb),$Description,$htmlwhite)
 			If($Catalog.ProvisioningType -eq "MCS")
@@ -7405,6 +7492,7 @@ Function OutputMachines
 		}
 			
 		#Added in 1.15, get the custom properties for the catalog
+		#Added new properties in 1.18
 		If($Null -ne $Catalog.ProvisioningSchemeID)
 		{
 			<#For script version 1.15, these are the custom properties documented at
@@ -7412,10 +7500,14 @@ Function OutputMachines
 				Custom Properties For Azure
 					DedicatedHostGroupId
 					DiskEncryptionSetId
+					EnableIntuneEnroll
 					IdentityDiskStorageType
+					InitialPageFileSizeInMB
 					LicenseType
 					MachinesPerStorageAccount
+					MaxPageFileSizeInMB
 					OsType
+					PageFileDiskDriveLetter
 					PersistOsDisk
 					PersistVm
 					PersistWBC
@@ -7426,9 +7518,11 @@ Function OutputMachines
 					SharedImageGalleryStorageAccountType (not documented but found in testing)
 					StorageAccountsPerResourceGroup
 					StorageAccountType
+					StorageType
 					UseEphemeralOsDisk
 					UseManagedDisks
 					UseSharedImageGallery
+					UseTempDiskForWBC
 					WBCDiskStorageType
 					Zones
 
@@ -7439,6 +7533,11 @@ Function OutputMachines
 				Custom Properties For Gcp
 					CatalogZones
 					CryptoKeyId
+					IdentityDiskStorageType
+					PersistOsDisk
+					PersistWBC
+					StorageType
+					WBCDiskStorageType
 			#>
 			
 			$ProvScheme = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeID @CCParams2
@@ -7572,6 +7671,7 @@ Function OutputMachines
 				}
 				
 				#Added in 1.15, add VM Image History
+				Write-Verbose "$(Get-Date -Format G): `t`t`tAdding catalog image history"
 				$ImageHistory = Get-ProvSchemeMasterVMImageHistory `
 								-ProvisioningSchemeUid $Catalog.ProvisioningSchemeID `
 								-ShowAll `
@@ -7580,7 +7680,7 @@ Function OutputMachines
 				
 				If($? -and $Null -eq $ImageHistory)
 				{
-					$txt = "There was no Image History found for Machine Catalog $($Catalog.Name) Provisioning Scheme $($Catalog.ProvisioningSchemeID)"
+					$txt = "There was no Image History found for Machine Catalog $($Catalog.CatalogName) Provisioning Scheme $($Catalog.ProvisioningSchemeID)"
 					OutputNotice $txt
 				}
 				ElseIf($? -and $Null -ne $ImageHistory)
@@ -7682,7 +7782,7 @@ Function OutputMachines
 				}
 				Else
 				{
-					$txt = "Unable to retrieve Image History for Machine Catalog $($Catalog.Name) Provisioning Scheme $($Catalog.ProvisioningSchemeID)"
+					$txt = "Unable to retrieve Image History for Machine Catalog $($Catalog.CatalogName) Provisioning Scheme $($Catalog.ProvisioningSchemeID)"
 					OutputWarning $txt
 				}
 				
@@ -7694,6 +7794,130 @@ Function OutputMachines
 				FunctionalLevel        : L7_30
 				ImageStatus            : Current
 				#>
+				
+				#Additional Data - added in 1.18
+				Write-Verbose "$(Get-Date -Format G): `t`t`tAdding catalog additional data (if any)"
+				
+				#The AdditionalData property is a hashtable and is neither null nor empty. 
+				#If there is nothing in the hashtable, the count value is 0
+				try
+				{
+					If(Test-Path $Image.MasterImageVM 4>$Null)
+					{
+						$TmpData = Get-Item $Image.MasterImageVM -ea 0 4>$Null
+
+						If($? -and (validObject $TmpData AdditionalData))
+						{
+							$AdditionalData = $TmpData.AdditionalData
+						}
+						Else
+						{
+							$AdditionalData = @{}
+						}
+					}
+					Else
+					{
+						$AdditionalData = @{}
+					}
+				}
+				
+				catch
+				{
+					$AdditionalData = @{}
+				}
+				
+				If($AdditionalData.Count -eq 0)
+				{
+					#There is no additional data, so nothing to do
+				}
+				ElseIf($AdditionalData.Count -gt 0)
+				{
+					If($MSWord -or $PDF)
+					{
+						WriteWordLine 4 0 "Additional Data"
+						$AdditionalDataWordTable = @()
+					}
+					If($Text)
+					{
+						Line 1 "Additional Data"
+
+						Line 2 'Additional Property Name                  Value                    '
+						Line 2 '==================================================================='
+						#       ServiceOfferingWithTemporaryDiskSizeInMbSS1234567890123456789012345
+						#       1234567890123456789012345678901234567890
+					}
+					If($HTML)
+					{
+						WriteHTMLLine 4 0 "Additional Data"
+						$rowdata = @()
+					}
+
+					ForEach($Item in $AdditionalData.Keys)
+					{
+						If($MSWord -or $PDF)
+						{
+							$AdditionalDataWordTable += @{ 
+								PropertyName  = $Item;
+								PropertyValue = $AdditionalData.$Item;
+							}
+						}
+						If($Text)
+						{
+							Line 2 ( "{0,-40}  {1,-25}" -f $Item, $AdditionalData.$Item )
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+								$Item,$htmlwhite,
+								$AdditionalData.$Item,$htmlwhite)
+							)
+						}
+					}
+					
+					If($MSWord -or $PDF)
+					{
+						If($AdditionalDataWordTable.Count -eq 0)
+						{
+							$AdditionalDataWordTable += @{ 
+								PropertyName  = "None found";
+								PropertyValue = "";
+							}
+						}
+						
+						$Table = AddWordTable -Hashtable $AdditionalDataWordTable `
+						-Columns PropertyName, PropertyValue `
+						-Headers "Additional Property Name", "Value" `
+						-Format $wdTableGrid `
+						-AutoFit $wdAutoFitContent;
+
+						SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+						FindWordDocumentEnd
+						$Table = $Null
+						WriteWordLine 0 0 ""
+					}
+					If($Text)
+					{
+						Line 0 ""
+					}
+					If($HTML)
+					{
+						$columnHeaders = @(
+							'Additional Property Name',($global:htmlsb),
+							'Value',($global:htmlsb)
+						)
+
+						$msg = ""
+						FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
+						WriteHTMLLine 0 0 ""
+					}
+				}
+				Else
+				{
+					#Could not retrieve additional data, so nothing to do
+				}
 			}
 			Else
 			{
@@ -7701,7 +7925,12 @@ Function OutputMachines
 			}
 		}
 		
-		If($Script:VDAUpdateService -eq $True -and $Catalog.MachinesArePhysical -eq $True)
+		#1.18, Citrix added support for MCS catalogs in the June 2022 update
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Extended support for VDA upgrade. Using the Full Configuration interface, 
+		#you can now upgrade MCS-provisioned persistent machines. You can upgrade 
+		#them on a per-catalog or a per-machine basis.
+		If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
 		{
 			#added in V1.17
 			#https://docs.citrix.com/en-us/citrix-daas/whats-new.html
@@ -7714,7 +7943,7 @@ Function OutputMachines
 				***The feature applies only to physical machines.***
 			#>
 			
-			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.Name -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.CatalogName -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
 			
 			If(!$? -or $Null -eq $VDAUpgrade)
 			{
@@ -7748,6 +7977,7 @@ Function OutputMachines
 					$VDAUpgradeRecentSchedule = $VDAUpgrade.RecentSchedule.ToLocalTime()
 				}
 				
+				#Citrix has not defined any of the Enums
 				If($MSWord -or $PDF)
 				{
 					WriteWordLine 3 0 "VDA Upgrade"
@@ -7920,7 +8150,7 @@ Function OutputMachines
 		}
 		Else
 		{
-			$txt = "Unable to retrieve Scopes for Machine Catalog $($Catalog.Name)"
+			$txt = "Unable to retrieve Scopes for Machine Catalog $($Catalog.CatalogName)"
 			OutputWarning $txt
 		}
 		
@@ -7928,7 +8158,7 @@ Function OutputMachines
 		{
 			If($Null -ne $Machines)
 			{
-				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Machines in $($Catalog.Name)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing Machines in $($Catalog.CatalogName)"
 				
 				If($MSWord -or $PDF)
 				{
@@ -8002,7 +8232,7 @@ Function OutputMachines
 					FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "225"
 				}
 				
-				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing administrators for Machines in $($Catalog.Name)"
+				Write-Verbose "$(Get-Date -Format G): `t`t`tProcessing administrators for Machines in $($Catalog.CatalogName)"
 				$Admins = GetAdmins "Catalog" $Catalog.Name
 				
 				If($? -and ($Null -ne $Admins))
@@ -8011,12 +8241,12 @@ Function OutputMachines
 				}
 				ElseIf($? -and ($Null -eq $Admins))
 				{
-					$txt = "There are no administrators for Machines in $($Catalog.Name)"
+					$txt = "There are no administrators for Machines in $($Catalog.CatalogName)"
 					OutputNotice $txt
 				}
 				Else
 				{
-					$txt = "Unable to retrieve administrators for Machines in $($Catalog.Name)"
+					$txt = "Unable to retrieve administrators for Machines in $($Catalog.CatalogName)"
 					OutputWarning $txt
 				}
 				
@@ -8027,7 +8257,7 @@ Function OutputMachines
 
 				ForEach($Machine in $Machines)
 				{
-					OutputMachineDetails $Machine $ADSearchBase "Machine"
+					OutputMachineDetails $Machine $ADSearchBase "Machine" $Catalog $xAllocationType
 				}
 			}
 		}
@@ -8224,7 +8454,9 @@ Function OutputMachineDetails
 	Param(
 		[object] $Machine,
 		[string] $ADSearchBase,
-		[string] $WhatType
+		[string] $WhatType,
+		[object] $Catalog,
+		[string] $xAllocationType
 	)
 	
 	#if HostedMachineName is empty, like for RemotePC and unregistered machines, use the first part of DNSName
@@ -10474,6 +10706,110 @@ Function OutputMachineDetails
 			}
 		}
 	}
+	
+	If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
+	{
+		#added in V1.18
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html
+		<#
+			New and enhanced features
+			Support for upgrading VDA machines. 
+			Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment. 
+			You can upgrade them on a per-catalog or a per-machine basis. 
+
+			Citrix added support for MCS catalogs in the June 2022 update
+			https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+			Extended support for VDA upgrade. Using the Full Configuration interface, 
+			you can now upgrade MCS-provisioned persistent machines. You can upgrade 
+			them on a per-catalog or a per-machine basis.
+		#>
+		
+		$VDAUpgrade = Get-VusMachineInfo -MachineUid $Machine.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+		
+		If(!$? -or $Null -eq $VDAUpgrade)
+		{
+			If($MSWord -or $PDF)
+			{
+				WriteWordLine 3 0 "VDA Upgrade"
+				WriteWordLine 0 0 "VDA upgrade is not configured for this machine"
+				WriteWordLine 0 0 ""
+			}
+			If($Text)
+			{
+				Line 1 "VDA Upgrade"
+				Line 2 "VDA upgrade is not configured for this machine"
+				Line 0 ""
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 3 0 "VDA Upgrade"
+				WriteHTMLLine 0 0 "VDA upgrade is not configured for this machine"
+				WriteHTMLLine 0 0 ""
+			}
+		}
+		Else
+		{
+			If(validObject $VDAUpgrade RecentSchedule)
+			{
+				If($null -eq $VDAUpgrade.RecentSchedule)
+				{
+					$VDAUpgradeRecentSchedule = "Not set"
+				}
+				Else
+				{
+					$VDAUpgradeRecentSchedule = $VDAUpgrade.RecentSchedule.ToLocalTime()
+				}
+			}
+			Else
+			{
+				$VDAUpgradeRecentSchedule = "Not set"
+			}
+			
+			#Citrix has not defined any of the Enums
+			If($MSWord -or $PDF)
+			{
+				WriteWordLine 3 0 "VDA Upgrade"
+				[System.Collections.Hashtable[]] $CatalogInformation = @()
+				$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgrade.UpgradeState.ToString(); }
+				$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgrade.UpgradeType.ToString(); }
+			
+				$Table = AddWordTable -Hashtable $CatalogInformation `
+				-Columns Data,Value `
+				-List `
+				-Format $wdTableGrid `
+				-AutoFit $wdAutoFitFixed;
+
+				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+				$Table.Columns.Item(1).Width = 225;
+				$Table.Columns.Item(2).Width = 275;
+
+				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+				FindWordDocumentEnd
+				$Table = $Null
+				WriteWordLine 0 0 ""
+			}
+			If($Text)
+			{
+				Line 1 "VDA Upgrade"
+				Line 2 "Upgrade state: " $VDAUpgrade.UpgradeState.ToString()
+				Line 2 "Upgrade type: " $VDAUpgrade.UpgradeType.ToString()
+				Line 0 ""
+			}
+			If($HTML)
+			{
+				WriteHTMLLine 3 0 "VDA Upgrade"
+				$rowdata = @()
+				$columnHeaders = @("Upgrade state",($global:htmlsb),$VDAUpgrade.UpgradeState.ToString(),$htmlwhite)
+				$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgrade.UpgradeType.ToString(),$htmlwhite))
+
+				$msg = ""
+				$columnWidths = @("200","250")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "450"
+			}
+		}
+	}
 }
 #endregion
 
@@ -11661,8 +11997,14 @@ Function OutputDeliveryGroupDetails
 
 		$ScriptInformation += @{Data = "Launch in user's home zone"; Value = $xUsersHomeZone; }
 		
-		If($Group.SessionSupport -eq "MultiSession")
-		{
+		#The June 2022 update to Citrix Cloud added support for single-session
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Restart schedule support for single-session OS machines. Previously, 
+		#the restart schedule feature was available only for multi-session OS machines. 
+		#It’s now also available for single-session OS machines. You can now create 
+		#restart schedules for delivery groups containing single-session OS machines.
+		#If($Group.SessionSupport -eq "MultiSession") 
+		#{
 			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams2 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
@@ -11754,7 +12096,7 @@ Function OutputDeliveryGroupDetails
 			{
 				$ScriptInformation += @{Data = "Restart machines automatically"; Value = "No"; }
 			}
-		}
+		#}
 
 		$ScriptInformation += @{Data = "License model"; Value = $LicenseModel; }
 		$ScriptInformation += @{Data = "Product code"; Value = $ProductCode; }
@@ -12400,6 +12742,7 @@ Function OutputDeliveryGroupDetails
 		{
 			WriteWordLine 4 0 "Manage Autoscale"
 			WriteWordLIne 0 0 "Autoscale Enabled: " $Group.AutoscalingEnabled.ToString()
+			WriteWordLine 0 0 ""
 		}
 	}
 	If($Text)
@@ -12625,8 +12968,14 @@ Function OutputDeliveryGroupDetails
 
 		Line 1 "Launch in user's home zone`t`t`t`t: " $xUsersHomeZone
 		
-		If($Group.SessionSupport -eq "MultiSession")
-		{
+		#The June 2022 update to Citrix Cloud added support for single-session
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Restart schedule support for single-session OS machines. Previously, 
+		#the restart schedule feature was available only for multi-session OS machines. 
+		#It’s now also available for single-session OS machines. You can now create 
+		#restart schedules for delivery groups containing single-session OS machines.
+		#If($Group.SessionSupport -eq "MultiSession") 
+		#{
 			$RestartSchedules = Get-BrokerRebootScheduleV2 @CCParams2 -DesktopGroupUid $Group.Uid
 			
 			If($? -and $Null -ne $RestartSchedules)
@@ -12718,7 +13067,7 @@ Function OutputDeliveryGroupDetails
 			{
 				Line 1 "Restart machines automatically`t`t`t`t: " "No"
 			}
-		}
+		#}
 		
 		Line 1 "License model`t`t`t`t`t`t: " $LicenseModel
 		Line 1 "Product code`t`t`t`t`t`t: " $ProductCode
@@ -13470,8 +13819,14 @@ Function OutputDeliveryGroupDetails
 		
 		$rowdata += @(,("Launch in user's home zone",($global:htmlsb),$xUsersHomeZone,$htmlwhite)) 
 			
-		If($Group.SessionSupport -eq "MultiSession")
-		{
+		#The June 2022 update to Citrix Cloud added support for single-session
+		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
+		#Restart schedule support for single-session OS machines. Previously, 
+		#the restart schedule feature was available only for multi-session OS machines. 
+		#It’s now also available for single-session OS machines. You can now create 
+		#restart schedules for delivery groups containing single-session OS machines.
+		#If($Group.SessionSupport -eq "MultiSession") 
+		#{
 			$RestartSchedules = Get-BrokerRebootScheduleV2 -DesktopGroupUid $Group.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
 			
 			If($? -and $Null -ne $RestartSchedules)
@@ -13563,7 +13918,7 @@ Function OutputDeliveryGroupDetails
 			{
 				$rowdata += @(,('Restart machines automatically',($global:htmlsb),"No",$htmlwhite))
 			}
-		}
+		#}
 		
 		$rowdata += @(,('License model',($global:htmlsb),$LicenseModel,$htmlwhite))
 		$rowdata += @(,('Product code',($global:htmlsb),$ProductCode,$htmlwhite))
@@ -14303,7 +14658,7 @@ Function OutputDeliveryGroupCatalogs
 					If($MSWord -or $PDF)
 					{
 						$CatalogsWordTable += @{
-							Name = $Catalog.Name; 
+							Name = $Catalog.CatalogName; 
 							Type = $xAllocationType; 
 							DesktopsTotal = $Catalog.AssignedCount;
 							DesktopsFree = $Catalog.AvailableCount; 
@@ -14311,7 +14666,7 @@ Function OutputDeliveryGroupCatalogs
 					}
 					If($Text)
 					{
-						Line 1 "Machine Catalog name`t: " $Catalog.Name
+						Line 1 "Machine Catalog name`t: " $Catalog.CatalogName
 						Line 1 "Machine Catalog type`t: " $xAllocationType
 						Line 1 "Desktops total`t`t: " $Catalog.AssignedCount
 						Line 1 "Desktops free`t`t: " $Catalog.AvailableCount
@@ -14320,7 +14675,7 @@ Function OutputDeliveryGroupCatalogs
 					If($HTML)
 					{
 						$rowdata += @(,(
-							$Catalog.Name,$htmlwhite,
+							$Catalog.CatalogName,$htmlwhite,
 							$xAllocationType,$htmlwhite,
 							$Catalog.AssignedCount.ToString(),$htmlwhite,
 							$Catalog.AvailableCount.ToString(),$htmlwhite)
@@ -15796,10 +16151,11 @@ Function OutputApplicationAdministrators
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 275;
-			$Table.Columns.Item(2).Width = 200;
+			$Table.Columns.Item(1).Width = 220;
+			$Table.Columns.Item(2).Width = 220;
 			$Table.Columns.Item(3).Width = 60;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
@@ -16640,6 +16996,7 @@ Function OutputSummaryPolicyTable
 
 			FindWordDocumentEnd
 			$Table = $Null
+			WriteWordLine 0 0 ""
 		}
 		If($HTML)
 		{
@@ -16774,6 +17131,7 @@ Function ProcessCitrixPolicies
 
 				FindWordDocumentEnd
 				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
 			If($Text)
 			{
@@ -16924,6 +17282,7 @@ Function ProcessCitrixPolicies
 
 						FindWordDocumentEnd
 						$Table = $Null
+						WriteWordLine 0 0 ""
 					}
 					If($HTML)
 					{
@@ -16944,6 +17303,7 @@ Function ProcessCitrixPolicies
 					If($MSWord -or $PDF)
 					{
 						WriteWordLine 0 1 "Assigned to: None"
+						WriteWordLine 0 0 ""
 					}
 					If($Text)
 					{
@@ -16962,6 +17322,7 @@ Function ProcessCitrixPolicies
 				{
 					WriteWordLine 3 0 "Assigned to"
 					WriteWordLine 0 1 $txt
+					WriteWordLine 0 0 ""
 				}
 				If($Text)
 				{
@@ -29579,7 +29940,7 @@ Function ProcessCitrixPolicies
 				Write-Verbose "$(Get-Date -Format G): `t`t`tWorkspace Environment Management"
 				If((validStateProp $Setting WemCloudConnectorList State ) -and ($Setting.WemCloudConnectorList.State -ne "NotConfigured"))
 				{
-					$txt = "Workspace Environment Management\Citrix Cloud Connectors" #addedin 2103
+					$txt = "Workspace Environment Management\Citrix Cloud Connectors" #added in 2103
 					If($Setting.WemCloudConnectorList.State -eq "Enabled")
 					{
 						If(validStateProp $Setting WemCloudConnectorList Values )
@@ -30153,7 +30514,7 @@ Function ProcessConfigLogging
 	{
 		Write-Verbose "$(Get-Date -Format G): Processing Configuration Logging"
 		$txt1 = "Logging"
-		If($MSword -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			$Selection.InsertNewPage()
 			WriteWordLine 1 0 $txt1
@@ -30210,9 +30571,8 @@ Function OutputConfigLog
 	
 	Write-Verbose "$(Get-Date -Format G): `t`tOutput Configuration Logging Details"
 	$txt2 = " For date range $($StartDate) through $($EndDate)"
-	If($MSword -or $PDF)
+	If($MSWord -or $PDF)
 	{
-		$Selection.InsertNewPage()
 		WriteWordLine 0 0 $txt2
 	}
 	If($Text)
@@ -30664,12 +31024,14 @@ Function OutputAdministrators
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitContent;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 			FindWordDocumentEnd
 			$Table = $Null
+			WriteWordLine 0 0 ""
 		}
 		If($HTML)
 		{
@@ -30836,12 +31198,14 @@ Function OutputScopes
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitContent;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 	}
 	If($Text)
 	{
@@ -30962,6 +31326,7 @@ Function OutputScopeObjects
 
 				FindWordDocumentEnd
 				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
 			If($Text)
 			{
@@ -31053,6 +31418,7 @@ Function OutputScopeObjects
 
 				FindWordDocumentEnd
 				$Table = $Null
+				WriteWordLine 0 0 ""
 			}
 			If($Text)
 			{
@@ -31315,7 +31681,7 @@ Function OutputScopeAdministrators
 	
 	ForEach($Scope in $Scopes)
 	{
-		If($MSword -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			[System.Collections.Hashtable[]] $WordTable = @()
 			WriteWordLine 3 0 "Administrators for Scope: $($Scope.Name)"
@@ -31395,11 +31761,12 @@ Function OutputScopeAdministrators
 				-Format $wdTableGrid `
 				-AutoFit $wdAutoFitFixed;
 
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 275;
-				$Table.Columns.Item(2).Width = 225;
-				$Table.Columns.Item(3).Width = 55;
+				$Table.Columns.Item(1).Width = 220;
+				$Table.Columns.Item(2).Width = 220;
+				$Table.Columns.Item(3).Width = 60;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -31568,6 +31935,7 @@ Function OutputRoles
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
 		$Table.Columns.Item(1).Width = 150;
@@ -31732,10 +32100,11 @@ Function OutputRoleDefinitions
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 100;
-			$Table.Columns.Item(2).Width = 400;
+			$Table.Columns.Item(1).Width = 150;
+			$Table.Columns.Item(2).Width = 350;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -31778,6 +32147,7 @@ Function GetRolePermissions
 			"Manage_ServiceConfigurationData"							{$Results.Add("Manage ServiceSettings", "Administrators")}
 			
 			"AppGroupApplications_ChangeTags"							{$Results.Add("Edit Application tags (Application Group)", "Application Groups")}
+			"AppGroupApplications_ChangeUserAssignment"					{$Results.Add("Change users assigned to an application (Application Group)", "Application Groups")}
 			"AppGroupApplications_Create"								{$Results.Add("Create Application (Application Group)", "Application Groups")}
 			"AppGroupApplications_CreateFolder"							{$Results.Add("Create Application Folder (Application Group)", "Application Groups")}
 			"AppGroupApplications_Delete"								{$Results.Add("Delete Application (Application Group)", "Application Groups")}
@@ -31786,17 +32156,20 @@ Function GetRolePermissions
 			"AppGroupApplications_MoveFolder"							{$Results.Add("Move Application Folder (Application Group)", "Application Groups")}
 			"AppGroupApplications_Read"									{$Results.Add("View Applications (Application Group)", "Application Groups")}
 			"AppGroupApplications_RemoveFolder"							{$Results.Add("Remove Application Folder (Application Group)", "Application Groups")}
-			"AppGroupApplications_ChangeUserAssignment"					{$Results.Add("Change users assigned to an application (Application Group)", "Application Groups")}
 			"ApplicationGroup_AddApplication"							{$Results.Add("Add Application to Application Group", "Application Groups")}
 			"ApplicationGroup_AddScope"									{$Results.Add("Add Application Group to Scope", "Application Groups")}
 			"ApplicationGroup_AddToDesktopGroup"						{$Results.Add("Add Delivery Group to Application Group", "Application Groups")}
 			"ApplicationGroup_ChangeTags"								{$Results.Add("Change Tags on Application Group", "Application Groups")}
 			"ApplicationGroup_ChangeUserAssignment"						{$Results.Add("Edit User Assignment on Application Group", "Application Groups")}
 			"ApplicationGroup_Create"									{$Results.Add("Create Application Group", "Application Groups")}
+			"ApplicationGroup_CreateFolder"								{$Results.Add("Create Application Group Folder", "Application Groups")}
 			"ApplicationGroup_Delete"									{$Results.Add("Delete Application Group", "Application Groups")}
+			"ApplicationGroup_EditFolder"								{$Results.Add("Edit Application Group Folder", "Application Groups")}
 			"ApplicationGroup_EditProperties"							{$Results.Add("Edit Application Group Properties", "Application Groups")}
+			"ApplicationGroup_MoveFolder"								{$Results.Add("Move Application Group Folder", "Application Groups")}
 			"ApplicationGroup_Read"										{$Results.Add("View Application Groups", "Application Groups")}
 			"ApplicationGroup_RemoveApplication"						{$Results.Add("Remove Application from Application Group", "Application Groups")}
+			"ApplicationGroup_RemoveFolder"								{$Results.Add("Remove Application Group Folder", "Application Groups")}
 			"ApplicationGroup_RemoveFromDesktopGroup"					{$Results.Add("Remove Delivery Group from Application Group", "Application Groups")}
 			"ApplicationGroup_RemoveScope"								{$Results.Add("Remove Application Group from Scope", "Application Groups")}
 			
@@ -31809,6 +32182,7 @@ Function GetRolePermissions
 			"AppLib_PackageDiscoveryProfile_Remove"						{$Results.Add("PackageDiscoveryProfile_Remove", "Application Packages")}
 			"AppLib_Read"												{$Results.Add("Read App-V Application Libraries and Packages", "Application Packages")}
 			"AppLib_RemoveApplication"									{$Results.Add("Remove App-V applications", "Application Packages")}
+			"AppLib_RemoveAppVServer"									{$Results.Add("Remove App-V Server and associated packages", "Application Packages")}
 			"AppLib_RemovePackage"										{$Results.Add("Remove App-V Application Libraries and Packages", "Application Packages")}
 			"AppV_AddServer"											{$Results.Add("Add App-V publishing server", "Application Packages")}
 			"AppV_DeleteServer"											{$Results.Add("Delete App-V publishing server", "Application Packages")}
@@ -31818,6 +32192,11 @@ Function GetRolePermissions
 			"EA_Broker"													{$Results.Add("Catalog Service Broker operations", "Citrix Catalog Service")}
 			"EA_Hyp"													{$Results.Add("Catalog Service Hypervisor operations", "Citrix Catalog Service")}
 			"EA_Prov"													{$Results.Add("Remove Desktop from Delivery Group (1)", "Citrix Catalog Service")}
+
+			"C365_EA_Acct"												{$Results.Add("Windows 365 Identity operations", "Citrix Windows 365 Service Catalog")}
+			"C365_EA_Broker"											{$Results.Add("Windows 365 Broker operations", "Citrix Windows 365 Service Catalog")}
+			"C365_EA_Hyp"												{$Results.Add("Windows 365 Hypervisor operations", "Citrix Windows 365 Service Catalog")}
+			"C365_EA_Prov"												{$Results.Add("Windows 365 MCS operations", "Citrix Windows 365 Service Catalog")}
 
 			"Cloud_Storefront_Read"										{$Results.Add("Read Storefront Configuration", "Cloud")}
 			"Cloud_Storefront_Write"									{$Results.Add("Update Storefront Configuration", "Cloud")}
@@ -32094,11 +32473,12 @@ Function OutputRoleAdministrators
 				-Format $wdTableGrid `
 				-AutoFit $wdAutoFitFixed;
 
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 				SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 275;
-				$Table.Columns.Item(2).Width = 225;
-				$Table.Columns.Item(3).Width = 55;
+				$Table.Columns.Item(1).Width = 220;
+				$Table.Columns.Item(2).Width = 220;
+				$Table.Columns.Item(3).Width = 60;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -32704,6 +33084,7 @@ Function OutputHosting
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 		
 		WriteWordLine 4 0 "Advanced"
 		$ScriptInformation = New-Object System.Collections.ArrayList
@@ -32758,6 +33139,7 @@ Function OutputHosting
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 	}
 	If($Text)
 	{
@@ -34137,6 +34519,7 @@ Function OutputZoneSiteView
 
 		FindWordDocumentEnd
 		$Table = $Null
+		WriteWordLine 0 0 ""
 	}
 	If($Text)
 	{
@@ -35257,11 +35640,13 @@ Script cannot continue
 		"Config"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Configuration Only)"; Break}
 		"Groups" 		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Delivery Groups Only)"; Break}
 		"Hosting"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Hosting Only)"; Break}
+		"Logging"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Logging Only)"; Break}
 		"Licensing"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Licensing Only)"; Break}
 		"Policies"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Policies Only)"; Break}
 		"StoreFront"	{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (StoreFront Only)"; Break}
 		"Zones"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Zones Only)"; Break}
 		"All"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site"; Break}
+		Default			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Missing a section title for $Section"; Break}
 	}
 	
 	$Script:DDCConfigData = Get-BrokerServiceConfigurationData @CCParams2 -SortBy SettingName
@@ -35308,7 +35693,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "Administrators     : $($Administrators)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Applications       : $($Applications)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Auth Profile Name  : $($Script:AuthProfileName)" 4>$Null		
-		If($MSWORD -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			Out-File -FilePath $SIFile -Append -InputObject "Company Name       : $($Script:CoName)" 4>$Null		
 			Out-File -FilePath $SIFile -Append -InputObject "Company Address    : $($CompanyAddress)" 4>$Null		
@@ -35361,7 +35746,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "Save As HTML       : $($HTML)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As PDF        : $($PDF)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Save As TEXT       : $($TEXT)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Save As WORD       : $($MSWORD)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Save As WORD       : $($MSWord)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Script Info        : $($ScriptInfo)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Section            : $($Section)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Site Name          : $($CCSiteName)" 4>$Null
@@ -35370,7 +35755,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "Title              : $($Script:Title)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "To                 : $($To)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "Use SSL            : $($UseSSL)" 4>$Null
-		If($MSWORD -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			Out-File -FilePath $SIFile -Append -InputObject "User Name          : $($UserName)" 4>$Null
 		}
@@ -35384,7 +35769,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "PoSH version       : $($Host.Version)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PSCulture          : $($PSCulture)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PSUICulture        : $($PSUICulture)" 4>$Null
-		If($MSWORD -or $PDF)
+		If($MSWord -or $PDF)
 		{
 			Out-File -FilePath $SIFile -Append -InputObject "Word language      : $($Script:WordLanguageValue)" 4>$Null
 			Out-File -FilePath $SIFile -Append -InputObject "Word version       : $($Script:WordProduct)" 4>$Null
@@ -35473,19 +35858,19 @@ Function OutputAppendixA
 					If(!$First -and $Save -ne "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)")
 					{
 						$AppendixWordTable += @{ 
-							RegKey = "";
-							RegValue = "";
-							RegData = "";
-							VDAType = "";
+							RegKey       = "";
+							RegValue     = "";
+							RegData      = "";
+							VDAType      = "";
 							ComputerName = "";
 						}
 					}
 
 					$AppendixWordTable += @{ 
-						RegKey = $Item.RegKey;
-						RegValue = $Item.RegValue;
-						RegData = $Item.Value;
-						VDAType = $Item.VDAType.Substring(0,1);
+						RegKey       = $Item.RegKey;
+						RegValue     = $Item.RegValue;
+						RegData      = $Item.Value;
+						VDAType      = $Item.VDAType.Substring(0,1);
 						ComputerName = $Item.ComputerName;
 					}
 					$Save = "$($Item.RegKey.ToString())$($Item.RegValue.ToString())$($Item.VDAType)"
@@ -35498,10 +35883,10 @@ Function OutputAppendixA
 				If($AppendixWordTable.Count -eq 0)
 				{
 					$AppendixWordTable += @{ 
-						RegKey = "None found";
-						RegValue = "";
-						RegData = "";
-						VDAType = "";
+						RegKey       = "None found";
+						RegValue     = "";
+						RegData      = "";
+						VDAType      = "";
 						ComputerName = "";
 					}
 				}
@@ -35523,6 +35908,7 @@ Function OutputAppendixA
 		}
 		Else
 		{
+			$selection.InsertNewPage()
 			WriteWordLine 1 0 "Appendix A - VDA Registry Items"
 			WriteWordLine 0 0 "There are no VDA Registry Items"
 			WriteWordLine 0 0 ""
