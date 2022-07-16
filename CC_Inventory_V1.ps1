@@ -7,8 +7,8 @@
 .SYNOPSIS
 	Creates an inventory of a Citrix Cloud (now DaaS) Site.
 .DESCRIPTION
-	Creates an inventory of a Citrix Cloud (now DaaS) Site using Microsoft PowerShell, Word, plain 
-	text, or HTML.
+	Creates an inventory of a Citrix Cloud (now DaaS) Site using Microsoft PowerShell, Word, 
+	plain text, or HTML.
 	
 	This script requires at least PowerShell version 5.
 	
@@ -94,7 +94,7 @@
 		
 .PARAMETER HTML
 	Creates an HTML file with an.html extension.
-	This parameter is set True if no other output format is selected.
+	This parameter is set to True if no other output format is selected.
 .PARAMETER Text
 	Creates a formatted text file with a.txt extension.
 	This parameter is disabled by default.
@@ -300,8 +300,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2022 at 6PM is 2022-06-01_1800.
-	Output filename will be ReportName_2022-06-01_1800.docx (or.pdf).
+	June 1, 2022, at 6PM is 2022-06-01_1800.
+	The output filename will be ReportName_2022-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -348,7 +348,7 @@
 
 	Script Name and Script Release date are script-specific variables.
 	Start Date Time in Local Format is a script variable.
-	Elapsed time is a calulated value.
+	Elapsed time is a calculated value.
 	Domain Name is $env:USERDNSDOMAIN.
 	Username is $env:USERNAME.
 	Folder Name is a script variable.
@@ -505,7 +505,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	Creates a Microsoft Word report.
 	
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
@@ -565,7 +565,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -625,7 +625,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -647,7 +647,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -746,7 +746,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -816,7 +816,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -833,7 +833,7 @@
 	Uses:
 		Carl Webster Consulting for the Company Name.
 		Mod for the Cover Page format.
-		Carl Webster for the User Name.
+		Carl Webster for the Username.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -847,7 +847,7 @@
 	Uses:
 		Carl Webster Consulting for the Company Name (alias CN).
 		Mod for the Cover Page format (alias CP).
-		Carl Webster for the User Name (alias UN).
+		Carl Webster for the Username (alias UN).
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -862,7 +862,7 @@
 	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Exposure for the Cover Page format.
-		Dr. Watson for the User Name.
+		Dr. Watson for the Username.
 		221B Baker Street, London, England for the Company Address.
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
@@ -880,7 +880,7 @@
 	Uses:
 		Sherlock Holmes Consulting for the Company Name.
 		Facet for the Cover Page format.
-		Dr. Watson for the User Name.
+		Dr. Watson for the Username.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
@@ -893,8 +893,8 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2022 at 6PM is 2022-06-01_1800.
-	Output filename will be CCSiteName_2022-06-01_1800.docx
+	June 1, 2022, at 6PM is 2022-06-01_1800.
+	The output filename will be CCSiteName_2022-06-01_1800.docx
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -912,12 +912,12 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2022 at 6PM is 2022-06-01_1800.
-	Output filename will be CCSiteName_2022-06-01_1800.pdf
+	June 1, 2022, at 6PM is 2022-06-01_1800.
+	The output filename will be CCSiteName_2022-06-01_1800.pdf
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
 	credentials.
@@ -1070,7 +1070,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
 	Set the following parameter values:
 		Administrators      = True
@@ -1151,7 +1151,7 @@
 
 	Carl Webster for the Company Name.
 	Sideline for the Cover Page format.
-	Administrator for the User Name.
+	Administrator for the Username.
 	
 	Set the following parameter values:
 		Administrators      = True
@@ -1291,9 +1291,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.18
+	VERSION: 1.19
 	AUTHOR: Carl Webster
-	LASTEDIT: June 20, 2022
+	LASTEDIT: July 16, 2022
 #>
 
 #endregion
@@ -1481,6 +1481,23 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.19 16-Jul-2022
+#	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State
+#		Type:
+#			Release type the VDA upgrades follow. Possible values are:
+#			o NotSet - Upgrade release type was not set by admin for this catalog.
+#			o CR - VDA upgrades follow CR release cycles.
+#			o LTSR - VDA upgrades follow LTSR release cycles.
+#		State:
+#			Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+#			o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
+#			o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+#			o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+#			o UpToDate - All VDAs in this catalog are on the most recently released version.
+#			o Unknown - Temporary state where the service is currently figuring out one of the above states.
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 1.18 27-Jun-2022
 #	Adding the missing $Script:Title variable if -Section Logging was selected
 #	Additional Word/PDF output cleanup
@@ -2683,9 +2700,9 @@ $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.18'
+$script:MyVersion   = '1.19'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "06/20/2022"
+$tmpdate            = [datetime] "07/16/2022"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -5914,7 +5931,7 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Title              : $($Script:Title)"
 	Write-Verbose "$(Get-Date -Format G): To                 : $($To)"
 	Write-Verbose "$(Get-Date -Format G): Use SSL            : $($UseSSL)"
-	Write-Verbose "$(Get-Date -Format G): User Name          : $($UserName)"
+	Write-Verbose "$(Get-Date -Format G): Username           : $($UserName)"
 	Write-Verbose "$(Get-Date -Format G): VDA Registry Keys  : $($VDARegistryKeys)"
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version  : $($Script:CCSiteVersion)"
@@ -7978,6 +7995,42 @@ Function OutputMachines
 				}
 				
 				#Citrix has not defined any of the Enums
+				#Citrix finally sent me the enums on 13-Jul-2022
+				
+				<#
+					Release type the VDA upgrades follow. Possible values are:
+					o NotSet - Upgrade release type was not set by admin for this catalog.
+					o CR - VDA upgrades follow CR release cycles.
+					o LTSR - VDA upgrades follow LTSR release cycles.
+				#>
+				Switch($VDAUpgrade.UpgradeType)
+				{
+					"NotSet"	{$VDAUpgradeType = "Upgrade release type was not set by admin for this catalog"; Break}
+					"CR"		{$VDAUpgradeType = "VDA upgrades follow CR release cycles"; Break}
+					"LTSR"		{$VDAUpgradeType = "VDA upgrades follow LTSR release cycles"; Break}
+					Default		{$VDAUpgradeType = "VDA upgrade type could not be determined: $($VDAUpgrade.UpgradeType)"; Break}
+				}
+				
+				<#
+					Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+					o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog
+					can be upgraded.
+					o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+					o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+					o UpToDate - All VDAs in this catalog are on the most recently released version.
+					o Unknown - Temporary state where the service is currently figuring out one of the above states.
+				#>
+				
+				Switch($VDAUpgrade.UpgradeState)
+				{
+					"MissingUpgradeType"	{$VDAUpgradeState = "Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded"; Break}
+					"UpgradeScheduled"		{$VDAUpgradeState = "Upgrade was scheduled or is in progress for this catalog"; Break}
+					"UpgradeAvailable"		{$VDAUpgradeState = "One or more machines in this catalog can be upgraded"; Break}
+					"UpToDate"				{$VDAUpgradeState = "All VDAs in this catalog are on the most recently released version"; Break}
+					"Unknown"				{$VDAUpgradeState = "Temporary state where the service is currently figuring out the upgrade state"; Break}
+					Default					{$VDAUpgradeState = "VDA upgrade state could not be determined: $($VDAUpgrade.UpgradeState)"; Break}
+				}
+				
 				If($MSWord -or $PDF)
 				{
 					WriteWordLine 3 0 "VDA Upgrade"
@@ -7988,8 +8041,8 @@ Function OutputMachines
 					$CatalogInformation += @{Data = "In progress upgrades"; Value = $VDAUpgrade.InProgressUpgrades.ToString(); }
 					$CatalogInformation += @{Data = "Recent schedule"; Value = $VDAUpgradeRecentSchedule; }
 					$CatalogInformation += @{Data = "Scheduled time"; Value = $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(); }
-					$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgrade.UpgradeState.ToString(); }
-					$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgrade.UpgradeType.ToString(); }
+					$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgradeState; }
+					$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgradeType; }
 				
 					$Table = AddWordTable -Hashtable $CatalogInformation `
 					-Columns Data,Value `
@@ -8017,8 +8070,8 @@ Function OutputMachines
 					Line 2 "In progress upgrades`t: " $VDAUpgrade.InProgressUpgrades.ToString()
 					Line 2 "Recent schedule`t`t: " $VDAUpgradeRecentSchedule
 					Line 2 "Scheduled time`t`t: " $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime()
-					Line 2 "Upgrade state`t`t: " $VDAUpgrade.UpgradeState.ToString()
-					Line 2 "Upgrade type`t`t: " $VDAUpgrade.UpgradeType.ToString()
+					Line 2 "Upgrade state`t`t: " $VDAUpgradeState
+					Line 2 "Upgrade type`t`t: " $VDAUpgradeType
 					Line 0 ""
 				}
 				If($HTML)
@@ -8031,8 +8084,8 @@ Function OutputMachines
 					$rowdata += @(,('In progress upgrades',($global:htmlsb),$VDAUpgrade.InProgressUpgrades.ToString(),$htmlwhite))
 					$rowdata += @(,('Recent schedule',($global:htmlsb),$VDAUpgradeRecentSchedule,$htmlwhite))
 					$rowdata += @(,('Scheduled time',($global:htmlsb),$VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(),$htmlwhite))
-					$rowdata += @(,('Upgrade state',($global:htmlsb),$VDAUpgrade.UpgradeState.ToString(),$htmlwhite))
-					$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgrade.UpgradeType.ToString(),$htmlwhite))
+					$rowdata += @(,('Upgrade state',($global:htmlsb),$VDAUpgradeState,$htmlwhite))
+					$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgradeType,$htmlwhite))
 
 					$msg = ""
 					$columnWidths = @("200","500")
@@ -35757,7 +35810,7 @@ Function ProcessScriptEnd
 		Out-File -FilePath $SIFile -Append -InputObject "Use SSL            : $($UseSSL)" 4>$Null
 		If($MSWord -or $PDF)
 		{
-			Out-File -FilePath $SIFile -Append -InputObject "User Name          : $($UserName)" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Username           : $($UserName)" 4>$Null
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "VDA Registry Keys  : $($VDARegistryKeys)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
