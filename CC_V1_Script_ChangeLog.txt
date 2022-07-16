@@ -6,6 +6,23 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.19 16-Jul-2022
+#	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State
+#		Type:
+#			Release type the VDA upgrades follow. Possible values are:
+#			o NotSet - Upgrade release type was not set by admin for this catalog.
+#			o CR - VDA upgrades follow CR release cycles.
+#			o LTSR - VDA upgrades follow LTSR release cycles.
+#		State:
+#			Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+#			o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
+#			o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+#			o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+#			o UpToDate - All VDAs in this catalog are on the most recently released version.
+#			o Unknown - Temporary state where the service is currently figuring out one of the above states.
+#	Updated the help text
+#	Updated the ReadMe file
+
 #Version 1.18 27-Jun-2022
 #	Adding the missing $Script:Title variable if -Section Logging was selected
 #	Additional Word/PDF output cleanup
