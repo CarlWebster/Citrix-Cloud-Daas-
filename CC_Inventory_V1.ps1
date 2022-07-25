@@ -1291,9 +1291,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.19
+	VERSION: 1.20
 	AUTHOR: Carl Webster
-	LASTEDIT: July 16, 2022
+	LASTEDIT: July 25, 2022
 #>
 
 #endregion
@@ -1481,6 +1481,10 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.20 25-Jul-2022
+#	Added support for Minimum Catalog Level 2206 (L7_34)
+#	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State to the Machine output
+#
 #Version 1.19 16-Jul-2022
 #	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State
 #		Type:
@@ -2700,9 +2704,9 @@ $SaveEAPreference = $ErrorActionPreference
 $ErrorActionPreference = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.19'
+$script:MyVersion   = '1.20'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "07/16/2022"
+$tmpdate            = [datetime] "07/25/2022"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -6713,6 +6717,7 @@ Function OutputMachines
 			"L7_20"	{$xVDAVersion = "1811 (or newer)"; Break}
 			"L7_25"	{$xVDAVersion = "2003 (or newer)"; Break}
 			"L7_30"	{$xVDAVersion = "2106 (or newer)"; Break}
+			"L7_34"	{$xVDAVersion = "2206 (or newer)"; Break}
 			Default {$xVDAVersion = "Unable to determine VDA version: $($Catalog.MinimumFunctionalLevel)"; Break}
 		}
 
@@ -6782,7 +6787,8 @@ Function OutputMachines
 					If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
 					    $Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 						$Catalog.MinimumFunctionalLevel -eq "L7_25" -or
-						$Catalog.MinimumFunctionalLevel -eq "L7_30") -and 
+						$Catalog.MinimumFunctionalLevel -eq "L7_30" -or 
+						$Catalog.MinimumFunctionalLevel -eq "L7_34") -and 
 					(($xAllocationType -eq "Random") -or 
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "Discard" )))
 					{
@@ -6810,7 +6816,8 @@ Function OutputMachines
 					If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
 					    $Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 						$Catalog.MinimumFunctionalLevel -eq "L7_25" -or
-						$Catalog.MinimumFunctionalLevel -eq "L7_25") -and
+						$Catalog.MinimumFunctionalLevel -eq "L7_30" -or
+						$Catalog.MinimumFunctionalLevel -eq "L7_34") -and
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
 					((Get-ConfigEnabledFeature @CCParams2) -contains "DedicatedFullDiskClone"))
 					{
@@ -7739,6 +7746,7 @@ Function OutputMachines
 							"L7_20"	{$tmp = "1811 (or newer)"; Break}
 							"L7_25"	{$tmp = "2003 (or newer)"; Break}
 							"L7_30"	{$tmp = "2106 (or newer)"; Break}
+							"L7_34"	{$tmp = "2206 (or newer)"; Break}
 							Default {$tmp = "Unable to determine Image Functional Level: $($Image.FunctionalLevel)"; Break}
 						}
 
@@ -10819,12 +10827,54 @@ Function OutputMachineDetails
 			}
 			
 			#Citrix has not defined any of the Enums
+			#Citrix finally sent me the enums on 13-Jul-2022
+			
+			<#
+				Release type the VDA upgrades follow. Possible values are:
+				o NotSet - Upgrade release type was not set by admin for this catalog.
+				o CR - VDA upgrades follow CR release cycles.
+				o LTSR - VDA upgrades follow LTSR release cycles.
+			#>
+			Switch($VDAUpgrade.UpgradeType)
+			{
+				"NotSet"	{$VDAUpgradeType = "Upgrade release type was not set by admin for this catalog"; Break}
+				"CR"		{$VDAUpgradeType = "VDA upgrades follow CR release cycles"; Break}
+				"LTSR"		{$VDAUpgradeType = "VDA upgrades follow LTSR release cycles"; Break}
+				Default		{$VDAUpgradeType = "VDA upgrade type could not be determined: $($VDAUpgrade.UpgradeType)"; Break}
+			}
+			
+			<#
+				Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+				o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog
+				can be upgraded.
+				o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+				o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+				o UpToDate - All VDAs in this catalog are on the most recently released version.
+				o Unknown - Temporary state where the service is currently figuring out one of the above states.
+			#>
+			
+			Switch($VDAUpgrade.UpgradeState)
+			{
+				"MissingUpgradeType"	{$VDAUpgradeState = "Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded"; Break}
+				"UpgradeScheduled"		{$VDAUpgradeState = "Upgrade was scheduled or is in progress for this catalog"; Break}
+				"UpgradeAvailable"		{$VDAUpgradeState = "One or more machines in this catalog can be upgraded"; Break}
+				"UpToDate"				{$VDAUpgradeState = "All VDAs in this catalog are on the most recently released version"; Break}
+				"Unknown"				{$VDAUpgradeState = "Temporary state where the service is currently figuring out the upgrade state"; Break}
+				Default					{$VDAUpgradeState = "VDA upgrade state could not be determined: $($VDAUpgrade.UpgradeState)"; Break}
+			}
+			
 			If($MSWord -or $PDF)
 			{
 				WriteWordLine 3 0 "VDA Upgrade"
 				[System.Collections.Hashtable[]] $CatalogInformation = @()
-				$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgrade.UpgradeState.ToString(); }
-				$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgrade.UpgradeType.ToString(); }
+				$CatalogInformation += @{Data = "Current schedule state"; Value = $VDAUpgrade.CurrentScheduleState.ToString(); }
+				$CatalogInformation += @{Data = "Duration in hours"; Value = $VDAUpgrade.DurationInHours.ToString(); }
+				$CatalogInformation += @{Data = "Failed upgrades"; Value = $VDAUpgrade.FailedUpgrades.ToString(); }
+				$CatalogInformation += @{Data = "In progress upgrades"; Value = $VDAUpgrade.InProgressUpgrades.ToString(); }
+				$CatalogInformation += @{Data = "Recent schedule"; Value = $VDAUpgradeRecentSchedule; }
+				$CatalogInformation += @{Data = "Scheduled time"; Value = $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(); }
+				$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgradeState; }
+				$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgradeType; }
 			
 				$Table = AddWordTable -Hashtable $CatalogInformation `
 				-Columns Data,Value `
@@ -10846,20 +10896,32 @@ Function OutputMachineDetails
 			If($Text)
 			{
 				Line 1 "VDA Upgrade"
-				Line 2 "Upgrade state: " $VDAUpgrade.UpgradeState.ToString()
-				Line 2 "Upgrade type: " $VDAUpgrade.UpgradeType.ToString()
+				Line 2 "Current schedule state`t: " $VDAUpgrade.CurrentScheduleState.ToString()
+				Line 2 "Duration in hours`t: " $VDAUpgrade.DurationInHours.ToString()
+				Line 2 "Failed upgrades`t`t: " $VDAUpgrade.FailedUpgrades.ToString()
+				Line 2 "In progress upgrades`t: " $VDAUpgrade.InProgressUpgrades.ToString()
+				Line 2 "Recent schedule`t`t: " $VDAUpgradeRecentSchedule
+				Line 2 "Scheduled time`t`t: " $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime()
+				Line 2 "Upgrade state`t`t: " $VDAUpgradeState
+				Line 2 "Upgrade type`t`t: " $VDAUpgradeType
 				Line 0 ""
 			}
 			If($HTML)
 			{
 				WriteHTMLLine 3 0 "VDA Upgrade"
 				$rowdata = @()
-				$columnHeaders = @("Upgrade state",($global:htmlsb),$VDAUpgrade.UpgradeState.ToString(),$htmlwhite)
-				$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgrade.UpgradeType.ToString(),$htmlwhite))
+				$columnHeaders = @("Current schedule state",($global:htmlsb),$VDAUpgrade.CurrentScheduleState.ToString(),$htmlwhite)
+				$rowdata += @(,('Duration in hours',($global:htmlsb),$VDAUpgrade.DurationInHours.ToString(),$htmlwhite))
+				$rowdata += @(,('Failed upgrades',($global:htmlsb),$VDAUpgrade.FailedUpgrades.ToString(),$htmlwhite))
+				$rowdata += @(,('In progress upgrades',($global:htmlsb),$VDAUpgrade.InProgressUpgrades.ToString(),$htmlwhite))
+				$rowdata += @(,('Recent schedule',($global:htmlsb),$VDAUpgradeRecentSchedule,$htmlwhite))
+				$rowdata += @(,('Scheduled time',($global:htmlsb),$VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(),$htmlwhite))
+				$rowdata += @(,('Upgrade state',($global:htmlsb),$VDAUpgradeState,$htmlwhite))
+				$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgradeType,$htmlwhite))
 
 				$msg = ""
-				$columnWidths = @("200","250")
-				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "450"
+				$columnWidths = @("200","500")
+				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
 			}
 		}
 	}
@@ -11414,6 +11476,7 @@ Function OutputDeliveryGroupDetails
 		"L7_20"	{$xVDAVersion = "1811 (or newer)"; Break}
 		"L7_25"	{$xVDAVersion = "2003 (or newer)"; Break}
 		"L7_30"	{$xVDAVersion = "2106 (or newer)"; Break}
+		"L7_34"	{$xVDAVersion = "2206 (or newer)"; Break}
 		Default {$xVDAVersion = "Unable to determine VDA version: $($Group.MinimumFunctionalLevel)"; Break}
 	}
 	
@@ -30769,6 +30832,7 @@ Function OutputSiteSettings
 		"L7_20"	{$xVDAVersion = "1811 (or newer)"; Break}
 		"L7_25"	{$xVDAVersion = "2003 (or newer)"; Break}
 		"L7_30"	{$xVDAVersion = "2106 (or newer)"; Break}
+		"L7_34"	{$xVDAVersion = "2206 (or newer)"; Break}
 		Default {$xVDAVersion = "Unable to determine VDA version: $($Script:CCSite1.DefaultMinimumFunctionalLevel)"; Break}
 	}
 
