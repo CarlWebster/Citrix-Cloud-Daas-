@@ -277,7 +277,7 @@
 
 	This parameter has an alias of MAX.
 .PARAMETER Section
-	Processes a specific section of the report.
+	Processes one or more sections of the report.
 	Valid options are:
 		Admins (Administrators)
 		Apps (Applications and Application Group Details)
@@ -291,7 +291,10 @@
 		StoreFront
 		Zones
 		All
+
 	This parameter defaults to All sections.
+	
+	Multiple sections are separated by a comma. -Section catalogs, groups
 	
 	Notes:
 	Using Logging will force the Logging Switch to True.
@@ -484,9 +487,10 @@
 	
 	Creates an HTML report by default.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -ProfileName "My CC Profile"
@@ -508,9 +512,10 @@
 	Administrator for the Username.
 	Creates a Microsoft Word report.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	****************************************************
@@ -519,8 +524,8 @@
 	
 	First, from an elevated PowerShell session, create a profile named Default.
 	
-	Set-XDCredentials -CustomerID "CustomerID" -ProfileType CloudAPI -StoreAs "Default" 
-	-APIKey "ID" -SecretKey "Secret"
+	C:\PSScript >.Set-XDCredentials -CustomerID "CustomerID" -ProfileType CloudAPI 
+	-StoreAs "Default" -APIKey "ID" -SecretKey "Secret"
 
 	Note: Review the instructions in the Authentication section of the ReadMe file for the 
 	details on creating a profile named Default.
@@ -567,36 +572,40 @@
 	Sideline for the Cover Page format.
 	Administrator for the Username.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Text
 
 	Saves the document as a formatted text file.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -HTML
 
 	Saves the document as an HTML file.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MachineCatalogs
 	
 	Creates an HTML report with full details for all machines in all Machine Catalogs.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) c
-	redentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -DeliveryGroups
@@ -604,9 +613,10 @@
 	Creates an HTML report with full details for all desktops in all Desktop (Delivery) 
 	Groups.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -DeliveryGroupsUtilization -MSWord
@@ -627,9 +637,10 @@
 	Sideline for the Cover Page format.
 	Administrator for the Username.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -DeliveryGroupsUtilization -PDF
@@ -649,9 +660,10 @@
 	Sideline for the Cover Page format.
 	Administrator for the Username.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -DeliveryGroups -MachineCatalogs
@@ -659,27 +671,30 @@
 	Creates an HTML report with full details for all machines in all Machine Catalogs and 
 	all desktops in all Delivery Groups.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Applications
 	
 	Creates an HTML report with full details for all applications.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Policies
 	
 	Creates an HTML report with full details for Policies.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -689,18 +704,20 @@
 	
 	Creates an HTML report with no Policy information.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -NoADPolicies
 	
 	Creates an HTML report with no Citrix AD-based Policy information.
 	
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -711,9 +728,10 @@
 	Creates an HTML report with full details on Site policies created in Studio but 
 	no Citrix AD-based Policy information.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -725,9 +743,10 @@
 	Creates an HTML report with Configuration Logging details for the dates 09/01/2022 
 	through 09/30/2022.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2022 10:00:00" 
@@ -748,36 +767,40 @@
 	Sideline for the Cover Page format.
 	Administrator for the Username.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Administrators
 	
 	Creates an HTML report with full details on Administrator Scopes and Roles.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Hosting
 	
 	Creates an HTML report with full details for Hosts, Host Connections, and Resources.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -StoreFront
 	
 	Creates an HTML report with full details for StoreFront.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MachineCatalogs -DeliveryGroups 
@@ -791,9 +814,10 @@
 		Hosts, Host Connections, and Resources
 		StoreFront
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -818,9 +842,10 @@
 	Sideline for the Cover Page format.
 	Administrator for the Username.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -835,9 +860,10 @@
 		Mod for the Cover Page format.
 		Carl Webster for the Username.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript.\CC_Inventory_V1.ps1 -CN "Carl Webster Consulting" -CP "Mod" 
@@ -849,9 +875,10 @@
 		Mod for the Cover Page format (alias CP).
 		Carl Webster for the Username (alias UN).
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript.\CC_Inventory_V1.ps1 -MSWord -CompanyName "Sherlock Holmes 
@@ -867,9 +894,10 @@
 		+44 1753 276600 for the Company Fax.
 		+44 1753 276200 for the Company Phone.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript.\CC_Inventory_V1.ps1 -MSWord -CompanyName "Sherlock Holmes 
@@ -883,9 +911,10 @@
 		Dr. Watson for the Username.
 		SuperSleuth@SherlockHolmes.com for the Company Email.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -AddDateTime
@@ -896,9 +925,10 @@
 	June 1, 2022, at 6PM is 2022-06-01_1800.
 	The output filename will be CCSiteName_2022-06-01_1800.docx
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -PDF -AddDateTime
@@ -919,9 +949,10 @@
 	June 1, 2022, at 6PM is 2022-06-01_1800.
 	The output filename will be CCSiteName_2022-06-01_1800.pdf
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Folder \\FileServer\ShareName
@@ -929,9 +960,10 @@
 	Creates an HTML report.
 	Output file is saved in the path \\FileServer\ShareName
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Section Policies
@@ -939,22 +971,24 @@
 	Creates an HTML report that contains only policy information.
 	Processes only the Policies section of the report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
-	Note: If a profile named Default does not exist, you may be prompted multiple times for 
-	Citrix Cloud (now DaaS) credentials.
+	Note: If a profile named Default does not exist, you may be prompted multiple times 
+	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Section Groups -DG
 	
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with Delivery Group details.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Section Groups
@@ -962,9 +996,22 @@
 	Creates an HTML report.
 	Processes only the Delivery Groups section of the report with no Delivery Group details.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
+    profile.
+.EXAMPLE
+	PS C:\PSScript > .\CC_Inventory_V1.ps1 -Section Config, Licensing -HTML 
+
+	Creates an HTML report.
+
+	The report includes only the Configuration and Licensing sections.
+
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -VDARegistryKeys
@@ -973,9 +1020,10 @@
 	Adds the information on VDA registry keys to Appendix A.
 	Forces the MachineCatalogs parameter to $True if DeliveryGroups is not selected.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -VDARegistryKeys -MachineCatalogs
@@ -983,9 +1031,10 @@
 	Creates an HTML report.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -VDARegistryKeys -DeliveryGroups
@@ -993,9 +1042,10 @@
 	Creates an HTML report.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -VDARegistryKeys -MachineCatalogs 
@@ -1005,9 +1055,10 @@
 	Adds the information on VDA registry keys to Appendix A.
 	Only processes machine details for the machine catalogs.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Section Catalogs -VDARegistryKeys 
@@ -1016,9 +1067,10 @@
 	Creates an HTML report with only machine catalog data.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Section Groups -VDARegistryKeys 
@@ -1027,9 +1079,10 @@
 	Creates an HTML report with only delivery group data.
 	Adds the information on VDA registry keys to Appendix A.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MaxDetails
@@ -1050,9 +1103,10 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -1086,9 +1140,10 @@
 		NoPolicies          = False
 		Section             = "All"
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -1107,9 +1162,10 @@
 	Creates a text file for transcript logging named 
 	CCDocScriptTranscript_yyyyMMddTHHmmssffff.txt.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -CSV
@@ -1120,9 +1176,10 @@
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -MaxDetails -HTML -MSWord -PDF -Text -Dev 
@@ -1167,9 +1224,10 @@
 		NoPolicies          = False
 		Section             = "All"
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 	
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
@@ -1188,9 +1246,10 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer mailrelay.domain.tld -From 
@@ -1219,9 +1278,10 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer 
@@ -1243,9 +1303,10 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer smtp.office365.com -SmtpPort 587 
@@ -1259,9 +1320,10 @@
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer smtp.gmail.com -SmtpPort 587 
@@ -1275,14 +1337,15 @@
 	The script uses the email server smtp.gmail.com on port 587 using SSL, sending from 
 	webster@gmail.com and sending to ITGroup@carlwebster.com.
 
-	If the current user's credentials are not valid to send email, the script prompts the 
-	user to enter valid credentials.
+	If the current user's credentials are not valid to send an email, the script prompts 
+	the user to enter valid credentials.
 
 	Creates an HTML report.
 
-    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS) 
-	credentials.
-    If a profile named Default exists, the script uses the credentials stored in the Default 
+    If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
+    credentials.
+
+    If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .INPUTS
 	None. You cannot pipe objects to this script.
@@ -1291,9 +1354,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.20
+	VERSION: 1.21
 	AUTHOR: Carl Webster
-	LASTEDIT: July 25, 2022
+	LASTEDIT: September 22, 2022
 #>
 
 #endregion
@@ -1387,7 +1450,7 @@ Param(
 	[ValidateSet('All', 'Admins', 'Apps', 'Catalogs', 'Config', 'Groups', 
 	'Hosting', 'Licensing', 'Logging', 'Policies', 'StoreFront', 'Zones')]
 	[parameter(Mandatory=$False)] 
-	[string]$Section="All",
+	[String[]] $Section = 'All',
 	
 	[parameter(Mandatory=$False)] 
 	[Alias("ADT")]
@@ -1481,6 +1544,14 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.21 22-Sep-2022
+#	Tested with Group Policy Module 2206 dated June 28, 2022 (https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
+#	Tested with PoSH SDK dated August 29, 2022 (https://download.apps.cloud.com/CitrixPoshSdk.exe)
+#	Updated Function ProcessScriptSetup to support multiple Section items
+#	Updated the script to allow the Section parameter to support multiple items
+#	Updated the help text
+#	Updated the ReadMe file
+#
 #Version 1.20 25-Jul-2022
 #	Added support for Minimum Catalog Level 2206 (L7_34)
 #	Added the missing enums for VDAUpgrade.Type and VDAUpgrade.State to the Machine output
@@ -2700,13 +2771,13 @@ Else
 
 #force  on
 $PSDefaultParameterValues = @{"*:Verbose"=$True}
-$SaveEAPreference = $ErrorActionPreference
-$ErrorActionPreference = 'SilentlyContinue'
+$SaveEAPreference         = $ErrorActionPreference
+$ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.20'
+$script:MyVersion   = '1.21'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "07/25/2022"
+$tmpdate            = [datetime] "09/22/2022"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -2862,20 +2933,21 @@ If($NoPolicies -and $Section -eq "Policies")
 }
 
 $ValidSection = $False
+#1.21 remove the Break statements since there can now be multiple sections entered
 Switch ($Section)
 {
-	"Admins"		{$ValidSection = $True; Break}
-	"Apps"			{$ValidSection = $True; Break}
-	"Catalogs"		{$ValidSection = $True; Break}
-	"Config"		{$ValidSection = $True; Break}
-	"Groups"		{$ValidSection = $True; Break}
-	"Hosting"		{$ValidSection = $True; Break}
-	"Licensing"		{$ValidSection = $True; Break}
-	"Logging"		{$ValidSection = $True; $Logging = $True; Break}	#force $logging true if the config logging section is specified
-	"Policies"		{$ValidSection = $True; $Policies = $True; Break} #force $policies true if the policies section is specified
-	"StoreFront"	{$ValidSection = $True; Break}
-	"Zones"			{$ValidSection = $True; Break}
-	"All"			{$ValidSection = $True; Break}
+	"Admins"		{$ValidSection = $True}
+	"Apps"			{$ValidSection = $True}
+	"Catalogs"		{$ValidSection = $True}
+	"Config"		{$ValidSection = $True}
+	"Groups"		{$ValidSection = $True}
+	"Hosting"		{$ValidSection = $True}
+	"Licensing"		{$ValidSection = $True}
+	"Logging"		{$ValidSection = $True; $Logging = $True}	#force $logging true if the config logging section is specified
+	"Policies"		{$ValidSection = $True; $Policies = $True} #force $policies true if the policies section is specified
+	"StoreFront"	{$ValidSection = $True}
+	"Zones"			{$ValidSection = $True}
+	"All"			{$ValidSection = $True}
 }
 
 If($ValidSection -eq $False)
@@ -35749,23 +35821,50 @@ Script cannot continue
 		[string]$Script:CCSiteName = $Script:CCSite2.SiteName
 	}
 
-	Switch ($Section)
+	#1.21 update to support multiple section items
+	If($Section.Count -eq 1 -and $Section -eq "All")
 	{
-		"Admins"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Administrators Only)"; Break}
-		"Apps"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Applications Only)"; Break}
-		"Catalogs"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Machine Catalogs Only)"; Break}
-		"Config"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Configuration Only)"; Break}
-		"Groups" 		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Delivery Groups Only)"; Break}
-		"Hosting"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Hosting Only)"; Break}
-		"Logging"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Logging Only)"; Break}
-		"Licensing"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Licensing Only)"; Break}
-		"Policies"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Policies Only)"; Break}
-		"StoreFront"	{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (StoreFront Only)"; Break}
-		"Zones"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Zones Only)"; Break}
-		"All"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site"; Break}
-		Default			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Missing a section title for $Section"; Break}
+		[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site"
 	}
-	
+	ElseIf($Section.Count -eq 1)
+	{
+		Switch ($Section)
+		{
+			"Admins"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Administrators Only)"; Break}
+			"Apps"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Applications Only)"; Break}
+			"Catalogs"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Machine Catalogs Only)"; Break}
+			"Config"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Configuration Only)"; Break}
+			"Groups" 		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Delivery Groups Only)"; Break}
+			"Hosting"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Hosting Only)"; Break}
+			"Licensing"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Licensing Only)"; Break}
+			"Logging"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Logging Only)"; Break}
+			"Policies"		{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Policies Only)"; Break}
+			"StoreFront"	{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (StoreFront Only)"; Break}
+			"Zones"			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Zones Only)"; Break}
+			Default			{[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site (Missing a section title for $Section"; Break}
+		}
+	}
+	ElseIf($Section.Count -gt 1)
+	{
+		[string]$Script:Title = "Inventory Report for the $($Script:CCSiteName) Site ("
+		Switch ($Section)
+		{
+			"Admins"		{[string]$Script:Title += "Administrators "}
+			"Apps"			{[string]$Script:Title += "Applications "}
+			"Catalogs"		{[string]$Script:Title += "Machine Catalogs "}
+			"Config"		{[string]$Script:Title += "Configuration "}
+			"Groups" 		{[string]$Script:Title += "Delivery Groups "}
+			"Hosting"		{[string]$Script:Title += "Hosting "}
+			"Licensing"		{[string]$Script:Title += "Licensing "}
+			"Logging"		{[string]$Script:Title += "Configuration Logging "}
+			"Policies"		{[string]$Script:Title += "Policies "}
+			"StoreFront"	{[string]$Script:Title += "StoreFront "}
+			"Zones"			{[string]$Script:Title += "Zones "}
+			Default			{[string]$Script:Title += "Missing a section title for $Section"}
+		}
+		[string]$Script:Title = $Script:Title.Substring(0,$Script:Title.LastIndexOf(" ")-1)+")"
+	}
+
 	$Script:DDCConfigData = Get-BrokerServiceConfigurationData @CCParams2 -SortBy SettingName
 	
 	Write-Verbose "$(Get-Date -Format G): Initial Site data has been gathered"
