@@ -1354,9 +1354,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.21
+	VERSION: 1.22
 	AUTHOR: Carl Webster
-	LASTEDIT: September 22, 2022
+	LASTEDIT: October 2, 2022
 #>
 
 #endregion
@@ -1544,6 +1544,22 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.22 2-Oct-2022
+#	Added Computer policy
+#		Profile Management\Advanced settings\Maximum number of VHDX disks for storing Outlook OST files
+#		Profile Management\Citrix Virtual Apps Optimization settings\Enable Citrix Virtual Apps Optimization
+#		Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:
+#		Profile Management\File deduplication\Files to exclude from the shared store
+#		Profile Management\File deduplication\Files to include from the shared store
+#	Added User policy
+#		ICA\Printing\Client Printers\Client printer names
+#		ICA\Server Limits\Disconnected session timer - Multi-session
+#		ICA\Server Limits\Disconnected session timer interval (minutes) - Multi-session
+#		ICA\Server Limits\Session connection timer - Multi-session
+#		ICA\Server Limits\Session connection timer interval (minutes) - Multi-session
+#		ICA\Server Limits\Session idle timer - Multi-session
+#		ICA\Server Limits\Session idle timer interval (minutes) - Multi-session
+#
 #Version 1.21 22-Sep-2022
 #	Tested with Group Policy Module 2206 dated June 28, 2022 (https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
 #	Tested with PoSH SDK dated August 29, 2022 (https://download.apps.cloud.com/CitrixPoshSdk.exe)
@@ -2775,9 +2791,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.21'
+$script:MyVersion   = '1.22'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "09/22/2022"
+$tmpdate            = [datetime] "10/02/2022"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -22183,6 +22199,35 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.AutoCreatePDFPrinter.State 
 						}
 					}
+					If((validStateProp $Setting ClientPrinterNames State ) -and ($Setting.ClientPrinterNames.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Printing\Client Printers\Client printer names"
+						$tmp = ""
+						Switch ($Setting.ClientPrinterNames.Value)
+						{
+							"LegacyPrinterNames"	{$tmp = "Legacy printer names"; Break}
+							"StandardPrinterNames"	{$tmp = "Standard printer names"; Break}
+							Default					{$tmp = "Client printer names could not be determined: $($Setting.ClientPrinterNames.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp
+						}
+						$tmp = $Null
+					}
 					If((validStateProp $Setting DirectConnectionsToPrintServers State ) -and ($Setting.DirectConnectionsToPrintServers.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Client Printers\Direct connections to print servers"
@@ -23192,7 +23237,50 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Server Limits"
+					If((validStateProp $Setting EnableServerDisconnectionTimer State ) -and ($Setting.EnableServerDisconnectionTimer.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Server Limits\Disconnected session timer - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableServerDisconnectionTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableServerDisconnectionTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableServerDisconnectionTimer.State 
+						}
+					}
+					If((validStateProp $Setting ServerDisconnectionTimerInterval State ) -and ($Setting.ServerDisconnectionTimerInterval.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Server Limits\Disconnected session timer interval (minutes) - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ServerDisconnectionTimerInterval.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ServerDisconnectionTimerInterval.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ServerDisconnectionTimerInterval.Value 
+						}
+					}
 					If((validStateProp $Setting IdleTimerInterval State ) -and ($Setting.IdleTimerInterval.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Server Limits\Server idle timer interval (milliseconds)"
@@ -23212,6 +23300,94 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.IdleTimerInterval.Value 
+						}
+					}
+					If((validStateProp $Setting EnableServerConnectionTimer State ) -and ($Setting.EnableServerConnectionTimer.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session connection timer - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableServerConnectionTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableServerConnectionTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableServerConnectionTimer.State 
+						}
+					}
+					If((validStateProp $Setting ServerConnectionTimerInterval State ) -and ($Setting.ServerConnectionTimerInterval.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session connection timer interval (minutes) - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ServerConnectionTimerInterval.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ServerConnectionTimerInterval.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ServerConnectionTimerInterval.Value 
+						}
+					}
+					If((validStateProp $Setting EnableServerIdleTimer State ) -and ($Setting.EnableServerIdleTimer.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session idle timer - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableServerIdleTimer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableServerIdleTimer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableServerIdleTimer.State 
+						}
+					}
+					If((validStateProp $Setting ServerIdleTimerInterval  State ) -and ($Setting.ServerIdleTimerInterval.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "ICA\Server Limits\Session idle timer interval (minutes) - Multi-session"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ServerIdleTimerInterval.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ServerIdleTimerInterval.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ServerIdleTimerInterval.Value 
 						}
 					}
 					
@@ -24730,6 +24906,27 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.LogoffRatherThanTempProfile.State
 						}
 					}
+					If((validStateProp $Setting OutlookSearchRoamingConcurrentSession_Part State ) -and ($Setting.OutlookSearchRoamingConcurrentSession_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Advanced settings\Maximum number of VHDX disks for storing Outlook OST files"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.OutlookSearchRoamingConcurrentSession_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.OutlookSearchRoamingConcurrentSession_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.OutlookSearchRoamingConcurrentSession_Part.Value 
+						}
+					}
 					If((validStateProp $Setting LoadRetries_Part State ) -and ($Setting.LoadRetries_Part.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Advanced settings\Number of retries when accessing locked files"
@@ -25275,6 +25472,71 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Citrix Virtual Apps Optimization settings"
+					If((validStateProp $Setting XenAppOptimizationEnabled State ) -and ($Setting.XenAppOptimizationEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Citrix Virtual Apps Optimization settings\Enable Citrix Virtual Apps Optimization"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.XenAppOptimizationEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.XenAppOptimizationEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.XenAppOptimizationEnabled.State
+						}
+					}
+					If((validStateProp $Setting XenAppOptimizationDefinitionPathData State ) -and ($Setting.XenAppOptimizationDefinitionPathData.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:"
+						If($Setting.XenAppOptimizationDefinitionPathData.State -eq "Enabled" -and $Setting.XenAppOptimizationDefinitionPathData.Value -eq "")
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = "Disabled";
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								"Disabled",$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt "Disabled"
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.XenAppOptimizationDefinitionPathData.Value;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.XenAppOptimizationDefinitionPathData.Value,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.XenAppOptimizationDefinitionPathData.Value 
+							}
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Cross-Platform settings"
 					If((validStateProp $Setting CPUserGroups_Part State ) -and ($Setting.CPUserGroups_Part.State -ne "NotConfigured"))
@@ -25506,6 +25768,212 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.CPMigrationFromBaseProfileToCPStore.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\File deduplication"
+					If((validStateProp $Setting SharedStoreFileExclusionList_Part State ) -and ($Setting.SharedStoreFileExclusionList_Part.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "Profile Management\File deduplication\Files to exclude from the shared store"
+						If($Setting.SharedStoreFileExclusionList_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting SharedStoreFileExclusionList_Part Values )
+							{
+								$tmpArray = $Setting.SharedStoreFileExclusionList_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = $txt;
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = "";
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t" $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Files to exclude from the shared store were found"
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = $txt;
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.SharedStoreFileExclusionList_Part.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.SharedStoreFileExclusionList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.SharedStoreFileExclusionList_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting SharedStoreFileInclusionList_Part State ) -and ($Setting.SharedStoreFileInclusionList_Part.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2209
+						$txt = "Profile Management\File deduplication\Files to include from the shared store"
+						If($Setting.SharedStoreFileInclusionList_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting SharedStoreFileInclusionList_Part Values )
+							{
+								$tmpArray = $Setting.SharedStoreFileInclusionList_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = $txt;
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$SettingsWordTable += @{
+											Text = "";
+											Value = $tmp;
+											}
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t" $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Files to include from the shared store were found"
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = $txt;
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $Setting.SharedStoreFileInclusionList_Part.State;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.SharedStoreFileInclusionList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.SharedStoreFileInclusionList_Part.State
+							}
 						}
 					}
 
