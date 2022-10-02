@@ -6,6 +6,22 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.22 2-Oct-2022
+#	Added Computer policy
+#		Profile Management\Advanced settings\Maximum number of VHDX disks for storing Outlook OST files
+#		Profile Management\Citrix Virtual Apps Optimization settings\Enable Citrix Virtual Apps Optimization
+#		Profile Management\Citrix Virtual Apps Optimization settings\Path to Citrix Virtual Apps optimization definitions:
+#		Profile Management\File deduplication\Files to exclude from the shared store
+#		Profile Management\File deduplication\Files to include from the shared store
+#	Added User policy
+#		ICA\Printing\Client Printers\Client printer names
+#		ICA\Server Limits\Disconnected session timer - Multi-session
+#		ICA\Server Limits\Disconnected session timer interval (minutes) - Multi-session
+#		ICA\Server Limits\Session connection timer - Multi-session
+#		ICA\Server Limits\Session connection timer interval (minutes) - Multi-session
+#		ICA\Server Limits\Session idle timer - Multi-session
+#		ICA\Server Limits\Session idle timer interval (minutes) - Multi-session
+
 #Version 1.21 22-Sep-2022
 #	Tested with Group Policy Module 2206 dated June 28, 2022 (https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
 #	Tested with PoSH SDK dated August 29, 2022 (https://download.apps.cloud.com/CitrixPoshSdk.exe)
