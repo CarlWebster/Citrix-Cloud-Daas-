@@ -1356,7 +1356,7 @@
 	NAME: CC_Inventory_V1.ps1
 	VERSION: 1.22
 	AUTHOR: Carl Webster
-	LASTEDIT: October 2, 2022
+	LASTEDIT: December 1, 2022
 #>
 
 #endregion
@@ -1742,7 +1742,7 @@ Param(
 #		Added the download location for the up-to-date Group Policy Snapin download to the error message
 #	Updated the ReadMe file
 #
-#Version 1.15 7-Dec-2021
+#Version 1.15 7-Dec-2021 (Change log updated 1-Dec-2022)
 #	Added additional error checking for empty arrays before trying to output a Word table
 #	Added extra error checking, validation, and messages when retrieving Citrix Cloud credentials
 #		Reworked the logic for using Get-XDAuthentication and retrieving the CustomerID
@@ -1943,7 +1943,10 @@ Param(
 #				Info: Minimum=1
 #				Summary: Duration in hours since last key rotation after which the UserNotify2 signing keys will 
 #						 be rotated. Default 1440 in hours is 60 days.
-#			Hosting.AutoscalePowerActionQueuingPeriodSeconds
+#	CHANGE LOG UPDATE 1-DEC-2022
+#		In version 2206, Citrix changed this from Hosting. to HostingManagement.
+#		I updated all the Hosting. entries to HostingManagement.
+#			HostingManagement.AutoscalePowerActionQueuingPeriodSeconds
 #				Type: int
 #				Default: 120
 #				Info: Seconds Minimum=0
@@ -1953,7 +1956,7 @@ Param(
 #
 #						 A value of zero removes the constraint of how long a power action queuing operation should take 
 #						 per desktop group.
-#			Hosting.ComplexPowerActionTimeoutSecs
+#			HostingManagement.ComplexPowerActionTimeoutSecs
 #				Type: int
 #				Default: 1200
 #				Info: Seconds Minimum=300
@@ -1964,20 +1967,20 @@ Param(
 #						 potentially lengthy Processing within the target VDA.
 #
 #						 See also SimplePowerActionTimeoutSecs.
-#			Hosting.HclConnectionStateCachePeriodSecs
+#			HostingManagement.HclConnectionStateCachePeriodSecs
 #				Type: int
 #				Default: 30
 #				Info: Minimum=0 Maximum=120
 #				Summary: Period over which the HCL's connection state to the actual hypervisor is cached. A value of zero disables 
 #						 caching causing the connection state to be reevaluated on every access.
-#			Hosting.HypervisorConnectionMaxPollFailures
+#			HostingManagement.HypervisorConnectionMaxPollFailures
 #				Type: int
 #				Default: 4
 #				Info: Minimum=1
 #				Summary: If the periodic poll to allow the HCL machine manager to be recreated when needed, itself repeatedly fails 
 #						 due to an error other than invalid credentials, then this value defines the maximum failures before the 
 #						 current site service is aborted thus allowing a new one to start, potentially on a different DDC.
-#			Hosting.HypervisorConnectionPollMaxPeriodSecs
+#			HostingManagement.HypervisorConnectionPollMaxPeriodSecs
 #				Type: int
 #				Default: 300
 #				Info: Seconds Minimum=30 Maximum=900
@@ -1985,19 +1988,19 @@ Param(
 #						 fails due to invalid credentials, the poll interval is increased each time with the maximum interval 
 #						 being capped at this value. Repeatedly attempting to create/discard the machine manager is expensive 
 #						 and invalid credentials are likely to require admin intervention to fix.
-#			Hosting.LegacyPeakTransitionDisconnectedBehaviour
+#			HostingManagement.LegacyPeakTransitionDisconnectedBehaviour
 #				Type: bool
 #				Default: false
 #				Info: 
 #				Summary: Controls whether to retain the legacy power policy peak transition disconnected behavior for all 
 #						 desktop groups.
-#			Hosting.MaxFailedRegistrationsAllowed
+#			HostingManagement.MaxFailedRegistrationsAllowed
 #				Type: int
 #				Default: 2
 #				Info: 
 #				Summary: How many times a VM can fail to register before we put it into maintenance mode. A negative value 
 #						 means that we never automatically put a VM into maintenance mode.
-#			Hosting.MaxRegistrationDelayMin
+#			HostingManagement.MaxRegistrationDelayMin
 #				Type: int
 #				Default: 20
 #				Info: minutes
@@ -2007,26 +2010,26 @@ Param(
 #						 This setting is also used in combination with the RebootSchedule/MaxShutdownDelayMin setting to 
 #						 define the maximum allowed time for a machine (either physical or a VM) to successfully reboot 
 #						 during reboot schedule Processing.
-#			Hosting.MaxTimeBeforeStuckOnBootFaultSecs
+#			HostingManagement.MaxTimeBeforeStuckOnBootFaultSecs
 #				Type: int
 #				Default: 300
 #				Info: Seconds
 #				Summary: How long to wait in seconds after a machine starts for a notification that its VM tools are 
 #						 running. After this time with no notification, the machine's fault state is changed to 
 #						 StuckOnBoot.
-#			Hosting.MaxTimeBeforeUnregisteredFaultSecs
+#			HostingManagement.MaxTimeBeforeUnregisteredFaultSecs
 #				Type: int
 #				Default: 600
 #				Info: Seconds
 #				Summary: How long to wait in seconds after a machine started but remains unregistered with the 
 #						 Broker (with or without attempting to register). After this timeout a machine's fault 
 #						 state would be set to Unregistered.
-#			Hosting.ParallelDesktopGroupScalingMaxThreads
+#			HostingManagement.ParallelDesktopGroupScalingMaxThreads
 #				Type: int
 #				Default: 5
 #				Info: Minimum=0 Maximum=100
 #				Summary: Maximum number of threads to use when scaling multiple desktop groups.
-#			Hosting.ParallelPowerStateReadMaxThreads
+#			HostingManagement.ParallelPowerStateReadMaxThreads
 #				Type: int
 #				Default: 5
 #				Info: Minimum=0 Maximum=100
@@ -2037,7 +2040,7 @@ Param(
 #						 (3) A value of zero forces use of a simple loop for all such operations. This puts all machine state 
 #						 reads and database writes into a single thread. This uses the minimum resources but at the expense of 
 #						 throughput, and delayed database updates.
-#			Hosting.SimplePowerActionTimeoutSecs
+#			HostingManagement.SimplePowerActionTimeoutSecs
 #				Type: int
 #				Default: 600
 #				Info: Seconds Minimum=60
@@ -2048,6 +2051,7 @@ Param(
 #						 operation of the hypervisor with no dependency on Processing within the target VDA.
 #
 #						 See also ComplexPowerActionTimeoutSecs.
+#	END OF CHANGE LOG UPDATE 1-DEC-2022
 #			IdleSessions.AutoSessionDisconnectGracePeriodSecs
 #				Type: int
 #				Default: 120
