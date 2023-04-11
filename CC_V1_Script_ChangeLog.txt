@@ -6,6 +6,9 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.25 11-Apr-2023
+#	Fixed six typos found when running a test for Citrix
+
 #Version 1.24 24-Mar-2023
 #	Added settings configurable by Set-BrokerServiceConfigurationData
 #		Core.GetEntitlementTypePeriodHours
