@@ -1354,9 +1354,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.24
+	VERSION: 1.25
 	AUTHOR: Carl Webster
-	LASTEDIT: March 24, 2023
+	LASTEDIT: April 11, 2023
 #>
 
 #endregion
@@ -1544,6 +1544,9 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.25 11-Apr-2023
+#	Fixed six typos found when running a test for Citrix
+#
 #Version 1.24 24-Mar-2023
 #	Added settings configurable by Set-BrokerServiceConfigurationData
 #		Core.GetEntitlementTypePeriodHours
@@ -2922,9 +2925,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.24'
+$script:MyVersion   = '1.25'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "03/24/2023"
+$tmpdate            = [datetime] "04/11/2023"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -7038,7 +7041,7 @@ Function OutputMachines
 						$Catalog.MinimumFunctionalLevel -eq "L7_30" -or
 						$Catalog.MinimumFunctionalLevel -eq "L7_34") -and
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-					((Get-ConfigEnabledFeature @CCParams2) -contains "DedicatedFullDiskClone"))
+					((Get-ConfigEnabledFeature -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0) -contains "DedicatedFullDiskClone")) #fixed in 1.25
 					{
 						If($MachineData.UseFullDiskCloneProvisioning -eq $True)
 						{
@@ -7165,19 +7168,19 @@ Function OutputMachines
 			
 			If($? -and $Null -ne $IdentityPool)
 			{
-				If($IdentityPool.NamingSchemeType -eq "None")
-				{
-					$IdentityDomain           = "N/A"
-					$IdentityNamingScheme     = "Use existing AD accounts"
-					$IdentityNamingSchemeType = "None"
-					$IdentityOU               = "N/A"
-				}
-				Else
+				If((validObject $IdentityPool NamingSchemeType) -and $IdentityPool.NamingSchemeType -eq "None") #fix in 1.25
 				{
 					$IdentityDomain           = $IdentityPool.Domain
 					$IdentityNamingScheme     = $IdentityPool.NamingScheme
 					$IdentityNamingSchemeType = $IdentityPool.NamingSchemeType
 					$IdentityOU               = $IdentityPool.OU
+				}
+				Else
+				{
+					$IdentityDomain           = "N/A"
+					$IdentityNamingScheme     = "Use existing AD accounts"
+					$IdentityNamingSchemeType = "None"
+					$IdentityOU               = "N/A"
 				}
 			}
 			Else
@@ -7420,7 +7423,7 @@ Function OutputMachines
 				Line 1 "Operating System`t`t`t: " $OperatingSystem
 				Line 1 "Provisioning method`t`t`t: " $xProvisioningType
 				Line 1 "Reset Administrator Passwords`t`t: " $ResetAdministratorPasswords
-				Line 1 "Resources`t`t`t`t: " $MachineData.HostingUnitName
+				Line 1 "Resources`t`t`t`t: " $HostingUnitName #fixed in 1.25
 				Line 1 "Set to VDA version`t`t`t: " $xVDAVersion
 				If(Test-Path variable:TempDiskCacheSize)
 				{
@@ -8177,7 +8180,7 @@ Function OutputMachines
 		#to prevent the "Get-BrokerCatalogRebootSchedule : Object does not exist" error
 		#get all the reboot schedules
 		
-		$CatalogRebootSchedules = Get-BrokerCatalogRebootSchedule @CCParams1
+		$CatalogRebootSchedules = Get-BrokerCatalogRebootSchedule -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
 		
 		If($? -and $Null -ne $CatalogRebootSchedules)
 		{
@@ -12363,7 +12366,7 @@ Function OutputDeliveryGroupDetails
 						}
 					}
 					
-					If($DesktopSettingExcludedUsers.Count -gt 0)
+					If((validObject $DesktopSettingExcludedUsers Count) -and $DesktopSettingExcludedUsers.Count -gt 0) #fixed in 1.25
 					{
 						$ScriptInformation += @{Data = "     Excluded Users"; Value = $DesktopSettingExcludedUsers[0]; }
 						$cnt = -1
@@ -13334,16 +13337,19 @@ Function OutputDeliveryGroupDetails
 						}
 					}
 					
-					If($DesktopSettingExcludedUsers.Count -gt 0)
+					If($DesktopSettingExcludedUsers -is [array]) #fixed in 1.25
 					{
-						Line 2 "Excluded Users`t`t`t`t`t: " $DesktopSettingExcludedUsers[0]
-						$cnt = -1
-						ForEach($tmp in $DesktopSettingExcludedUsers)
+						If($DesktopSettingExcludedUsers.Count -gt 0)
 						{
-							$cnt++
-							If($cnt -gt 0)
+							Line 2 "Excluded Users`t`t`t`t`t: " $DesktopSettingExcludedUsers[0]
+							$cnt = -1
+							ForEach($tmp in $DesktopSettingExcludedUsers)
 							{
-								Line 9 "  " $tmp
+								$cnt++
+								If($cnt -gt 0)
+								{
+									Line 9 "  " $tmp
+								}
 							}
 						}
 					}
@@ -14185,16 +14191,19 @@ Function OutputDeliveryGroupDetails
 						}
 					}
 					
-					If($DesktopSettingExcludedUsers.Count -gt 0)
+					If($DesktopSettingExcludedUsers -is [array]) #fixed in 1.25
 					{
-						$rowdata += @(,("     Excluded Users",($global:htmlsb),$DesktopSettingExcludedUsers[0],$htmlwhite))
-						$cnt = -1
-						ForEach($tmp in $DesktopSettingExcludedUsers)
+						If($DesktopSettingExcludedUsers.Count -gt 0)
 						{
-							$cnt++
-							If($cnt -gt 0)
+							$rowdata += @(,("     Excluded Users",($global:htmlsb),$DesktopSettingExcludedUsers[0],$htmlwhite))
+							$cnt = -1
+							ForEach($tmp in $DesktopSettingExcludedUsers)
 							{
-								$rowdata += @(,("",($global:htmlsb),$tmp,$htmlwhite))
+								$cnt++
+								If($cnt -gt 0)
+								{
+									$rowdata += @(,("",($global:htmlsb),$tmp,$htmlwhite))
+								}
 							}
 						}
 					}
