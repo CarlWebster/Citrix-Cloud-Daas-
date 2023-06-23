@@ -6,6 +6,77 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.26 23-Jun-2023
+#	RANT
+#		In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections because some idiot at Citrix 
+#		made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
+#		and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
+#		data needed.
+#
+#		If that idiot ever decides to pull their head out of their @$$, I can come back and add the two sections back.
+#	END RANT
+#
+#	Added Computer policy
+#		Profile Management\Advanced settings\Disable defragmentation for VHD disk compaction
+#		Profile Management\Advanced settings\Enable user-level policy settings
+#		Profile Management\Advanced settings\Set priority order for user groups
+#		VDA Data Collection\Security\Clipboard place metadata collection for Security monitoring
+#	Added to Function OutputZoneSiteView:
+#		Valid Edge Servers? (No one at Citrix can tell me what a valid or invalid Edge server is or how to resolve the issue of an invalid Edge server.)
+#		Healthy? (Is the Zone healthy? No one at Citrix can tell me what a healthy Zone is or how to fix an unhealthy Zone.)
+#		Primary? (Is the Zone the Primary Zone? There can (should) only be one Primary Zone.)
+#	Added two more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.AssignmentPolicyMaxDesktops
+#			Type: int
+#			Default: 5
+#			Info: Minimum=1, Maximum=100
+#			Summary: The maximum value accepted for the MaxDesktops parameter of the New/Set-BrokerAssignmentPolicyRule cmdlets. 
+#					 This is limited here because enumeration creates #MaxDesktops AOFU resources - 
+#					 which if inadvertently set to a very large value impacts enumeration performance and 
+#					 also consumes large amounts of memory.
+#
+#		Core.SetSiteDataPeriodSecs
+#			Type: int
+#			Default: 600
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data.
+#
+#		Lhc.OutageSummaryEventIntervalSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds Minimum=60
+#			Summary: The interval at which LHC would refresh the outage summary event.
+#
+#		LhcState.PeerStatus
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The status information of peers participating in election process.
+#
+#	In Function OutputMachines, for ProvisioningType -eq "MCS" added:
+#		Device Management Type - This can be Intune, IntuneWithCitrixTags, or None
+#		Identity Type - This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup
+#		Master Image VM Date - The date and time when the VM snapshot copy used by the provisioning scheme was made
+#		MDM Enrollment - This can be Intune, IntuneWithCitrixTags, or None
+#		Prepared Image Definition Name - The name for the image definition used for the provisioning scheme
+#		Prepared Image Version Number - The version number for the image version used for the provisioning scheme
+#		Windows Activation Type - Windows Activation Type set on the Master Image which has a mapping with the Provisioning Scheme
+#	In Function OutputMachines:
+#		Made the code consistent between the Daas and CVAD scripts
+#		Added missing fields that were in one script but not the other
+#		Added the Machine data metadatamap keys output that was in the Word output but not in the Text and HTML output
+#		Added Custom Properties For VMware
+#			FolderId
+#		Renamed "Master VM" to "Master Image VM"
+#	Removed the IncludeVMImageHistory parameter as it wasn't used
+#	Renamed Computer policy
+#		VDA Data Collection\VDA data collection for Performance Analytics to VDA Data Collection\VDA data collection for Analytics
+#	Tested with Group Policy Module 2305 dated May 31, 2023 
+#		(https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
+#	Tested with PoSH SDK dated May 18, 2023 
+#		(https://download.apps.cloud.com/CitrixPoshSdk.exe)
+#	Updated for 7.38
+
 #Version 1.25 11-Apr-2023
 #	Fixed six typos found when running a test for Citrix
 

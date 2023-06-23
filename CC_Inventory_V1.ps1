@@ -196,19 +196,6 @@
 	
 	This parameter is disabled by default.
 	This parameter has an alias of MC.
-.PARAMETER IncludeVMImageHistory
-	Gives information on the VM image history for each Machine Catalog.
-	
-	Includes the following properties.
-		ProvisioningSchemeName
-		MasterImageVM
-		FunctionalLevel
-		Date
-		ImageStatus
-		MasterImageNote
-	
-	This parameter is disabled by default.
-	This parameter has aliases of IVMIH and History.
 .PARAMETER NoADPolicies
 	Excludes all Citrix AD-based policy information from the output document.
 	Includes only Site policies created in Studio.
@@ -1354,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.25
+	VERSION: 1.26
 	AUTHOR: Carl Webster
-	LASTEDIT: April 11, 2023
+	LASTEDIT: June 23, 2023
 #>
 
 #endregion
@@ -1418,10 +1405,6 @@ Param(
 	[parameter(Mandatory=$False)] 
 	[Alias("MC")]
 	[Switch]$MachineCatalogs=$False,	
-	
-	[parameter(Mandatory=$False)] 
-	[Alias("IVMIH","History")]
-	[Switch]$IncludeVMImageHistory=$False,	
 	
 	[parameter(Mandatory=$False)] 
 	[Alias("NoAD")]
@@ -1544,6 +1527,77 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.26 23-Jun-2023
+#	RANT
+#		In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections because some idiot at Citrix 
+#		made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
+#		and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
+#		data needed.
+#
+#		If that idiot ever decides to pull their head out of their @$$, I can come back and add the two sections back.
+#	END RANT
+#
+#	Added Computer policy
+#		Profile Management\Advanced settings\Disable defragmentation for VHD disk compaction
+#		Profile Management\Advanced settings\Enable user-level policy settings
+#		Profile Management\Advanced settings\Set priority order for user groups
+#		VDA Data Collection\Security\Clipboard place metadata collection for Security monitoring
+#	Added to Function OutputZoneSiteView:
+#		Valid Edge Servers? (No one at Citrix can tell me what a valid or invalid Edge server is or how to resolve the issue of an invalid Edge server.)
+#		Healthy? (Is the Zone healthy? No one at Citrix can tell me what a healthy Zone is or how to fix an unhealthy Zone.)
+#		Primary? (Is the Zone the Primary Zone? There can (should) only be one Primary Zone.)
+#	Added two more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.AssignmentPolicyMaxDesktops
+#			Type: int
+#			Default: 5
+#			Info: Minimum=1, Maximum=100
+#			Summary: The maximum value accepted for the MaxDesktops parameter of the New/Set-BrokerAssignmentPolicyRule cmdlets. 
+#					 This is limited here because enumeration creates #MaxDesktops AOFU resources - 
+#					 which if inadvertently set to a very large value impacts enumeration performance and 
+#					 also consumes large amounts of memory.
+#
+#		Core.SetSiteDataPeriodSecs
+#			Type: int
+#			Default: 600
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data.
+#
+#		Lhc.OutageSummaryEventIntervalSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds Minimum=60
+#			Summary: The interval at which LHC would refresh the outage summary event.
+#
+#		LhcState.PeerStatus
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The status information of peers participating in election process.
+#
+#	In Function OutputMachines, for ProvisioningType -eq "MCS" added:
+#		Device Management Type - This can be Intune, IntuneWithCitrixTags, or None
+#		Identity Type - This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup
+#		Master Image VM Date - The date and time when the VM snapshot copy used by the provisioning scheme was made
+#		MDM Enrollment - This can be Intune, IntuneWithCitrixTags, or None
+#		Prepared Image Definition Name - The name for the image definition used for the provisioning scheme
+#		Prepared Image Version Number - The version number for the image version used for the provisioning scheme
+#		Windows Activation Type - Windows Activation Type set on the Master Image which has a mapping with the Provisioning Scheme
+#	In Function OutputMachines:
+#		Made the code consistent between the Daas and CVAD scripts
+#		Added missing fields that were in one script but not the other
+#		Added the Machine data metadatamap keys output that was in the Word output but not in the Text and HTML output
+#		Added Custom Properties For VMware
+#			FolderId
+#		Renamed "Master VM" to "Master Image VM"
+#	Removed the IncludeVMImageHistory parameter as it wasn't used
+#	Renamed Computer policy
+#		VDA Data Collection\VDA data collection for Performance Analytics to VDA Data Collection\VDA data collection for Analytics
+#	Tested with Group Policy Module 2305 dated May 31, 2023 
+#		(https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html)
+#	Tested with PoSH SDK dated May 18, 2023 
+#		(https://download.apps.cloud.com/CitrixPoshSdk.exe)
+#	Updated for 7.38
+#
 #Version 1.25 11-Apr-2023
 #	Fixed six typos found when running a test for Citrix
 #
@@ -2662,7 +2716,7 @@ Param(
 #	Renamed computer policy
 #		Enable multi-session write-back for FSLogix Profile Container to Enable multi-session write-back for profile containers
 #		Virtual channel white list to Virtual channel allow list
-#	To get the Master VM for an Azure Catalog, add searching for ".manageddisk"
+#	To get the Master Image VM for an Azure Catalog, add searching for ".manageddisk"
 #		Also added ".snapshot" which was found in customer data
 #	Updated the Authentication section in the ReadMe
 #	Updated the text explanations for:
@@ -2837,7 +2891,7 @@ Param(
 #		Hardcode $AdminAddress to LocalHost
 #	Removed licensing data that didn't make sense for Citrix Cloud and added some data that did make sense
 #	Since the RegistrationState property is an enum, add .ToString() to the machine/desktop/server variable so HTML output is correct
-#	When getting the Master VM for an MCS based machine catalog, also check for images ending in .template for Nutanix
+#	When getting the Master Image VM for an MCS based machine catalog, also check for images ending in .template for Nutanix
 #	When getting the provisioning scheme data for a machine, only Process machines with a provisioning type of MCS
 #		There is no provisioning scheme data for manually or PVS provisioned machines
 #	When VDARegistryKeys is used, now test the RemoteRegistry service for its status
@@ -2925,9 +2979,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.25'
+$script:MyVersion   = '1.26'
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "04/11/2023"
+$tmpdate            = [datetime] "06/23/2023"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -6768,6 +6822,15 @@ Function OutputMachines
 			"MCS"    {$xProvisioningType = "Machine creation services"; Break}
 			Default  {$xProvisioningType = "Provisioning method could not be determined: $($Catalog.ProvisioningType)"; Break}
 		}
+		
+		#mdmenrollment added in 1.26
+		Switch ($Catalog.MdmEnrollment)
+		{
+			"Intune"				{$MDMEnrollment = "Microsoft Intune"; Break}
+			"IntuneWithCitrixTags"	{$MDMEnrollment = "Microsoft Intune with Citrix tags"; Break}
+			"None"					{$MDMEnrollment = "No MDM"; Break}
+			Default					{$MDMEnrollment = "MDM Enrollment method could not be determined: $($Catalog.MdmEnrollment)"; Break}
+		}
 
 		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
 		#Citrix broke this cmdlet when they added folder names
@@ -7006,6 +7069,8 @@ Function OutputMachines
 						}
 					}
 					
+					$MasterImageVMDate = (Get-Date -UFormat "%c" $MachineData.MasterImageVMDate) #added in 1.26
+					
 					If(($Catalog.MinimumFunctionalLevel -eq "L7_9" -or 
 					    $Catalog.MinimumFunctionalLevel -eq "L7_20" -or 
 						$Catalog.MinimumFunctionalLevel -eq "L7_25" -or
@@ -7061,7 +7126,7 @@ Function OutputMachines
 					}
 					Else
 					{
-						$CleanOnBoot = "Unable to retrieve details"
+						$CleanOnBoot = ""
 					}
 					If( $MachineData.PSObject.Properties[ 'DedicatedTenancy' ] )
 					{
@@ -7069,7 +7134,7 @@ Function OutputMachines
 					}
 					Else
 					{
-						$DedicatedTenancy = "Unable to retrieve details"
+						$DedicatedTenancy = "False"
 					}
 					If( $MachineData.PSObject.Properties[ 'IdentityPoolName' ] )
 					{
@@ -7077,7 +7142,7 @@ Function OutputMachines
 					}
 					Else
 					{
-						$IdentityPoolName = "Unable to retrieve details"
+						$IdentityPoolName = ""
 					}
 					
 					If( $MachineData.PSObject.Properties[ 'ResetAdministratorPasswords' ] )
@@ -7086,7 +7151,7 @@ Function OutputMachines
 					}
 					Else
 					{
-						$ResetAdministratorPasswords = "Unable to retrieve details"
+						$ResetAdministratorPasswords = "False"
 					}
 					If( $MachineData.PSObject.Properties[ 'HostingUnitName' ] )
 					{
@@ -7094,7 +7159,42 @@ Function OutputMachines
 					}
 					Else
 					{
-						$HostingUnitName = "Unable to retrieve details"
+						$HostingUnitName = ""
+					}
+					
+					#stuff added in 1.26
+					If( $MachineData.PSObject.Properties[ 'PreparedImageDefinitionName' ] )
+					{
+						$PreparedImageDefinitionName = $MachineData.PreparedImageDefinitionName
+					}
+					Else
+					{
+						$PreparedImageDefinitionName = ""
+					}
+					If( $MachineData.PSObject.Properties[ 'PreparedImageVersionNumber' ] )
+					{
+						$PreparedImageVersionNumber = $MachineData.PreparedImageVersionNumber
+					}
+					Else
+					{
+						$PreparedImageVersionNumber = ""
+					}
+					If( $MachineData.PSObject.Properties[ 'WindowsActivationType' ] )
+					{
+						#WindowsActivationType <string> Windows Activation Type set on the Master Image which has a 
+						#mapping with the Provisioning Scheme.
+						#This feature is supported from 2303 and successive VDA versions
+						
+						Switch ($MachineData.WindowsActivationType)
+						{
+							"KeyManagementService"	{$WindowsActivationType = "KMS"; Break}
+							"UnsupportedVDA"		{$WindowsActivationType = "Unsupported VDA"; Break}
+							Default					{$WindowsActivationType = "Unable to determine Windows Activation Type: $($MachineData.WindowsActivationType)"; Break}
+						}
+					}
+					Else
+					{
+						$WindowsActivationType = "Unsupported VDA Version"
 					}
 				}
 				Else
@@ -7107,11 +7207,15 @@ Function OutputMachines
 					$IdentityPoolName            = "Unable to retrieve details"
 					$InstalledVDAVersion         = "Unable to retrieve details"
 					$MasterVM                    = "Unable to retrieve details"
+					$MasterImageVMDate           = "Unable to retrieve details"
 					$MemoryMB                    = "Unable to retrieve details"
 					$OperatingSystem             = "Unable to retrieve details"
+					$PreparedImageDefinitionName = "Unable to retrieve details"
+					$PreparedImageVersionNumber  = "Unable to retrieve details"
 					$ResetAdministratorPasswords = "Unable to retrieve details"
 					$TempDiskCacheSize           = $Null
 					$TempMemoryCacheSize         = $Null
+					$WindowsActivationType       = "Unable to retrieve details"
 					$xDiskImage                  = "Unable to retrieve details"
 					Remove-Variable TempDiskCacheSize
 					Remove-Variable TempMemoryCacheSize
@@ -7152,11 +7256,15 @@ Function OutputMachines
 			$IdentityPoolName            = "Unable to retrieve details"
 			$InstalledVDAVersion         = "Unable to retrieve details"
 			$MasterVM                    = "Unable to retrieve details"
+			$MasterImageVMDate           = "Unable to retrieve details"
 			$MemoryMB                    = "Unable to retrieve details"
 			$OperatingSystem             = "Unable to retrieve details"
+			$PreparedImageDefinitionName = "Unable to retrieve details"
+			$PreparedImageVersionNumber  = "Unable to retrieve details"
 			$ResetAdministratorPasswords = "Unable to retrieve details"
 			$TempDiskCacheSize           = $Null
 			$TempMemoryCacheSize         = $Null
+			$WindowsActivationType       = "Unable to retrieve details"
 			$xDiskImage                  = "Unable to retrieve details"
 			Remove-Variable TempDiskCacheSize
 			Remove-Variable TempMemoryCacheSize
@@ -7166,29 +7274,86 @@ Function OutputMachines
 		{
 			$IdentityPool = @(Get-AcctIdentityPool @CCParams2 -IdentityPoolName $Catalog.Name)
 			
-			If($? -and $Null -ne $IdentityPool)
+			If($? -and $Null -ne $IdentityPool -and $IdentityPool.Count -gt 0)
 			{
-				If((validObject $IdentityPool NamingSchemeType) -and $IdentityPool.NamingSchemeType -eq "None") #fix in 1.25
-				{
+				#If($IdentityPool.NamingSchemeType -ne "None") #fix in 1.26
+				#{
 					$IdentityDomain           = $IdentityPool.Domain
 					$IdentityNamingScheme     = $IdentityPool.NamingScheme
 					$IdentityNamingSchemeType = $IdentityPool.NamingSchemeType
 					$IdentityOU               = $IdentityPool.OU
-				}
-				Else
-				{
-					$IdentityDomain           = "N/A"
-					$IdentityNamingScheme     = "Use existing AD accounts"
-					$IdentityNamingSchemeType = "None"
-					$IdentityOU               = "N/A"
-				}
+
+					#added in 1.26
+					<#
+						IdentityType	The type of identity type. 
+						This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup.
+					#>
+					Switch ($IdentityPool.IdentityType)
+					{
+						"ActiveDirectory"	{$IdentityType = "On-premises AD"; Break}
+						"AzureAD"			{$IdentityType = "Azure AD joined"; Break}
+						"HybridAzureAD"		{$IdentityType = "Hybrid Azure AD joined"; Break}
+						"Workgroup"			{$IdentityType = "Non-domain-joined"; Break}
+						Default				{$IdentityType = "-"; Break}
+					}
+					
+					<#
+						DeviceManagementType	The type of device management type. 
+						This can be Intune, IntuneWithCitrixTags, or None.
+					#>
+					Switch($IdentityPool.DeviceManagementType)
+					{
+						"Intune"				{$DeviceManagementType = "Microsoft Intune"; Break}
+						"IntuneWithCitrixTags"	{$DeviceManagementType = "Microsoft Intune with Citrix Tags"; Break}
+						"None"					{$DeviceManagementType = ""; Break}
+						""						{$DeviceManagementType = ""; Break}
+						Default					{$DeviceManagementType = "Unable to determine Device Management Type: $($IdentityPool.DeviceManagementType)"; Break}
+					}
+					#end added in 1.26
+				#}
+				#Else
+				#{
+				#	$IdentityDomain           = ""
+				#	$IdentityNamingScheme     = ""
+				#	$IdentityNamingSchemeType = "None"
+				#	$IdentityOU               = ""
+				#	#added in 1.26
+				#	<#
+				#		IdentityType	The type of identity type. 
+				#		This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup.
+				#	#>
+				#	Switch ($IdentityPool.IdentityType)
+				#	{
+				#		"ActiveDirectory"	{$IdentityType = "On-premises AD"; Break}
+				#		"AzureAD"			{$IdentityType = "Azure AD joined"; Break}
+				#		"HybridAzureAD"		{$IdentityType = "Hybrid Azure AD joined"; Break}
+				#		"Workgroup"			{$IdentityType = "Non-domain-joined"; Break}
+				#		Default				{$IdentityType = "-"; Break}
+				#	}
+				#	
+				#	<#
+				#		DeviceManagementType	The type of device management type. 
+				#		This can be Intune, IntuneWithCitrixTags, or None.
+				#	#>
+				#	Switch($IdentityPool.DeviceManagementType)
+				#	{
+				#		"Intune"				{$DeviceManagementType = "Microsoft Intune"; Break}
+				#		"IntuneWithCitrixTags"	{$DeviceManagementType = "Microsoft Intune with Citrix Tags"; Break}
+				#		"None"					{$DeviceManagementType = "None"; Break}
+				#		""						{$DeviceManagementType = ""; Break}
+				#		Default					{$DeviceManagementType = "Unable to determine Device Management Type: $($IdentityPool.DeviceManagementType)"; Break}
+				#	}
+				#	#end added in 1.26
+				#}
 			}
 			Else
 			{
 				$IdentityDomain           = "Not Found"
 				$IdentityNamingScheme     = "Not Found"
 				$IdentityNamingSchemeType = "Not Found"
+				$IdentityType             = "Not Found" #added in 1.26
 				$IdentityOU               = "Not Found"
+				$DeviceManagementType     = "Not Found" #added in 1.26
 			}
 		}
 		
@@ -7226,16 +7391,22 @@ Function OutputMachines
 				$CatalogInformation += @{Data = "Clean on Boot"; Value = $CleanOnBoot; }
 				$CatalogInformation += @{Data = "Dedicated Tenancy"; Value = $DedicatedTenancy; }
 				$CatalogInformation += @{Data = "Description"; Value = $Description; }
+				$CatalogInformation += @{Data = "Device Management Type"; Value = $DeviceManagementType; } #added in 1.26
 				$CatalogInformation += @{Data = "Disk Image"; Value = $xDiskImage; }
 				$CatalogInformation += @{Data = "Hard disk"; Value = $DiskSize; }
 				$CatalogInformation += @{Data = "Identity Pool Name"; Value = $IdentityPoolName; }
+				$CatalogInformation += @{Data = "Identity Type"; Value = $IdentityType; } #added in 1.26
 				$CatalogInformation += @{Data = "Installed VDA version"; Value = $InstalledVDAVersion; }
 				$CatalogInformation += @{Data = "Machine type"; Value = $xCatalogType; }
-				$CatalogInformation += @{Data = "Master VM"; Value = $MasterVM; }
+				$CatalogInformation += @{Data = "Master Image VM"; Value = $MasterVM; }
+				$CatalogInformation += @{Data = "Master Image VM Date"; Value = $MasterImageVMDate; } #added in 1.26
+				$CatalogInformation += @{Data = "MDM Enrollment"; Value = $MDMEnrollment; } #added in 1.26
 				$CatalogInformation += @{Data = "Memory"; Value = $MemoryMB; }
 				$CatalogInformation += @{Data = "Naming scheme type"; Value = $IdentityNamingSchemeType; }
 				$CatalogInformation += @{Data = "No. of machines"; Value = $NumberOfMachines; }
 				$CatalogInformation += @{Data = "Operating System"; Value = $OperatingSystem; }
+				$CatalogInformation += @{Data = "Prepared Image Definition Name"; Value = $PreparedImageDefinitionName; } #added in 1.26
+				$CatalogInformation += @{Data = "Prepared Image Version Number"; Value = $PreparedImageVersionNumber; } #added in 1.26
 				$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
 				$CatalogInformation += @{Data = "Reset Administrator Passwords"; Value = $ResetAdministratorPasswords; }
 				$CatalogInformation += @{Data = "Resources"; Value = $HostingUnitName; }
@@ -7254,9 +7425,9 @@ Function OutputMachines
 				{
 					$CatalogInformation += @{Data = "VM copy mode"; Value = $VMCopyMode; }
 				}
+				$CatalogInformation += @{Data = "Windows Activation Type"; Value = $WindowsActivationType; } #added in 1.26
 				$CatalogInformation += @{Data = "Zone"; Value = $Catalog.ZoneName; }
 				$CatalogInformation += @{Data = "Zone Healthy?"; Value = $Catalog.ZoneHealthy; }
-				
 			}
 			ElseIf($Catalog.ProvisioningType -eq "PVS")
 			{
@@ -7356,6 +7527,22 @@ Function OutputMachines
 				$CatalogInformation += @{Data = "Zone Healthy?"; Value = $Catalog.ZoneHealthy.ToString(); }
 			}
 			
+			If($Null -ne $MachineData)
+			{
+				$itemKeys = $MachineData.MetadataMap.Keys
+
+				ForEach( $itemKey in $itemKeys )
+				{
+					$value = $MachineData.MetadataMap[ $itemKey ]
+					
+					If($value -eq "")
+					{
+						$value = "Not set"
+					}
+					$CatalogInformation += @{Data = $itemKey; Value = $value; }
+				}
+			}
+			
 			If($Catalog.SessionSupport -eq "MultiSession")
 			{
 				$itemKeys = $Catalog.MetadataMap.Keys
@@ -7411,16 +7598,22 @@ Function OutputMachines
 				Line 1 "Clean on Boot`t`t`t`t: " $CleanOnBoot
 				Line 1 "Dedicated Tenancy`t`t`t: " $DedicatedTenancy
 				Line 1 "Description`t`t`t`t: " $Description
+				Line 1 "Device Management Type`t`t`t: " $DeviceManagementType #added in 1.26
 				Line 1 "Disk Image`t`t`t`t: " $xDiskImage
 				Line 1 "Hard disk`t`t`t`t: " $DiskSize
 				Line 1 "Identity Pool Name`t`t`t: " $IdentityPoolName
+				Line 1 "Identity Type`t`t`t`t: " $IdentityType #added in 1.26
 				Line 1 "Installed VDA version`t`t`t: " $InstalledVDAVersion
 				Line 1 "Machine type`t`t`t`t: " $xCatalogType
-				Line 1 "Master VM`t`t`t`t: " $MasterVM
+				Line 1 "Master Image VM`t`t`t`t: " $MasterVM
+				Line 1 "Master Image VM Date`t`t`t: " $MasterImageVMDate #added in 1.26
+				Line 1 "MDM Enrollment`t`t`t`t: " $MDMEnrollment #added in 1.26
 				Line 1 "Memory`t`t`t`t`t: " $MemoryMB
 				Line 1 "Naming scheme type`t`t`t: " $IdentityNamingSchemeType
 				Line 1 "No. of machines`t`t`t`t: " $NumberOfMachines
 				Line 1 "Operating System`t`t`t: " $OperatingSystem
+				Line 1 "Prepared Image Definition Name`t`t: " $PreparedImageDefinitionName #added in 1.26
+				Line 1 "Prepared Image Version Number`t`t: " $PreparedImageVersionNumber #added in 1.26
 				Line 1 "Provisioning method`t`t`t: " $xProvisioningType
 				Line 1 "Reset Administrator Passwords`t`t: " $ResetAdministratorPasswords
 				Line 1 "Resources`t`t`t`t: " $HostingUnitName #fixed in 1.25
@@ -7439,6 +7632,7 @@ Function OutputMachines
 				{
 					Line 1 "VM copy mode`t`t`t`t: " $VMCopyMode
 				}
+				Line 1 "Windows Activation Type`t`t`t: " $WindowsActivationType #added in 1.26
 				Line 1 "Zone`t`t`t`t`t: " $Catalog.ZoneName
 				Line 1 "Zone Healthy?`t`t`t`t: " $Catalog.ZoneHealthy.ToString()
 			}
@@ -7541,6 +7735,22 @@ Function OutputMachines
 				Line 1 "Zone Healthy?`t`t`t`t: " $Catalog.ZoneHealthy.ToString()
 			}
 
+			If($Null -ne $MachineData)
+			{
+				$itemKeys = $MachineData.MetadataMap.Keys
+
+				ForEach( $itemKey in $itemKeys )
+				{
+					$value = $MachineData.MetadataMap[ $itemKey ]
+					
+					If($value -eq "")
+					{
+						$value = "Not set"
+					}
+					Line 1 "$($itemKey)`t: " $value
+				}
+			}
+			
 			If($Catalog.SessionSupport -eq "MultiSession")
 			{
 				$itemKeys = $Catalog.MetadataMap.Keys
@@ -7582,16 +7792,23 @@ Function OutputMachines
 				$rowdata += @(,('Allocation type',($global:htmlsb),$xAllocationType,$htmlwhite))
 				$rowdata += @(,("Clean on Boot",($global:htmlsb),$CleanOnBoot,$htmlwhite))
 				$rowdata += @(,("Dedicated Tenancy",($global:htmlsb),$DedicatedTenancy,$htmlwhite))
+				$rowdata += @(,("Description",($global:htmlsb),$Description,$htmlwhite)) #added in 1.26
+				$rowdata += @(,("Device Management Type",($global:htmlsb),$DeviceManagementType,$htmlwhite)) #added in 1.26
 				$rowdata += @(,('Disk Image',($global:htmlsb),$xDiskImage,$htmlwhite))
 				$rowdata += @(,('Hard disk',($global:htmlsb),$DiskSize,$htmlwhite))
 				$rowdata += @(,("Identity Pool Name",($global:htmlsb),$IdentityPoolName,$htmlwhite))
+				$rowdata += @(,("Identity Type",($global:htmlsb),$IdentityType,$htmlwhite)) #added in 1.26
 				$rowdata += @(,('Installed VDA version',($global:htmlsb),$InstalledVDAVersion,$htmlwhite))
 				$rowdata += @(,('Machine Type',($global:htmlsb),$xCatalogType,$htmlwhite))
-				$rowdata += @(,('Master VM',($global:htmlsb),$MasterVM,$htmlwhite))
+				$rowdata += @(,('Master Image VM',($global:htmlsb),$MasterVM,$htmlwhite))
+				$rowdata += @(,("Master Image VM Date",($global:htmlsb),$MasterImageVMDate,$htmlwhite)) #added in 1.26
+				$rowdata += @(,("MDM Enrollment",($global:htmlsb),$MDMEnrollment,$htmlwhite)) #added in 1.26
 				$rowdata += @(,('Memory',($global:htmlsb),$MemoryMB,$htmlwhite))
 				$rowdata += @(,("Naming scheme type",($global:htmlsb),$IdentityNamingSchemeType,$htmlwhite))
 				$rowdata += @(,('No. of machines',($global:htmlsb),$NumberOfMachines,$htmlwhite))
 				$rowdata += @(,('Operating System',($global:htmlsb),$OperatingSystem,$htmlwhite))
+				$rowdata += @(,("Prepared Image Definition Name",($global:htmlsb),$PreparedImageDefinitionName,$htmlwhite)) #added in 1.26
+				$rowdata += @(,("Prepared Image Version Number",($global:htmlsb),$PreparedImageVersionNumber,$htmlwhite)) #added in 1.26
 				$rowdata += @(,('Provisioning method',($global:htmlsb),$xProvisioningType,$htmlwhite))
 				$rowdata += @(,("Reset Administrator Passwords",($global:htmlsb),$ResetAdministratorPasswords,$htmlwhite))
 				$rowdata += @(,('Resources',($global:htmlsb),$HostingUnitName,$htmlwhite))
@@ -7610,6 +7827,7 @@ Function OutputMachines
 				{
 					$rowdata += @(,('VM copy mode',($global:htmlsb),$VMCopyMode,$htmlwhite))
 				}
+				$rowdata += @(,("Windows Activation Type",($global:htmlsb),$WindowsActivationType,$htmlwhite)) #added in 1.26
 				$rowdata += @(,('Zone',($global:htmlsb),$Catalog.ZoneName,$htmlwhite))
 				$rowdata += @(,('Zone Healthy?',($global:htmlsb),$Catalog.ZoneHealthy.ToString(),$htmlwhite))
 			}
@@ -7707,6 +7925,22 @@ Function OutputMachines
 				$rowdata += @(,('Zone Healthy?',($global:htmlsb),$Catalog.ZoneHealthy.ToString(),$htmlwhite))
 			}
 			
+			If($Null -ne $MachineData)
+			{
+				$itemKeys = $MachineData.MetadataMap.Keys
+
+				ForEach( $itemKey in $itemKeys )
+				{
+					$value = $MachineData.MetadataMap[ $itemKey ]
+					
+					If($value -eq "")
+					{
+						$value = "Not set"
+					}
+					$rowdata += @(,($itemKey,($global:htmlsb),$value,$htmlwhite))
+				}
+			}
+			
 			If($Catalog.SessionSupport -eq "MultiSession")
 			{
 				$itemKeys = $Catalog.MetadataMap.Keys
@@ -7742,7 +7976,8 @@ Function OutputMachines
 		If($Null -ne $Catalog.ProvisioningSchemeID)
 		{
 			<#For script version 1.15, these are the custom properties documented at
-			https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+				https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
+				
 				Custom Properties For Azure
 					DedicatedHostGroupId
 					DiskEncryptionSetId
@@ -7754,7 +7989,7 @@ Function OutputMachines
 					MaxPageFileSizeInMB
 					OsType
 					PageFileDiskDriveLetter
-					PageFileDiskDriveLetterOverride $new in 2212
+					PageFileDiskDriveLetterOverride #new in 2212
 					PersistOsDisk
 					PersistVm
 					PersistWBC
@@ -7786,6 +8021,9 @@ Function OutputMachines
 					PersistWBC
 					StorageType
 					WBCDiskStorageType
+					
+				Custom Properties For VMware #new in 1.26
+					FolderId
 			#>
 			
 			$ProvScheme = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeID @CCParams2
@@ -8283,6 +8521,11 @@ Function OutputMachines
 			}
 		}
 		
+		<#In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections becauuse some idiot at Citrix 
+		made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
+		and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
+		data needed.
+		
 		#1.18, Citrix added support for MCS catalogs in the June 2022 update
 		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
 		#Extended support for VDA upgrade. Using the Full Configuration interface, 
@@ -8290,17 +8533,6 @@ Function OutputMachines
 		#them on a per-catalog or a per-machine basis.
 		If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
 		{
-			#added in V1.17
-			#https://docs.citrix.com/en-us/citrix-daas/whats-new.html
-			<#
-				April 2022
-				New and enhanced features
-				Support for upgrading VDA machines (preview). 
-				Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment. 
-				You can upgrade them on a per-catalog or a per-machine basis. 
-				***The feature applies only to physical machines.***
-			#>
-			
 			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.CatalogName -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
 			
 			If(!$? -or $Null -eq $VDAUpgrade)
@@ -8338,12 +8570,12 @@ Function OutputMachines
 				#Citrix has not defined any of the Enums
 				#Citrix finally sent me the enums on 13-Jul-2022
 				
-				<#
-					Release type the VDA upgrades follow. Possible values are:
-					o NotSet - Upgrade release type was not set by admin for this catalog.
-					o CR - VDA upgrades follow CR release cycles.
-					o LTSR - VDA upgrades follow LTSR release cycles.
-				#>
+				
+				#Release type the VDA upgrades follow. Possible values are:
+				#o NotSet - Upgrade release type was not set by admin for this catalog.
+				#o CR - VDA upgrades follow CR release cycles.
+				#o LTSR - VDA upgrades follow LTSR release cycles.
+				
 				Switch($VDAUpgrade.UpgradeType)
 				{
 					"NotSet"	{$VDAUpgradeType = "Upgrade release type was not set by admin for this catalog"; Break}
@@ -8352,16 +8584,13 @@ Function OutputMachines
 					Default		{$VDAUpgradeType = "VDA upgrade type could not be determined: $($VDAUpgrade.UpgradeType)"; Break}
 				}
 				
-				<#
-					Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
-					o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog
-					can be upgraded.
-					o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
-					o UpgradeAvailable - One or more machines in this catalog can be upgraded.
-					o UpToDate - All VDAs in this catalog are on the most recently released version.
-					o Unknown - Temporary state where the service is currently figuring out one of the above states.
-				#>
-				
+				#Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+				#o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
+				#o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+				#o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+				#o UpToDate - All VDAs in this catalog are on the most recently released version.
+				#o Unknown - Temporary state where the service is currently figuring out one of the above states.
+								
 				Switch($VDAUpgrade.UpgradeState)
 				{
 					"MissingUpgradeType"	{$VDAUpgradeState = "Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded"; Break}
@@ -8434,6 +8663,7 @@ Function OutputMachines
 				}
 			}
 		}
+		#>
 		
 		#scopes
 		$Scopes = (Get-BrokerCatalog -Name $Catalog.Name @CCParams2).Scopes
@@ -11101,23 +11331,13 @@ Function OutputMachineDetails
 		}
 	}
 	
+	<#In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections becauuse some idiot at Citrix 
+	made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
+	and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
+	data needed.
+		
 	If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
 	{
-		#added in V1.18
-		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html
-		<#
-			New and enhanced features
-			Support for upgrading VDA machines. 
-			Using the Full Configuration interface, you can now upgrade VDA machines for your Citrix DaaS deployment. 
-			You can upgrade them on a per-catalog or a per-machine basis. 
-
-			Citrix added support for MCS catalogs in the June 2022 update
-			https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
-			Extended support for VDA upgrade. Using the Full Configuration interface, 
-			you can now upgrade MCS-provisioned persistent machines. You can upgrade 
-			them on a per-catalog or a per-machine basis.
-		#>
-		
 		$VDAUpgrade = Get-VusMachineInfo -MachineUid $Machine.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
 		
 		If(!$? -or $Null -eq $VDAUpgrade)
@@ -11162,12 +11382,11 @@ Function OutputMachineDetails
 			#Citrix has not defined any of the Enums
 			#Citrix finally sent me the enums on 13-Jul-2022
 			
-			<#
-				Release type the VDA upgrades follow. Possible values are:
-				o NotSet - Upgrade release type was not set by admin for this catalog.
-				o CR - VDA upgrades follow CR release cycles.
-				o LTSR - VDA upgrades follow LTSR release cycles.
-			#>
+			#Release type the VDA upgrades follow. Possible values are:
+			#o NotSet - Upgrade release type was not set by admin for this catalog.
+			#o CR - VDA upgrades follow CR release cycles.
+			#o LTSR - VDA upgrades follow LTSR release cycles.
+
 			Switch($VDAUpgrade.UpgradeType)
 			{
 				"NotSet"	{$VDAUpgradeType = "Upgrade release type was not set by admin for this catalog"; Break}
@@ -11176,15 +11395,12 @@ Function OutputMachineDetails
 				Default		{$VDAUpgradeType = "VDA upgrade type could not be determined: $($VDAUpgrade.UpgradeType)"; Break}
 			}
 			
-			<#
-				Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
-				o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog
-				can be upgraded.
-				o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
-				o UpgradeAvailable - One or more machines in this catalog can be upgraded.
-				o UpToDate - All VDAs in this catalog are on the most recently released version.
-				o Unknown - Temporary state where the service is currently figuring out one of the above states.
-			#>
+			#Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
+			#o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
+			#o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
+			#o UpgradeAvailable - One or more machines in this catalog can be upgraded.
+			#o UpToDate - All VDAs in this catalog are on the most recently released version.
+			#o Unknown - Temporary state where the service is currently figuring out one of the above states.
 			
 			Switch($VDAUpgrade.UpgradeState)
 			{
@@ -11258,6 +11474,7 @@ Function OutputMachineDetails
 			}
 		}
 	}
+	#>
 }
 #endregion
 
@@ -11376,6 +11593,21 @@ Function OutputDeliveryGroupTable
 			$Script:TotalDesktopGroups++
 		}
 		ElseIf($NumApps -gt 0 -or $NumAppGroups -gt 0 -and $NumDesktops -gt 0)
+		{
+			$xDeliveryType = "Applications and Desktops"
+			$Script:TotalAppsAndDesktopGroups++
+		}
+		ElseIf($Group.DeliveryType -eq "AppsOnly")
+		{
+			$xDeliveryType = "Applications"
+			$Script:TotalApplicationGroups++
+		}
+		ElseIf($Group.DeliveryType -eq "DesktopsOnly")
+		{
+			$xDeliveryType = "Desktops"
+			$Script:TotalDesktopGroups++
+		}
+		ElseIf($Group.DeliveryType -eq "DesktopsAndApps")
 		{
 			$xDeliveryType = "Applications and Desktops"
 			$Script:TotalAppsAndDesktopGroups++
@@ -25169,6 +25401,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DisableDynamicConfig.State
 						}
 					}
+					If((validStateProp $Setting NDefrag4Compaction State ) -and ($Setting.NDefrag4Compaction.State -ne "NotConfigured"))
+					{
+						#added in 1.26
+						$txt = "Profile Management\Advanced settings\Disable defragmentation for VHD disk compaction"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.NDefrag4Compaction.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.NDefrag4Compaction.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.NDefrag4Compaction.State
+						}
+					}
 					If((validStateProp $Setting CredBasedAccessEnabled State ) -and ($Setting.CredBasedAccessEnabled.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Advanced settings\Enable credential-based access to user stores"
@@ -25230,6 +25484,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.OutlookSearchRoamingEnabled.State
+						}
+					}
+					If((validStateProp $Setting UserGroupLevelConfigEnabled State ) -and ($Setting.UserGroupLevelConfigEnabled.State -ne "NotConfigured"))
+					{
+						#added in 1.26
+						$txt = "Profile Management\Advanced settings\Enable user-level policy settings"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UserGroupLevelConfigEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UserGroupLevelConfigEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UserGroupLevelConfigEnabled.State
 						}
 					}
 					If((validStateProp $Setting FreeRatio4Compaction_Part State ) -and ($Setting.FreeRatio4Compaction_Part.State -ne "NotConfigured"))
@@ -25443,6 +25719,90 @@ Function ProcessCitrixPolicies
 						Else
 						{
 							$tmp = "No Paths to replicate a user store were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					If((validStateProp $Setting OrderedGroups_Part State ) -and ($Setting.OrderedGroups_Part.State -ne "NotConfigured"))
+					{
+						#added in 1.26
+						$txt = "Profile Management\Advanced settings\Set priority order for user groups"
+						If(validStateProp $Setting OrderedGroups_Part Value )
+						{
+							$tmpArray = $Setting.OrderedGroups_Part.Value.Split(";")
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t`t`t       " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No User Groups were found"
 							If($MSWord -or $PDF)
 							{
 								$SettingsWordTable += @{
@@ -30629,7 +30989,7 @@ Function ProcessCitrixPolicies
 					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection"
 					If((validStateProp $Setting VdcPolicyEnable State ) -and ($Setting.VdcPolicyEnable.State -ne "NotConfigured"))
 					{
-						$txt = "VDA Data Collection\VDA data collection for Performance Analytics"
+						$txt = "VDA Data Collection\VDA data collection for Analytics"
 						If($MSWord -or $PDF)
 						{
 							$WordTableRowHash = @{
@@ -30649,6 +31009,32 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.VdcPolicyEnable.State
 						}
 					}
+
+					#added in 1.26
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\Security"
+					If((validStateProp $Setting EnableClipboardMetadataCollection State ) -and ($Setting.EnableClipboardMetadataCollection.State -ne "NotConfigured"))
+					{
+						$txt = "VDA Data Collection\Security\Clipboard place metadata collection for Security monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableClipboardMetadataCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableClipboardMetadataCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableClipboardMetadataCollection.State
+						}
+					}
+					#end added in 1.26
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings"
 					If((validStateProp $Setting ControllerRegistrationIPv6Netmask State ) -and ($Setting.ControllerRegistrationIPv6Netmask.State -ne "NotConfigured"))
@@ -35686,10 +36072,13 @@ Function ProcessZones
 		ForEach($ZoneCatalog in $ZoneCatalogs)
 		{
 			$obj = [PSCustomObject] @{
-				MemName = $ZoneCatalog.Name			
-				MemDesc = $ZoneCatalog.Description			
-				MemType = "Machine Catalog"			
-				MemZone = $Zone.Name			
+				MemName        = $ZoneCatalog.Name			
+				MemDesc        = $ZoneCatalog.Description			
+				MemType        = "Machine Catalog"			
+				MemZone        = $Zone.Name
+				MemZoneEdge    = $Zone.HasValidEdgeServers.ToString()
+				MemZoneHealthy = $Zone.IsHealthy.ToString()
+				MemZonePrimary = $Zone.IsPrimary.ToString()
 			}
 			$Null = $ZoneMembers.Add($obj)
 		}
@@ -35699,10 +36088,13 @@ Function ProcessZones
 		ForEach($ZoneHost in $ZoneHosts)
 		{
 			$obj = [PSCustomObject] @{
-				MemName = $ZoneHost.HypervisorConnectionName			
-				MemDesc = ""			
-				MemType = "Host Connection"		
-				MemZone = $Zone.Name			
+				MemName        = $ZoneHost.HypervisorConnectionName			
+				MemDesc        = ""			
+				MemType        = "Host Connection"		
+				MemZone        = $Zone.Name			
+				MemZoneEdge    = $Zone.HasValidEdgeServers.ToString()
+				MemZoneHealthy = $Zone.IsHealthy.ToString()
+				MemZonePrimary = $Zone.IsPrimary.ToString()
 			}
 			$Null = $ZoneMembers.Add($obj)
 		}
@@ -35712,10 +36104,13 @@ Function ProcessZones
 		ForEach($ZoneCC in $ZoneCCs)
 		{
 			$obj = [PSCustomObject] @{
-				MemName = $ZoneCC.MachineAddress
-				MemDesc = ""		
-				MemType = "Citrix Cloud Connector"		
-				MemZone = $Zone.Name			
+				MemName        = $ZoneCC.MachineAddress
+				MemDesc        = ""		
+				MemType        = "Citrix Cloud Connector"		
+				MemZone        = $Zone.Name			
+				MemZoneEdge    = $Zone.HasValidEdgeServers.ToString()
+				MemZoneHealthy = $Zone.IsHealthy.ToString()
+				MemZonePrimary = $Zone.IsPrimary.ToString()
 			}
 			$Null = $ZoneMembers.Add($obj)
 		}
@@ -35750,35 +36145,45 @@ Function OutputZoneSiteView
 			}
 
 			$ZoneWordTable += @{ 
-				xName = $ZoneMember.MemName;
-				xDesc = $ZoneMemberMemDesc;
-				xType = $ZoneMember.MemType;
-				xZone = $ZoneMember.MemZone;
+				xName    = $ZoneMember.MemName;
+				xDesc    = $ZoneMemberMemDesc;
+				xType    = $ZoneMember.MemType;
+				xZone    = $ZoneMember.MemZone;
+				xEdge    = $ZoneMember.MemZoneEdge;
+				xHealthy = $ZoneMember.MemZoneHealthy;
+				xPrimary = $ZoneMember.MemZonePrimary
 			}
 		}
 
 		If($ZoneWordTable.Count -eq 0)
 		{
 			$ZoneWordTable += @{ 
-				xName = "None found";
-				xDesc = "";
-				xType = "";
-				xZone = "";
+				xName    = "None found";
+				xDesc    = "";
+				xType    = "";
+				xZone    = "";
+				xEdge    = ""; 
+				xHealthy = ""; 
+				xPrimary = ""; 
 			}
 		}
 		
 		$Table = AddWordTable -Hashtable $ZoneWordTable `
-		-Columns xName, xDesc, xType, xZone `
-		-Headers "Name", "Description", "Type", "Zone" `
+		-Columns xName, xDesc, xType, xZone, xEdge, xHealthy, xPrimary `
+		-Headers "Name", "Description", "Type", "Zone", "Valid Edge Servers?", "Healthy?", "Primary?" `
 		-Format $wdTableGrid `
 		-AutoFit $wdAutoFitFixed;
 
+		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-		$Table.Columns.Item(1).Width = 175;
-		$Table.Columns.Item(2).Width = 100;
-		$Table.Columns.Item(3).Width = 125;
-		$Table.Columns.Item(4).Width = 100;
+		$Table.Columns.Item(1).Width = 100;
+		$Table.Columns.Item(2).Width = 90;
+		$Table.Columns.Item(3).Width = 80;
+		$Table.Columns.Item(4).Width = 90;
+		$Table.Columns.Item(5).Width = 50;
+		$Table.Columns.Item(6).Width = 45;
+		$Table.Columns.Item(7).Width = 45;
 		
 		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -35801,10 +36206,13 @@ Function OutputZoneSiteView
 				$ZoneMemberMemDesc = $ZoneMember.MemDesc
 			}
 
-			Line 1 "Name`t`t: " $ZoneMember.MemName
-			Line 1 "Description`t: " $ZoneMemberMemDesc
-			Line 1 "Type`t`t: " $ZoneMember.MemType
-			Line 1 "Zone`t`t: " $ZoneMember.MemZone
+			Line 1 "Name`t`t`t: " $ZoneMember.MemName
+			Line 1 "Description`t`t: " $ZoneMemberMemDesc
+			Line 1 "Type`t`t`t: " $ZoneMember.MemType
+			Line 1 "Zone`t`t`t: " $ZoneMember.MemZone
+			Line 1 "Valid Edge Servers?`t: " $ZoneMember.MemZoneEdge
+			Line 1 "Healthy?`t`t: " $ZoneMember.MemZoneHealthy
+			Line 1 "Primary?`t`t: " $ZoneMember.MemZonePrimary
 			Line 0 ""
 		}
 	}
@@ -35827,7 +36235,10 @@ Function OutputZoneSiteView
 				$ZoneMember.MemName,$htmlwhite,
 				$ZoneMemberMemDesc,$htmlwhite,
 				$ZoneMember.MemType,$htmlwhite,
-				$ZoneMember.MemZone,$htmlwhite)
+				$ZoneMember.MemZone,$htmlwhite,
+				$ZoneMember.MemZoneEdge,$htmlwhite,
+				$ZoneMember.MemZoneHealthy,$htmlwhite,
+				$ZoneMember.MemZonePrimary,$htmlwhite)
 			)
 		}
 		
@@ -35835,12 +36246,15 @@ Function OutputZoneSiteView
 			'Name',($global:htmlsb),
 			'Description',($global:htmlsb),
 			'Type',($global:htmlsb),
-			'Zone',($global:htmlsb)
+			'Zone',($global:htmlsb),
+			'Valid Edge Servers?',($global:htmlsb),
+			'Healthy?',($global:htmlsb),
+			'Primary?',($global:htmlsb)
 		)
 
 		$msg = ""
-		$columnWidths = @("150","200","150","150")
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "650"
+		$columnWidths = @("100","100","200","200", "100","90","90")
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "880"
 	}
 }
 
@@ -36435,7 +36849,7 @@ Function ProcessScriptSetup
 	`n`n
 	Missing Citrix PowerShell Snap-ins Detected. 
 	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2112 or later installation media. 
+	Please install the Citrix Group Policy Management Console from the CVAD 2305 or later installation media. 
 	`n`n
 	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
 	`n`n
@@ -36454,20 +36868,20 @@ Function ProcessScriptSetup
 	}
 	Else
 	{
-		#1.17, add snapin version check. If the snapin version is less than 7.33, end the script
+		#1.26, add snapin version check. If the snapin version is less than 7.38, end the script
 		#code courtesy of Guy Leech
 		$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
 		
-		If([version]$Script:GPSnapinVersion -lt "7.33") #1.16 fixed version check
+		If([version]$Script:GPSnapinVersion -lt "7.38")
 		{
 			#1.16 added download location to error message
 			Write-Error "
 	`n`r
 	CVADS Group Policy snapin is not the correct version.
 	`n`n
-	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.33.
+	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.38.
 	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2203 or later installation media. 
+	Please install the Citrix Group Policy Management Console from the CVAD 2305 or later installation media. 
 	`n`n
 	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
 	`n`n
@@ -36526,7 +36940,7 @@ Function ProcessScriptSetup
 	}
 	Else
 	{
-		#1.17, add SDK version check. If the SDK version is less than 7.34, end the script
+		#1.26, add SDK version check. If the SDK version is less than 7.38, end the script
 		#code courtesy of Guy Leech
 		$Script:SDKVersion = (((Get-Module -Name Citrix.Broker.Commands | `
 			Select-Object ImplementingAssembly) -as [string]) -split '[=,]') | `
@@ -36534,13 +36948,13 @@ Function ProcessScriptSetup
 			Sort-Object -Descending | `
 			Select-Object -first 1
 		
-		If($Script:SDKVersion -lt 7.34)
+		If($Script:SDKVersion -lt 7.38)
 		{
 			Write-Error "
 	`n`r
 	CVADS Remote Powershell SDK is not the correct version.
 	`n`n
-	Your SDK version is $Script:SDKVersion and must be at least version 7.34.
+	Your SDK version is $Script:SDKVersion and must be at least version 7.38.
 	`n`n
 	Please download the latest Remote SDK version from https://download.apps.cloud.com/CitrixPoshSdk.exe
 	`n`n
