@@ -1528,24 +1528,51 @@ Param(
 # This script is based on the CVAD V3.00 doc script
 
 #Version 1.26 23-Jun-2023
-#	RANT
-#		In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections because some idiot at Citrix 
-#		made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
-#		and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
-#		data needed.
-#
-#		If that idiot ever decides to pull their head out of their @$$, I can come back and add the two sections back.
-#	END RANT
-#
+#	In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections 
+#		because the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets were not supposed to be 
+#		made public. I added them to this script 11 months ago and now Citrix removed the cmdlets.
 #	Added Computer policy
 #		Profile Management\Advanced settings\Disable defragmentation for VHD disk compaction
 #		Profile Management\Advanced settings\Enable user-level policy settings
 #		Profile Management\Advanced settings\Set priority order for user groups
 #		VDA Data Collection\Security\Clipboard place metadata collection for Security monitoring
 #	Added to Function OutputZoneSiteView:
-#		Valid Edge Servers? (No one at Citrix can tell me what a valid or invalid Edge server is or how to resolve the issue of an invalid Edge server.)
-#		Healthy? (Is the Zone healthy? No one at Citrix can tell me what a healthy Zone is or how to fix an unhealthy Zone.)
+#		Valid Edge Servers? 
+#		Healthy? (Is the Zone healthy?)
 #		Primary? (Is the Zone the Primary Zone? There can (should) only be one Primary Zone.)
+#
+#		Information from Citrix.
+#			1. What is a valid edge server?
+#
+#			"HasValidEdgeServers" is a property of Zone objects. A Zone has valid EdgeServers 
+#			if there are any EdgeServers in that Zone. NOTE: The presence of the edge server 
+#			record is dependent on the edge server data being returned from Citrix Cloud with 
+#			sufficient/correct data such as the presence of a SID value for the edge server. 
+#			Edge servers that do not have known SID values or cannot determine the AD domains 
+#			could be possibly seen as 'invalid'.
+#
+#			2. How do I fix an invalid edge server?
+#
+#			See response to #1.
+#
+#			3. What makes a zone healthy?
+#
+#			A Zone is considered healthy if any of the EdgeServers in that Zone are healthy (i.e., not in LHC outage mode).
+#
+#			4. What is an unhealthy Zone?
+#
+#			A Zone is considered unhealthy if all of the EdgeServers in that Zone are unhealthy (i.e., in LHC outage mode).
+#
+#			5. How do I fix an unhealthy Zone?
+#
+#			Once an EdgeServer comes out of LHC outage mode, the Zone's "IsHealthy" property should change to "true".
+#
+#			LHC is designed to operate automatically, without the need for admin intervention. 
+#			If a Zone's "IsHealthy" property is "false" for an extended period of time, you can check whether there are 
+#			any ongoing networking issues and/or reach out to Citrix customer support.
+#
+#		End of Information from Citrix.
+#
 #	Added two more settings configurable by Set-BrokerServiceConfigurationData
 #		Core.AssignmentPolicyMaxDesktops
 #			Type: int
@@ -37858,8 +37885,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIItUQYJKoZIhvcNAQcCoIItQjCCLT4CAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUjoHY/2cqKgScDA5wAdx7O8j9
-# cwOggiaxMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU7aSUQ+zm3oLpCST516AQkHLy
+# gSKggiaxMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -38069,33 +38096,33 @@ ProcessScriptEnd
 # AlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQg
 # VHJ1c3RlZCBHNCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTEC
 # EAW6Vi5Lenb3LWKVYisrl2YwCQYFKw4DAhoFAKBAMBkGCSqGSIb3DQEJAzEMBgor
-# BgEEAYI3AgEEMCMGCSqGSIb3DQEJBDEWBBRFvR8TUN3lMYfIpbzdP60Tas51ZTAN
-# BgkqhkiG9w0BAQEFAASCAgDwPB26qLBNUX2vWclXWL3hHVcxKzJlQ6fhV87R402u
-# 7wzhEBrBfDdYKGa1YJTQmfzYuQj4da1YubPsAaeem34ga1nyXIIBJJNM0Kr0urqO
-# oY23G1y2HzgKPCjMxXKJ9TKuXp2A5UHVnGXJHhrSf8+9Wxd0VQ25mr+UMlJXcFaS
-# cwVhGJgnNQLHubKc/KjBy1VXytKQ44/l8X37dFFSP6bEkp5JeNKiCJpZz4sUuUyO
-# /Ctmi1vKljl3uJVl6e0QNZmwVmIvgqNFXuzzC+EeZWDF/upvBSclpMx4nvZxTURi
-# L1pi2niDa7XDUa02kFFiU4shRH4oOFFujYeYMuV1DIGLkShTGJh/3YY08J2QhbMm
-# LE6lb36P66dN27sHm8A3Kk2OhVwGe6ke63spGETyFj3PEKmqV5EEdOMkgyJ5FJdI
-# 6dM7wwoT74fxo2gyG5yponAZhETRiuBbZhl+EqsUSH60wU+buMojA7zUl4oPwtfv
-# thL6y56Pg5klnopSU+S21c7xc5DMOOKUKIlLwzhbeIXhiTX5GDM7DE1FbVw2NwJy
-# EvVUmFZxTJINVEwABWL3t9V6bC3K8qzMoMJdKzdDBdGnwZaCYIkykBh3OGfFc2dk
-# +RbutVLGj99USq2nNzMb+G4Cx0EqjjdsflCZphCTnY6VqzJygHvCQlI9jxACaXzQ
-# 2qGCAyAwggMcBgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVT
+# BgEEAYI3AgEEMCMGCSqGSIb3DQEJBDEWBBRxm7xj6kii3rRTvEBkivtnyFzykzAN
+# BgkqhkiG9w0BAQEFAASCAgAOzH4YDGXhSFbkaJpC5u6KDQ6WW1Jbc6e+yIj1PBqe
+# CVKf8TxVAt30ayYLnixx846lBhMLJe3u7g+WksfspGMo8u90gUYljR2EQlRyD5In
+# HIw2koprr6shbbYR8orEN9XOvhTGJVQVaVIfhOUcckO4SiCts1RDBj2mxAJIEnGg
+# Jdo6nqAafT2Y60/LpZmRY3ALEy1MpctbDmDqQhITWU8tpM7X+ZPQDArMx+24YQyK
+# Trsy2EQcmZ9KKEB3xrq7RJri+KfZ4fBjOCc1wZ/Y0rGgND9QPumgdU8+uf1YAgqy
+# ctZAd2lj57YtGNV0OqsF4BryD11IiG0cWf3DEUxlij1+SH+3X4Jopob+6JXTndjG
+# 4Jk1Z6Th3DnI7iH+Yht4ZuMN3kbwR5dOBxTq7QSbmsc0657ga2SbDOl3poToAopf
+# DEBYFqTeweZAMAeK8/QmXC/cK3oC2MB4sbJFISwUBxgZxubrxPZSi2C0hBfkPOE5
+# 1+hJsP8g5o5XOW5jEJjPE68a7IrUf750qGa8q7Wq+Al5U3Nkq/YJ8pZI8jLLa7Oy
+# +ZQ7V+SwlW+usViyZCgo/b5MxZiYIpa/wo3LIL6Rfm8PfNgeonnkdeDqgC3aJTJY
+# NqB9z5Z4jxzRt06/jxtrG/PhFXEqlapJlZ1w3DV0lCqI0nNd6G2AIxTpOaxbo83D
+# 0qGCAyAwggMcBgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVT
 # MRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1
 # c3RlZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAxNaXJLlPo8
 # Kko9KQeAPVowDQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcN
-# AQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MjMxNjQ4MDhaMC8GCSqGSIb3DQEJBDEi
-# BCADt97eO2p7hp2NUll7WDsTteuEpQ5I35HTfSWlBIgM4zANBgkqhkiG9w0BAQEF
-# AASCAgApfTwiet44/6wwdg4NDxA4ePzgRmvdIN86S3Ux9c6CsTqGMzgPDJIRFqRh
-# EWFkuUIarcNpo/Vo2AloBOHOApQM2YPgyd/Qi4oY7GQXpoMvR7PXn3KFRJDDlc+f
-# uS1lVk7LADeskHzNcot6hDPHAmXTN1iwKJpUE4X+2xWN5FtOhPCm7ind5ilQmPaV
-# FwEiuoD6INs9BsGQj7PjUce89Gp9aMqXNqEtqw2srXIvEkL3Ua+AFIbHZRw+jKsz
-# hvQsN9jcm0fYBmhRaJeETtxFmqWpmoM8DWKljVbnXKEOWEWNBiXkBOFSBSAp7Xho
-# t++Jp6u1INXfOJ7PXEkl0h57z/DcB0Azlhplh0MuxRPbOtRlCtZBpFE2FwYVN7Ka
-# KGoAuMcT5SN+gCK3C1yIPzoLRr2k+rMv3NUn2RPpbCoH7ecw81DzDtSPNBXUocsZ
-# tV3glGq978YmmfA4MkQpMzIuUocbA5Hvo2cuAkSmMBHR5BHDg/0jIQJRL/ziDZes
-# IkSNUV5B3eGBv6DhsWT/OBuM0Fo8es41W1x60w/Ru3sJvoJm6LMSqpL8xRssB+uo
-# nySCWfHTrHsWgENX3prWmHf0NIGxCi1BjrSEI3aHt2NK5mVvulnPV+kXh9nRgR+D
-# aO8OImgJj1H9idsLJZL9zC498XXnEZdf5PB1cv5VLWdUk4pZJQ==
+# AQcBMBwGCSqGSIb3DQEJBTEPFw0yMzA2MzAxOTM1MDFaMC8GCSqGSIb3DQEJBDEi
+# BCDhPPvw5rzHdi0Md9VIdUqdWsaSU/nGMmSzAqV8NZpspDANBgkqhkiG9w0BAQEF
+# AASCAgBdFHL3d0cndSoNSXecqrDSIzDlMFAkR8zKWDppOqxmK7tmvZufIEfGpG/4
+# CLOB4w2RoEFVp+UY9tP0ExsbfokVpkxW7By5mp7TMPkfbRhaOzv0g3iX5YJwLRJ7
+# oq+ermBtnz472oJLAAu0MAfDLss7mjrciGymVeQUkXEk/MRYoHBvh7M9vimuKXcN
+# eKB66SokuMdIO8HVtqFHtuneYHXtfyguW2IIi5fx72O3Sjd3WuB5MqQed4qZG+rN
+# hxmzH5BDjKrsJiNWKdqhtdBXccT38ouI4/XWCVK/CQx6QpLQoJd0WJXoTkHQ0z55
+# 8yGwsXXg3Hq80EJWDDYYcCdHU8hd6wrQUHRBlZbw/BPuXgc2R1EgIhOe/DsVjrxb
+# bScS6Zn8MgyL7fgluky5UGDiCegSnh4UTWjeok/KOh+O7BORyqe7hodVOGSF3pdf
+# 3LVtRXRWKCRBqFdy1C+Iks6yv/wVgSloLOwX76s/CQTAgH638k265epwVtaQqfia
+# d7RTwvPUeNOncTOVL+DGXa/u9sETIGxC3Pvh05qha18bOLE+RtosogMQCd/iy93+
+# xC5UUpQq9Xld2z4epS25KyGXnWdg6OtZuavyReHewAOxezXr1REmkdQmcnmgNsGz
+# 4irnGMKlHZceSSWnxhP7He+HS8rHsfKeaN8b2TbUY9e60OcZcA==
 # SIG # End signature block
