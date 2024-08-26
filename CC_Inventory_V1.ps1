@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.26
+	VERSION: 1.27
 	AUTHOR: Carl Webster
-	LASTEDIT: June 23, 2023
+	LASTEDIT: August 26, 2024
 #>
 
 #endregion
@@ -1527,6 +1527,13 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.27
+#	No longer abort the script if the snapins or Group Policy module are not a specific version. Now, just find and display the versions used.
+#
+#	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/udated/renamed since version 2206
+#
+#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), 7.42 (2407), and 7.43 (2409)
+#
 #Version 1.26 23-Jun-2023
 #	In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections 
 #		because the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets were not supposed to be 
@@ -3006,9 +3013,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = '1.26'
+$script:MyVersion   = "'1.27 Webster's Final Update"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "06/23/2023"
+$tmpdate            = [datetime] "08/26/2024"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -17938,11 +17945,11 @@ Function ProcessCitrixPolicies
 						If($MSWord -or $PDF)
 						{
 							$FiltersWordTable += @{
-							Name = $filter.FilterName;
-							Type = $tmp;
-							Enabled = $filter.Enabled;
-							Mode = $filter.Mode;
-							Value = $filter.FilterValue;
+								Name    = $filter.FilterName;
+								Type    = $tmp;
+								Enabled = $filter.Enabled;
+								Mode    = $filter.Mode;
+								Value   = $filter.FilterValue;
 							}
 						}
 						If($Text)
@@ -17970,11 +17977,11 @@ Function ProcessCitrixPolicies
 						If($FiltersWordTable.Count -eq 0)
 						{
 							$FiltersWordTable += @{
-							Name = "None found";
-							Type = "";
-							Enabled = "";
-							Mode = "";
-							Value = "";
+								Name    = "None found";
+								Type    = "";
+								Enabled = "";
+								Mode    = "";
+								Value   = "";
 							}
 						}
 						
@@ -18042,6 +18049,7 @@ Function ProcessCitrixPolicies
 				{
 					Line 0 "Assigned to"
 					Line 1 $txt
+					Line 0 ""
 				}
 				If($HTML)
 				{
@@ -18061,6 +18069,7 @@ Function ProcessCitrixPolicies
 				{
 					Line 0 "Assigned to"
 					Line 1 $txt
+					Line 0 ""
 				}
 				If($HTML)
 				{
@@ -18515,30 +18524,6 @@ Function ProcessCitrixPolicies
 						}
 					}
 
-					Write-Verbose "$(Get-Date -Format G): `t`t`tHDX Analytics"
-					If((validStateProp $Setting EnableHDXInsight State ) -and ($Setting.EnableHDXInsight.State -ne "NotConfigured"))
-					{
-						#added in 2112
-						$txt = "HDX Analytics\HDX Insight for SD-WAN"
-						If($MSWord -or $PDF)
-						{
-							$SettingsWordTable += @{
-							Text = $txt;
-							Value = $Setting.EnableHDXInsight.State;
-							}
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$Setting.EnableHDXInsight.State,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $Setting.EnableHDXInsight.State
-						}
-					}
-
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA"
 					If((validStateProp $Setting ApplicationLaunchWaitTimeout State ) -and ($Setting.ApplicationLaunchWaitTimeout.State -ne "NotConfigured"))
 					{
@@ -18739,6 +18724,27 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DragDrop.State 
 						}
 					}
+					If((validStateProp $Setting RemoteCredentialGuard State ) -and ($Setting.RemoteCredentialGuard.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Enhanced domain passthrough for single sign on"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteCredentialGuard.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteCredentialGuard.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteCredentialGuard.State 
+						}
+					}
 					If((validStateProp $Setting AllowFidoRedirection State ) -and ($Setting.AllowFidoRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\FIDO2 Redirection"
@@ -18780,6 +18786,92 @@ Function ProcessCitrixPolicies
 						{
 							OutputPolicySetting $txt $Setting.HDXDirect.State 
 						}
+					}
+					If((validStateProp $Setting HDXDirectMode State ) -and ($Setting.HDXDirectMode.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\HDX Direct mode"
+						$tmp = ""
+						Switch ($Setting.HDXDirectMode.Value)
+						{
+							"InternalOnly"		{$tmp = "Internal only"; Break}
+							"InternalAndExternal"	{$tmp = "Internal and external"; Break}
+							Default			{$tmp = "HDX Direct mode: $($Setting.HDXDirectMode.Value)"; Break}
+						}
+						
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
+					}
+					If((validStateProp $Setting HDXDirectPortRange State ) -and ($Setting.HDXDirectPortRange.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\HDX Direct port range"
+						$array = $Setting.HDXDirectPortRange.Value.Split(',')
+						$tmp = $array[0]
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+
+						$txt = ""
+						$cnt = -1
+						ForEach($element in $array)
+						{
+							$cnt++
+							
+							If($cnt -ne 0)
+							{
+								$tmp = "$($element) "
+								If($MSWord -or $PDF)
+								{
+									$SettingsWordTable += @{
+									Text = "";
+									Value = $tmp;
+									}
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									"",$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting "`t`t`t`t`t`t" $tmp
+								}
+							}
+						}
+						$array = $Null
+						$tmp = $Null
 					}
 					If((validStateProp $Setting AllowWIARedirection State ) -and ($Setting.AllowWIARedirection.State -ne "NotConfigured"))
 					{
@@ -19012,6 +19104,28 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
+					If((validStateProp $Setting RemoteCredentialGuard State ) -and ($Setting.RemoteCredentialGuard.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Remote Credential Guard mode"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteCredentialGuard.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteCredentialGuard.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteCredentialGuard.State 
+						}
+					}
 					If((validStateProp $Setting RendezvousProtocol State ) -and ($Setting.RendezvousProtocol.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Rendezvous Protocol"
@@ -19119,6 +19233,50 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RestrictSessionClipboardWrite.State 
 						}
 					}
+					If((validStateProp $Setting AllowScannerSANERedirection State ) -and ($Setting.AllowScannerSANERedirection.State -ne "NotConfigured"))
+					{
+						#added in 2407
+						$txt = "ICA\SANE scanner redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowScannerSANERedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowScannerSANERedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowScannerSANERedirection.State 
+						}
+					}
+					If((validStateProp $Setting SecureHDX State ) -and ($Setting.SecureHDX.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Secure HDX"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.SecureHDX.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SecureHDX.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SecureHDX.State 
+						}
+					}
 					If((validStateProp $Setting SessionClipboardWriteAllowedFormats State ) -and ($Setting.SessionClipboardWriteAllowedFormats.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Session clipboard write allowed formats"
@@ -19202,6 +19360,57 @@ Function ProcessCitrixPolicies
 							}
 						}
 					}
+					If((validStateProp $Setting UsageDataCollectionThroughClient State ) -and ($Setting.UsageDataCollectionThroughClient.State -ne "NotConfigured"))
+					{
+						#added in 2402 and renamed in 2407
+						If($CVADSiteVersion.Major -eq 7 -and $CVADSiteVersion.Minor -eq 41) #cvad 2402
+						{
+							$txt = "ICA\Usage data collection through client"	#2402 text
+						}
+						Else
+						{
+							$txt = "ICA\Session metrics collection"	#renamed in 2407
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UsageDataCollectionThroughClient.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UsageDataCollectionThroughClient.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UsageDataCollectionThroughClient.State 
+						}
+					}
+					If((validStateProp $Setting VdaUpgradeProxy State ) -and ($Setting.VdaUpgradeProxy.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "ICA\VDA upgrade proxy configuration"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VdaUpgradeProxy.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VdaUpgradeProxy.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VdaUpgradeProxy.Value 
+						}
+					}
 					If((validStateProp $Setting VirtualChannelWhiteList State ) -and ($Setting.VirtualChannelWhiteList.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Virtual channel allow list" #renamed in 2103
@@ -19264,7 +19473,291 @@ Function ProcessCitrixPolicies
 							$tmp = $Null
 						}
 					}
+					If((validStateProp $Setting DynamicVirtualChannelAllowList State ) -and ($Setting.DynamicVirtualChannelAllowList.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Virtual channel allow list for DVC" #2407
+						If(validStateProp $Setting DynamicVirtualChannelAllowList Values )
+						{
+							$tmpArray = $Setting.DynamicVirtualChannelAllowList.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t      " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+					}
+					If((validStateProp $Setting VirtualChannelWhiteListLogThrottling State ) -and ($Setting.VirtualChannelWhiteListLogThrottling.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Virtual channel allow list log throttling (hours)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VirtualChannelWhiteListLogThrottling.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VirtualChannelWhiteListLogThrottling.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VirtualChannelWhiteListLogThrottling.Value 
+						}
+					}
+					If((validStateProp $Setting VirtualChannelWhiteListLogging State ) -and ($Setting.VirtualChannelWhiteListLogging.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "ICA\Virtual channel allow list logging"
+						$tmp = ""
+						Switch ($Setting.VirtualChannelWhiteListLogging.Value)
+						{
+							"LogWarningsOnly"	{$tmp = "Log Warnings Only"; Break}
+							"Disabled"		{$tmp = "Disabled"; Break}
+							"LogAllEvents"		{$tmp = "Log All Events"; Break}
+							Default			{$tmp = "Virtual channel allow list logging: $($Setting.VirtualChannelWhiteListLogging.Value)"; Break}
+						}
+						
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
+					}
+					If((validStateProp $Setting VirtualChannelPluginManager State ) -and ($Setting.VirtualChannelPluginManager.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Virtual channel plugin manager"
+						If(validStateProp $Setting VirtualChannelPluginManager Values )
+						{
+							$tmpArray = $Setting.VirtualChannelPluginManager.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t  " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Virtual channel plugin managers were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
 					
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\App Protection"
+					If((validStateProp $Setting AppProtectionPostureCheck State ) -and ($Setting.AppProtectionPostureCheck.State -ne "NotConfigured"))
+					{
+						#new in CVAD 2308
+						$txt = "ICA\App Protection\Posture check for Citrix Workspace App"
+						If(validStateProp $Setting AppProtectionPostureCheck Values )
+						{
+							$tmpArray = $Setting.AppProtectionPostureCheck.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t       " $tmp
+									}
+								}
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Posture check for Citrix Workspace App list were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Audio"
 					If((validStateProp $Setting EnableAdaptiveAudio State ) -and ($Setting.EnableAdaptiveAudio.State -ne "NotConfigured"))
 					{
@@ -19403,6 +19896,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.MicrophoneRedirection.State 
 						}
 					}
+					If((validStateProp $Setting LossTolerantAudio State ) -and ($Setting.LossTolerantAudio.State -ne "NotConfigured"))
+					{
+						#added in 2402
+						$txt = "ICA\Audio\Loss tolerant mode for audio"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.LossTolerantAudio.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.LossTolerantAudio.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.LossTolerantAudio.State 
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Auto Client Reconnect"
 					If((validStateProp $Setting AutoClientReconnect State ) -and ($Setting.AutoClientReconnect.State -ne "NotConfigured"))
@@ -19463,7 +19978,7 @@ Function ProcessCitrixPolicies
 						{
 							"DoNotLogAutoReconnectEvents"	{$tmp = "Do Not Log auto-reconnect events"; Break}
 							"LogAutoReconnectEvents"		{$tmp = "Log auto-reconnect events"; Break}
-							Default 						{$tmp = "Auto client reconnect logging could not be determined: $($Setting.AutoClientReconnectLogging.Value)"; Break}
+							Default							{$tmp = "Auto client reconnect logging could not be determined: $($Setting.AutoClientReconnectLogging.Value)"; Break}
 						}
 						If($MSWord -or $PDF)
 						{
@@ -20058,6 +20573,27 @@ Function ProcessCitrixPolicies
 						$array = $Null
 						$tmp = $Null
 					}
+					If((validStateProp $Setting BidirectionalRedirectionConfig State ) -and ($Setting.BidirectionalRedirectionConfig.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Bidirectional Content Redirection\Bidirectional content redirection configuration"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.BidirectionalRedirectionConfig.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.BidirectionalRedirectionConfig.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.BidirectionalRedirectionConfig.Value 
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Client Sensors\Location"
 					If((validStateProp $Setting AllowLocationServices State ) -and ($Setting.AllowLocationServices.State -ne "NotConfigured"))
@@ -20190,6 +20726,27 @@ Function ProcessCitrixPolicies
 					}
 			
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\End User Monitoring"
+					If((validStateProp $Setting EndpointMetricsCheckPeriod State ) -and ($Setting.EndpointMetricsCheckPeriod.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\End User Monitoring\Client statistics interval"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EndpointMetricsCheckPeriod.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EndpointMetricsCheckPeriod.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EndpointMetricsCheckPeriod.Value 
+						}	
+					}
 					If((validStateProp $Setting IcaRoundTripCalculation State ) -and ($Setting.IcaRoundTripCalculation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\End User Monitoring\ICA round trip calculation"
@@ -20623,30 +21180,6 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.SpecialFolderRedirection.State 
 						}
 					}
-					If($Script:CCSiteVersion -lt 7.37)
-					{
-						If((validStateProp $Setting AllowFileUpload State ) -and ($Setting.AllowFileUpload.State -ne "NotConfigured"))
-						{
-							$txt = "ICA\File Redirection\Upload file to desktop"
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.AllowFileUpload.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.AllowFileUpload.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.AllowFileUpload.State 
-							}
-						}
-					}
 					If((validStateProp $Setting AsynchronousWrites State ) -and ($Setting.AsynchronousWrites.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\File Redirection\Use asynchronous writes"
@@ -20689,6 +21222,27 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.AllowVisuallyLosslessCompression.State 
+						}
+					}
+					If((validStateProp $Setting AllowWindowsScreenLock State ) -and ($Setting.AllowWindowsScreenLock.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Graphics\Allow windows screen lock"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWindowsScreenLock.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWindowsScreenLock.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWindowsScreenLock.State 
 						}
 					}
 					If((validStateProp $Setting DisplayMemoryLimit State ) -and ($Setting.DisplayMemoryLimit.State -ne "NotConfigured"))
@@ -21897,17 +22451,6 @@ Function ProcessCitrixPolicies
 							$Port2Priority = ""
 							$Port3Priority = ""
 							$TmpArray      = $Tmp.Split(";")
-							<#
-							[string]$cgpport1 = $Tmp.substring(0, $Tmp.indexof(";"))
-							[string]$cgpport2 = $Tmp.substring($cgpport1.length + 1 , ($Tmp.indexof(";")+1))
-							[string]$cgpport3 = $Tmp.substring((($cgpport1.length + 1)+($cgpport2.length + 1)) , ($Tmp.indexof(";")+1))
-							[string]$cgpport1priority = $cgpport1.substring($cgpport1.length -1, 1)
-							[string]$cgpport2priority = $cgpport2.substring($cgpport2.length -1, 1)
-							[string]$cgpport3priority = $cgpport3.substring($cgpport3.length -1, 1)
-							$cgpport1 = $cgpport1.substring(0, $cgpport1.indexof(","))
-							$cgpport2 = $cgpport2.substring(0, $cgpport2.indexof(","))
-							$cgpport3 = $cgpport3.substring(0, $cgpport3.indexof(","))
-							#>
 							$TmpArray2                = $TmpArray[0].Split(",")
 							[string]$cgpport1         = $TmpArray2[0]
 							[string]$cgpport1priority = $TmpArray2[1]
@@ -22205,7 +22748,7 @@ Function ProcessCitrixPolicies
 									}
 								"CTXNSAP"	
 									{
-										$tmp = "Virtual Channel: App Flow - Stream Number: $StreamNumber"; Break
+										$tmp = "Virtual Channel: App Flow - Stream Number: $StreamNumber"; Break #removed in 2206
 									}
 								"CTXCSB"	
 									{
@@ -23270,7 +23813,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting UpcSslFips State ) -and ($Setting.UpcSslFips.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\Printing\Universal Print Server\SSL FIPS Mode"
+						$txt = "ICA\Printing\Universal Print Server\UPS FIPS Mode" #in 2311 renamed from SSL FIPS mode to UPS FIPS mode
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -23440,6 +23983,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.UpsPrintStreamInputBandwidthLimit.Value 
 						}
 					}
+					If((validStateProp $Setting UpcHttpConnectTimeout State ) -and ($Setting.UpcHttpConnectTimeout.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) connect timeout (Seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UpcHttpConnectTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UpcHttpConnectTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UpcHttpConnectTimeout.Value 
+						}
+					}
 					If((validStateProp $Setting UpsHttpPort State ) -and ($Setting.UpsHttpPort.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) port"
@@ -23459,6 +24024,50 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.UpsHttpPort.Value 
+						}
+					}
+					If((validStateProp $Setting UpcHttpReceiveTimeout State ) -and ($Setting.UpcHttpReceiveTimeout.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) receive timeout (Seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UpcHttpReceiveTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UpcHttpReceiveTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UpcHttpReceiveTimeout.Value 
+						}
+					}
+					If((validStateProp $Setting UpcHttpSendTimeout State ) -and ($Setting.UpcHttpSendTimeout.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\Printing\Universal Print Server\Universal Print Server web service (HTTP/SOAP) send timeout (Seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UpcHttpSendTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UpcHttpSendTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UpcHttpSendTimeout.Value 
 						}
 					}
 					If((validStateProp $Setting LoadBalancedPrintServers State ) -and ($Setting.LoadBalancedPrintServers.State -ne "NotConfigured"))
@@ -23565,13 +24174,13 @@ Function ProcessCitrixPolicies
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Printing\Universal Printing"
 					If((validStateProp $Setting EMFProcessingMode State ) -and ($Setting.EMFProcessingMode.State -ne "NotConfigured"))
 					{
-						$txt = "ICA\Printing\Universal Printing\Universal printing EMF Processing mode"
+						$txt = "ICA\Printing\Universal Printing\Universal printing EMF processing mode"
 						$tmp = ""
 						Switch ($Setting.EMFProcessingMode.Value)
 						{
-							"ReProcessEMFsForPrinter"	{$tmp = "ReProcess EMFs for printer"; Break}
+							"ReprocessEMFsForPrinter"	{$tmp = "Reprocess EMFs for printer"; Break}
 							"SpoolDirectlyToPrinter"	{$tmp = "Spool directly to printer"; Break}
-							Default						{$tmp = "Universal printing EMF Processing mode could not be determined: $($Setting.EMFProcessingMode.Value)"; Break}
+							Default						{$tmp = "Universal printing EMF processing mode could not be determined: $($Setting.EMFProcessingMode.Value)"; Break}
 						}
 						 
 						If($MSWord -or $PDF)
@@ -23843,6 +24452,7 @@ Function ProcessCitrixPolicies
 						}
 					}
 
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Server Limits"
 					If((validStateProp $Setting EnableServerDisconnectionTimer State ) -and ($Setting.EnableServerDisconnectionTimer.State -ne "NotConfigured"))
 					{
 						#added in CVAD 2206
@@ -24625,6 +25235,66 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\USB Devices"
+					If((validStateProp $Setting UsbConnectExistingDevices State ) -and ($Setting.UsbConnectExistingDevices.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\USB Devices\Allow existing USB devices to be automatically connected"
+						$tmp = ""
+						Switch ($Setting.UsbConnectExistingDevices.Value)
+						{
+							"Ask"		{$tmp = "Ask before redirecting USB Composite device."; Break}
+							"Never"		{$tmp = "Never automatically redirect USB Composite device."; Break}
+							"Always"	{$tmp = "Always allow redirecting USB Composite device."; Break}
+							"Default"	{$tmp = "Allow existing USB devices to be automatically connected could not be determined: $($Setting.UsbConnectExistingDevices.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+					}
+					If((validStateProp $Setting UsbConnectNewDevices State ) -and ($Setting.UsbConnectNewDevices.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\USB Devices\Allow newly arrived USB devices to be automatically connected"
+						$tmp = ""
+						Switch ($Setting.UsbConnectNewDevices.Value)
+						{
+							"Ask"		{$tmp = "Ask before redirecting USB Composite device."; Break}
+							"Never"		{$tmp = "Never automatically redirect USB Composite device."; Break}
+							"Always"	{$tmp = "Always allow redirecting USB Composite device."; Break}
+							"Default"	{$tmp = "Allow newly arrived USB devices to be automatically connected could not be determined: $($Setting.UsbConnectNewDevices.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+					}
 					If((validStateProp $Setting ClientUsbDeviceOptimizationRules State ) -and ($Setting.ClientUsbDeviceOptimizationRules.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\USB devices\Client USB device optimization rules"
@@ -24821,6 +25491,85 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.UsbPlugAndPlayRedirection.State 
+						}
+					}
+					If((validStateProp $Setting USBDeviceRulesV2 State ) -and ($Setting.USBDeviceRulesV2.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "ICA\USB devices\USB device redirection rules (Version 2)"
+						If(validStateProp $Setting USBDeviceRulesV2 Values )
+						{
+							$array = $Setting.USBDeviceRulesV2.Values
+							$tmp = $array[0]
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp 
+							}
+
+							$txt = ""
+							$cnt = -1
+							ForEach($element in $array)
+							{
+								$cnt++
+								
+								If($cnt -ne 0)
+								{
+									$tmp = "$($element) "
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
+									}
+								}
+							}
+							$array = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No USB device redirection rules (Version 2) were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp 
+							}
 						}
 					}
 
@@ -25138,7 +25887,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting CPUUsageExcludedProcessPriority State ) -and ($Setting.CPUUsageExcludedProcessPriority.State -ne "NotConfigured"))
 					{
-						$txt = "Load Management\CPU usage excluded Process priority"
+						$txt = "Load Management\CPU usage excluded process priority"
 						If($Setting.CPUUsageExcludedProcessPriority.State -eq "Enabled")
 						{
 							$tmp = ""
@@ -25146,7 +25895,7 @@ Function ProcessCitrixPolicies
 							{
 								"BelowNormalOrLow"	{$tmp = "Below Normal or Low"; Break}
 								"Low"				{$tmp = "Low"; Break}
-								Default				{$tmp = "CPU usage excluded Process priority could not be determined: $($Setting.CPUUsageExcludedProcessPriority.Value)"; Break}
+								Default				{$tmp = "CPU usage excluded process priority could not be determined: $($Setting.CPUUsageExcludedProcessPriority.Value)"; Break}
 							}
 							If($MSWord -or $PDF)
 							{
@@ -25364,6 +26113,28 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Advanced settings"
+					If((validStateProp $Setting EnableVolumeReattach State ) -and ($Setting.EnableVolumeReattach.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "Profile Management\Advanced settings\Automatically reattach VHDX disks in sessions"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableVolumeReattach.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVolumeReattach.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVolumeReattach.State
+						}
+					}
 					If((validStateProp $Setting CEIPEnabled State ) -and ($Setting.CEIPEnabled.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Advanced settings\Customer Experience Improvement Program"
@@ -25407,6 +26178,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.VhdStorePath_Part.State
 						}
 					}
+					If((validStateProp $Setting VhdContainerCapacity_Part State ) -and ($Setting.VhdContainerCapacity_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Default capacity of VHD containers (GB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdContainerCapacity_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdContainerCapacity_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdContainerCapacity_Part.Value 
+						}
+					}
 					If((validStateProp $Setting DisableDynamicConfig State ) -and ($Setting.DisableDynamicConfig.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Advanced settings\Disable automatic configuration"
@@ -25448,6 +26241,50 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.NDefrag4Compaction.State
+						}
+					}
+					If((validStateProp $Setting SyncGpoStateEnabled State ) -and ($Setting.SyncGpoStateEnabled.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "Profile Management\Advanced settings\Enable asynchronous processing for user Group Policy on logon"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.SyncGpoStateEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SyncGpoStateEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SyncGpoStateEnabled.State
+						}
+					}
+					If((validStateProp $Setting OutlookSearchRoamingConcurrentSession State ) -and ($Setting.OutlookSearchRoamingConcurrentSession.State -ne "NotConfigured"))
+					{
+						#added in CVAD 2206
+						$txt = "Profile Management\Advanced settings\Enable concurrent session support for Outlook search data roaming"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.OutlookSearchRoamingConcurrentSession.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.OutlookSearchRoamingConcurrentSession.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.OutlookSearchRoamingConcurrentSession.State
 						}
 					}
 					If((validStateProp $Setting CredBasedAccessEnabled State ) -and ($Setting.CredBasedAccessEnabled.State -ne "NotConfigured"))
@@ -25537,7 +26374,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting FreeRatio4Compaction_Part State ) -and ($Setting.FreeRatio4Compaction_Part.State -ne "NotConfigured"))
 					{
-						$txt = "Profile Management\Advanced settings\Free space ration (%)"
+						$txt = "Profile Management\Advanced settings\Free space ratio to trigger VHD disk compaction(%)"
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -25600,7 +26437,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting NLogoffs4Compaction_Part State ) -and ($Setting.NLogoffs4Compaction_Part.State -ne "NotConfigured"))
 					{
-						$txt = "Profile Management\Advanced settings\Number of logoffs"
+						$txt = "Profile Management\Advanced settings\Number of logoffs to trigger VHD disk compaction"
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -25680,6 +26517,72 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.ProcessCookieFiles.State
+						}
+					}
+					If((validStateProp $Setting VhdAutoExpansionIncrement_Part State ) -and ($Setting.VhdAutoExpansionIncrement_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Profile container auto-expansion increment (GB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdAutoExpansionIncrement_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdAutoExpansionIncrement_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdAutoExpansionIncrement_Part.Value 
+						}
+					}
+					If((validStateProp $Setting VhdAutoExpansionLimit_Part State ) -and ($Setting.VhdAutoExpansionLimit_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Profile container auto-expansion limit (GB)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdAutoExpansionLimit_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdAutoExpansionLimit_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdAutoExpansionLimit_Part.Value 
+						}
+					}
+					If((validStateProp $Setting VhdAutoExpansionThreshold_Part State ) -and ($Setting.VhdAutoExpansionThreshold_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\Profile container auto-expansion threshold (%)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.VhdAutoExpansionThreshold_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.VhdAutoExpansionThreshold_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.VhdAutoExpansionThreshold_Part.Value 
 						}
 					}
 					If((validStateProp $Setting MultiSiteReplication_Part State ) -and ($Setting.MultiSiteReplication_Part.State -ne "NotConfigured"))
@@ -25847,6 +26750,57 @@ Function ProcessCitrixPolicies
 							{
 								OutputPolicySetting $txt $tmp
 							}
+						}
+					}
+					If((validStateProp $Setting UserStoreSelection_Part State ) -and ($Setting.UserStoreSelection_Part.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Advanced settings\User store selection method"
+						$tmp = ""
+						Switch ($Setting.UserStoreSelection_Part.Value)
+						{
+							"Config"	{$tmp = "Configuration order"; Break}
+							"AccPerf"	{$tmp = "Access performance"; Break}
+							Default		{$tmp = "User store selection method could not be determined: $($Setting.UserStoreSelection_Part.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+					}
+					If((validStateProp $Setting UwpAppsRoaming State ) -and ($Setting.UwpAppsRoaming.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Advanced settings\UWP app roaming"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UwpAppsRoaming.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UwpAppsRoaming.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UwpAppsRoaming.State
 						}
 					}
 
@@ -26874,6 +27828,27 @@ Function ProcessCitrixPolicies
 							{
 								OutputPolicySetting $txt $Setting.SharedStoreFileInclusionList_Part.State
 							}
+						}
+					}
+					If((validStateProp $Setting SharedStoreProfileContainerFileSizeLimit_Part State ) -and ($Setting.SharedStoreProfileContainerFileSizeLimit_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\File deduplication\Minimum size of files to deduplicate from profile containers"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.SharedStoreProfileContainerFileSizeLimit_Part.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SharedStoreProfileContainerFileSizeLimit_Part.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SharedStoreProfileContainerFileSizeLimit_Part.Value
 						}
 					}
 
@@ -29612,6 +30587,50 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Profile container settings"
+					If((validStateProp $Setting DisableConcurrentAccessToOneDriveContainer State ) -and ($Setting.DisableConcurrentAccessToOneDriveContainer.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Profile container settings\Enable exclusive access to VHD containers - OneDrive container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToOneDriveContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToOneDriveContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToOneDriveContainer.State
+						}
+					}
+					If((validStateProp $Setting DisableConcurrentAccessToProfileContainer State ) -and ($Setting.DisableConcurrentAccessToProfileContainer.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Profile container settings\Enable exclusive access to VHD containers - Profile container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToProfileContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToProfileContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToProfileContainer.State
+						}
+					}
 					If((validStateProp $Setting ProfileContainerLocalCache State ) -and ($Setting.ProfileContainerLocalCache.State -ne "NotConfigured"))
 					{
 						$txt = "Profile Management\Profile container settings\Enable local caching for profile containers"
@@ -29631,6 +30650,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.ProfileContainerLocalCache.State
+						}
+					}
+					If((validStateProp $Setting EnableVHDAutoExtend State ) -and ($Setting.EnableVHDAutoExtend.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Profile container settings\Enable VHD auto-expansion for profile container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableVHDAutoExtend.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVHDAutoExtend.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVHDAutoExtend.State
 						}
 					}
 					If((validStateProp $Setting EnableVHDDiskCompaction State ) -and ($Setting.EnableVHDDiskCompaction.State -ne "NotConfigured"))
@@ -29861,6 +30902,282 @@ Function ProcessCitrixPolicies
 							If($Text)
 							{
 								OutputPolicySetting $txt $Setting.ProfileContainerInclusionListDir_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting PreventLoginWhenMountFailed_Part State ) -and ($Setting.PreventLoginWhenMountFailed_Part.State -ne "NotConfigured"))
+					{
+						#added in 2311
+						$txt = "Profile Management\Profile container settings\Log off users when profile container is not available during logon"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.PreventLoginWhenMountFailed_Part.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.PreventLoginWhenMountFailed_Part.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.PreventLoginWhenMountFailed_Part.State
+						}
+					}
+					If((validStateProp $Setting DisableConcurrentAccessToOneDriveContainer State ) -and ($Setting.DisableConcurrentAccessToOneDriveContainer.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Profile container settings\OneDrive container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToOneDriveContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToOneDriveContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToOneDriveContainer.State
+						}
+					}
+					If((validStateProp $Setting ProfileContainer_Part State ) -and ($Setting.ProfileContainer_Part.State -ne "NotConfigured"))
+					{
+						#added in 2308
+						$txt = "Profile Management\Profile container settings\OneDrive container - List of OneDrive folders"
+						If($Setting.ProfileContainer_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting ProfileContainer_Part Values )
+							{
+								$tmpArray = $Setting.ProfileContainer_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = $txt;
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = "";
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t  " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Exclusion list was found"
+								If($MSWord -or $PDF)
+								{
+									$WordTableRowHash = @{
+									Text = $txt;
+									Value = $tmp;
+									}
+									$SettingsWordTable += $WordTableRowHash;
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $Setting.ExclusionList_Part.State;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.ExclusionList_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.ExclusionList_Part.State
+							}
+						}
+					}
+					If((validStateProp $Setting DisableConcurrentAccessToProfileContainer State ) -and ($Setting.DisableConcurrentAccessToProfileContainer.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Profile container"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.DisableConcurrentAccessToProfileContainer.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.DisableConcurrentAccessToProfileContainer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.DisableConcurrentAccessToProfileContainer.State
+						}
+					}
+					If((validStateProp $Setting GroupsToAccessProfileContainer_Part State ) -and ($Setting.GroupsToAccessProfileContainer_Part.State -ne "NotConfigured"))
+					{
+						$txt = "Profile Management\Profile container settings\Users and groups to access profile container"
+						If($Setting.GroupsToAccessProfileContainer_Part.State -eq "Enabled")
+						{
+							If(validStateProp $Setting GroupsToAccessProfileContainer_Part Values )
+							{
+								$tmpArray = $Setting.GroupsToAccessProfileContainer_Part.Values
+								$tmp = ""
+								$cnt = 0
+								ForEach($Thing in $tmpArray)
+								{
+									$cnt++
+									$tmp = "$($Thing)"
+									If($cnt -eq 1)
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = $txt;
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											$txt,$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting $txt $tmp
+										}
+									}
+									Else
+									{
+										If($MSWord -or $PDF)
+										{
+											$WordTableRowHash = @{
+											Text = "";
+											Value = $tmp;
+											}
+											$SettingsWordTable += $WordTableRowHash;
+										}
+										If($HTML)
+										{
+											$rowdata += @(,(
+											"",$htmlbold,
+											$tmp,$htmlwhite))
+										}
+										If($Text)
+										{
+											OutputPolicySetting "`t`t`t`t`t`t`t`t`t`t     " $tmp
+										}
+									}
+								}
+								$tmpArray = $Null
+								$tmp = $Null
+							}
+							Else
+							{
+								$tmp = "No Users and groups list was found"
+								If($MSWord -or $PDF)
+								{
+									$WordTableRowHash = @{
+									Text = $txt;
+									Value = $tmp;
+									}
+									$SettingsWordTable += $WordTableRowHash;
+								}
+								If($HTML)
+								{
+									$rowdata += @(,(
+									$txt,$htmlbold,
+									$tmp,$htmlwhite))
+								}
+								If($Text)
+								{
+									OutputPolicySetting $txt $tmp
+								}
+							}
+						}
+						Else
+						{
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $Setting.GroupsToAccessProfileContainer_Part.State;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$Setting.GroupsToAccessProfileContainer_Part.State,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $Setting.GroupsToAccessProfileContainer_Part.State
 							}
 						}
 					}
@@ -30743,6 +32060,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.PSPendingLockTimeout.Value 
 						}
 					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Citrix Virtual Apps Optimization settings"
 					If((validStateProp $Setting XenAppOptimizationEnable State ) -and ($Setting.XenAppOptimizationEnable.State -ne "NotConfigured"))
 					{
@@ -30959,6 +32277,220 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tUser Personalization Layer"
+					If((validStateProp $Setting UplCustomizedUserLayerSizeInGb State ) -and ($Setting.UplCustomizedUserLayerSizeInGb.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\Customized User Layer Sizer in GB"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UplCustomizedUserLayerSizeInGb.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UplCustomizedUserLayerSizeInGb.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UplCustomizedUserLayerSizeInGb.Value
+						}
+					}
+					If((validStateProp $Setting UserLayerCompactionEnabled State ) -and ($Setting.UserLayerCompactionEnabled.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\Enable user layer compaction"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.UserLayerCompactionEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.UserLayerCompactionEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.UserLayerCompactionEnabled.State
+						}
+					}
+					If((validStateProp $Setting UplGroupsUsingCustomizedUserLayerSizeState ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\Groups using customized user layer size"
+						If((validStateProp $Setting UplGroupsUsingCustomizedUserLayerSizeState ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+						{
+							$tmpArray = $Setting.UplUserExclusions.Values
+							$array = $Null
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
+									}
+								}
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No User Layer Exclusions were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					If((validStateProp $Setting UplUserExclusions State ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+					{
+						$txt = "User Personalization Layer\User Layer Exclusions"
+						If((validStateProp $Setting UplUserExclusions State ) -and ($Setting.UplUserExclusions.State -ne "NotConfigured"))
+						{
+							$tmpArray = $Setting.UplUserExclusions.Values
+							$array = $Null
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t    " $tmp
+									}
+								}
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No User Layer Exclusions were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
 					If((validStateProp $Setting UplRepositoryPath State ) -and ($Setting.UplRepositoryPath.State -ne "NotConfigured"))
 					{
 						$txt = "User Personalization Layer\User Layer Repository Path"
@@ -31034,6 +32566,30 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.VdcPolicyEnable.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\Performance"
+					If((validStateProp $Setting EnableVdaDiagnosticsCollection State ) -and ($Setting.EnableVdaDiagnosticsCollection.State -ne "NotConfigured"))
+					{
+						$txt = "VDA Data Collection\Performance\Diagnostic data collection for performance monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableVdaDiagnosticsCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableVdaDiagnosticsCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableVdaDiagnosticsCollection.State
 						}
 					}
 
@@ -31235,7 +32791,7 @@ Function ProcessCitrixPolicies
 					}
 					If((validStateProp $Setting EnableProcessMonitoring State ) -and ($Setting.EnableProcessMonitoring.State -ne "NotConfigured"))
 					{
-						$txt = "Virtual Delivery Agent Settings\Monitoring\Enable Process monitoring"
+						$txt = "Virtual Delivery Agent Settings\Monitoring\Enable process monitoring"
 						If($MSWord -or $PDF)
 						{
 							$WordTableRowHash = @{
@@ -31649,7 +33205,7 @@ Function ProcessCitrixPolicies
 
 				If($MSWord -or $PDF)
 				{
-					If($SettingsWordTable.Count -gt 0) #don't Process if array is empty
+					If($SettingsWordTable.Count -gt 0) #don't process if array is empty
 					{
 						$Table = AddWordTable -Hashtable $SettingsWordTable `
 						-Columns  Text,Value `
@@ -36893,22 +38449,25 @@ Function ProcessScriptSetup
 		"
 		AbortScript
 	}
+	<#
+	In version 1.27, don't check the version as it will keep future DaaS Version from running the script
 	Else
 	{
-		#1.26, add snapin version check. If the snapin version is less than 7.38, end the script
+		#1.26, add snapin version check. 
+		#If the snapin version is less than 7.40, end the script
 		#code courtesy of Guy Leech
 		$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
 		
-		If([version]$Script:GPSnapinVersion -lt "7.38")
+		If([version]$Script:GPSnapinVersion -lt "7.40")
 		{
 			#1.16 added download location to error message
 			Write-Error "
 	`n`r
 	CVADS Group Policy snapin is not the correct version.
 	`n`n
-	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.38.
+	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.40.
 	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2305 or later installation media. 
+	Please install the Citrix Group Policy Management Console from the CVAD 2311 or later installation media. 
 	`n`n
 	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
 	`n`n
@@ -36932,6 +38491,15 @@ Function ProcessScriptSetup
 			Write-Host "" -ForegroundColor White
 		}
 	}
+	#>
+
+	#1.27. Let's just show the version only.
+	#code courtesy of Guy Leech
+	$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
+
+	Write-Host "" -ForegroundColor White
+	Write-Host "You are running Group Policy Snapin version $($Script:GPSnapinVersion)." -ForegroundColor White
+	Write-Host "" -ForegroundColor White
 
 	Write-Verbose "$(Get-Date -Format G): Importing required Citrix PowerShell modules"
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.ADIdentity.Commands"
@@ -36965,9 +38533,12 @@ Function ProcessScriptSetup
 		Write-Error "Unable to import the Citrix.Broker.Commands module. Script cannot continue."
 		AbortScript
 	}
+	<#
+	In version 1.27, don't check the version as it will keep future DaaS Version from running the script
 	Else
 	{
-		#1.26, add SDK version check. If the SDK version is less than 7.38, end the script
+		#1.26, add SDK version check. 
+		#If the SDK version is less than 7.38, end the script
 		#code courtesy of Guy Leech
 		$Script:SDKVersion = (((Get-Module -Name Citrix.Broker.Commands | `
 			Select-Object ImplementingAssembly) -as [string]) -split '[=,]') | `
@@ -36975,13 +38546,13 @@ Function ProcessScriptSetup
 			Sort-Object -Descending | `
 			Select-Object -first 1
 		
-		If($Script:SDKVersion -lt 7.38)
+		If($Script:SDKVersion -lt 7.40)
 		{
 			Write-Error "
 	`n`r
 	CVADS Remote Powershell SDK is not the correct version.
 	`n`n
-	Your SDK version is $Script:SDKVersion and must be at least version 7.38.
+	Your SDK version is $Script:SDKVersion and must be at least version 7.40.
 	`n`n
 	Please download the latest Remote SDK version from https://download.apps.cloud.com/CitrixPoshSdk.exe
 	`n`n
@@ -36997,6 +38568,19 @@ Function ProcessScriptSetup
 			Write-Host "" -ForegroundColor White
 		}
 	}
+	#>
+	
+	#1.27 use this instead. Let's just show the SDK version
+	#code courtesy of Guy Leech
+	$Script:SDKVersion = (((Get-Module -Name Citrix.Broker.Commands | `
+		Select-Object ImplementingAssembly) -as [string]) -split '[=,]') | `
+		Where-Object { $_ -as [version] } | `
+		Sort-Object -Descending | `
+		Select-Object -first 1
+	
+	Write-Host "" -ForegroundColor White
+	Write-Host "You are running Remote SDK version $($Script:SDKVersion)." -ForegroundColor White
+	Write-Host "" -ForegroundColor White
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Common.Commands"
 	Import-Module "Citrix.Common.Commands" 4>$Null
@@ -37309,6 +38893,15 @@ Script cannot continue
 	$tmp = $Script:CCSiteVersion
 	Switch ($tmp)
 	{
+		"7.43"	{$Script:CCSiteVersion = "2409"; Break}
+		"7.42"	{$Script:CCSiteVersion = "2407"; Break}
+		"7.41"	{$Script:CCSiteVersion = "2402"; Break}
+		"7.40"	{$Script:CCSiteVersion = "2311"; Break}
+		"7.39"	{$Script:CCSiteVersion = "2308"; Break}
+		"7.38"	{$Script:CCSiteVersion = "2305"; Break}
+		"7.37"	{$Script:CCSiteVersion = "2303"; Break}
+		"7.36"	{$Script:CCSiteVersion = "2212"; Break}
+		"7.35"	{$Script:CCSiteVersion = "2209"; Break}
 		"7.34"	{$Script:CCSiteVersion = "2206"; Break}
 		"7.33"	{$Script:CCSiteVersion = "2203"; Break}
 		"7.32"	{$Script:CCSiteVersion = "2112"; Break}

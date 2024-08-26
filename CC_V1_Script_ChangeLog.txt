@@ -6,6 +6,13 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.27
+#	No longer abort the script if the snapins or Group Policy module are not a specific version. Now, just find and display the versions used.
+#
+#	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/udated/renamed since version 2206
+#
+#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), 7.42 (2407), and 7.43 (2409)
+
 #Version 1.26 23-Jun-2023
 #	In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections 
 #		because the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets were not supposed to be 
@@ -832,7 +839,7 @@
 #				Info: 
 #				Summary: Disables automatic traversal of the trust relationships to the Citrix Broker Service controller's 
 #						 computer domain used to identify domains and forests available for performing name lookups. If 
-#						 disabled, only Domain Controllers in the controller’s domain, or Global Catalogs in the controller's 
+#						 disabled, only Domain Controllers in the controller s domain, or Global Catalogs in the controller's 
 #						 forest are used for name lookups. When disabled, machine and user names from remote forests are 
 #						 typically not available.
 #			NameCache.DisableDomainCaching
