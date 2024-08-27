@@ -1343,7 +1343,7 @@
 	NAME: CC_Inventory_V1.ps1
 	VERSION: 1.27
 	AUTHOR: Carl Webster
-	LASTEDIT: August 26, 2024
+	LASTEDIT: August 27, 2024
 #>
 
 #endregion
@@ -1528,9 +1528,44 @@ Param(
 # This script is based on the CVAD V3.00 doc script
 
 #Version 1.27
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Cost_Read
+#			Director_AlertWebhookProfile_Edit
+#			Director_EndpointMetrics_Edit
+#			Director_InfrastructureMonitor
+#			Director_IntegrationsAndDataExport
+#			Catalog_ManageWemSet
+#			DirectorAgent_Registration
+#			PolicySets_AddScope
+#			PolicySets_RemoveScope
+#			ServiceAccount_AddScope
+#			ServiceAccount_Create
+#			ServiceAccount_Delete
+#			ServiceAccount_EditProperties
+#			ServiceAccount_Read
+#			ServiceAccount_RemoveScope
+#
+#	In Function OutputLicensingOverview:
+#		Added:
+#			LicenseGraceSessionsRemaining
+#			LicensingGraceHoursLeft
+#			LicensingGracePeriodActive
+#			LicensingOutOfBoxGracePeriodActive
+#		Fixed the following to handle Null values:
+#			LicensingGraceHoursLeft
+#			LicenseGraceSessionsRemaining
+#			LicenseGraceSessionsRemaining
+#			LicensedSessionsActive
+#			PeakConcurrentLicenseUsers
+#			PeakConcurrentLicensedDevices
+#			TotalUniqueLicenseUsers
+#			LicensedSessionsActive
+#		Updated product editions
+#
 #	No longer abort the script if the snapins or Group Policy module are not a specific version. Now, just find and display the versions used.
 #
-#	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/udated/renamed since version 2206
+#	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/updated/renamed since version 2206
 #
 #	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), 7.42 (2407), and 7.43 (2409)
 #
@@ -3015,7 +3050,7 @@ $Error.Clear()
 
 $script:MyVersion   = "'1.27 Webster's Final Update"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "08/26/2024"
+$tmpdate            = [datetime] "08/27/2024"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -3309,7 +3344,7 @@ Else
 
 Write-Host "Attempting to authenticate using the profile named $Script:AuthProfileName" -ForegroundColor White
 
-Get-XDAuthentication -ProfileName $Script:AuthProfileName -EA 0 *>$Null
+Get-XDAuthentication -ProfileName $Script:AuthProfileName #-EA 0 *>$Null
 
 If($?)
 {
@@ -3317,11 +3352,11 @@ If($?)
 	Write-Host "" -ForegroundColor White
 	
 	#change the Process in 1.15
-	$Results = Get-XDCredentials -ProfileName $Script:AuthProfileName -EA 0 4>$Null
+	$CCCreds = Get-XDCredentials -ProfileName $Script:AuthProfileName #-EA 0 4>$Null
 	
-	If($? -and $Null -ne $Results)
+	If($? -and $Null -ne $CCCreds)
 	{
-		$CCCreds = $Results.Credentials
+		#$CCCreds = $Results.Credentials
 		Write-Host "Successfully retrieved the CustomerId: $($CCCreds.CustomerId)." -ForegroundColor White
 		Write-Host "" -ForegroundColor White
 	}
@@ -3331,7 +3366,7 @@ If($?)
 		Write-Host "" -ForegroundColor White
 		
 		Write-Host "Results Credentials variable: " -NoNewLinecc
-		$($Results.Credentials)
+		$($Results)
 		Write-Host "" -ForegroundColor White
 		
 		Write-Host "Exception: " -NoNewLine
@@ -8013,6 +8048,7 @@ Function OutputMachines
 				https://developer-docs.citrix.com/projects/citrix-virtual-apps-desktops-service-sdk/en/latest/MachineCreation/about_Prov_CustomProperties/
 				
 				Custom Properties For Azure
+					BackupVmConfiguration #new in 1.27
 					DedicatedHostGroupId
 					DiskEncryptionSetId
 					EnableIntuneEnroll
@@ -8058,6 +8094,13 @@ Function OutputMachines
 					
 				Custom Properties For VMware #new in 1.26
 					FolderId
+					
+				Custom Properties For Scvmm #new in 1.27
+					AzureArcRegion
+					AzureArcResourceGroup
+					AzureArcSubscriptionId
+					EnableAzureArcOnboarding
+					
 			#>
 			
 			$ProvScheme = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeID @CCParams2
@@ -8066,7 +8109,7 @@ Function OutputMachines
 			{
 				#error or nothing retrieve
 			}
-			ElseIf($? -and $Null -ne $ProvScheme)
+			ElseIf($? -and $Null -ne $ProvScheme -and $Null -ne $ProvScheme.CustomProperties) #in 1.27 ignore if CustomProperties is null
 			{
 				[xml]$XML = $ProvScheme.CustomProperties
 				
@@ -35364,6 +35407,8 @@ Function GetRolePermissions
 			"Controller_EditProperties"									{$Results.Add("Edit Controller", "Controllers")}
 			"Controllers_Remove"										{$Results.Add("Remove Delivery Controller", "Controllers")}
 
+			"Cost_Read"													{$Results.Add("Read Cost", "Cost Management")}	#added in 1.27
+
 			"Applications_AttachClientHostedApplicationToDesktopGroup"	{$Results.Add("Attach Local Access Application to Delivery Group", "Delivery Groups")}
 			"Applications_ChangeMaintenanceMode"						{$Results.Add("Enable/disable maintenance mode of an Application", "Delivery Groups")}
 			"Applications_ChangeTags"									{$Results.Add("Edit Application tags", "Delivery Groups")}
@@ -35407,6 +35452,7 @@ Function GetRolePermissions
 			"Director_AlertPolicy_Edit"									{$Results.Add("Create\Edit\Delete Alert Policies", "Director")}
 			"Director_AlertPolicy_Read"									{$Results.Add("View Alert Policies", "Director")}
 			"Director_Alerts_Read"										{$Results.Add("View Alerts", "Director")}
+			"Director_AlertWebhookProfile_Edit"							{$Results.Add("(2)", "Director")} #added in 1.27
 			"Director_ApplicationDashboard"								{$Results.Add("View Applications page", "Director")}
 			"Director_ClientDetails_Read"								{$Results.Add("View Client Details page", "Director")}
 			"Director_ClientHelpDesk_Read"								{$Results.Add("View Client Activity Manager page", "Director")}
@@ -35417,6 +35463,7 @@ Function GetRolePermissions
 			"Director_DiskMetrics_Edit"									{$Results.Add("Edit Disk metrics related Broker machine command properties", "Director")}
 			"Director_DismissAlerts"									{$Results.Add("Dismiss Alerts", "Director")}
 			"Director_EmailserverConfiguration_Edit"					{$Results.Add("Create\Edit\Remove Alert Email Server Configuration", "Director")}
+			"Director_EndpointMetrics_Edit"								{$Results.Add("Edit Endpoint Metrics related Broker machine command properties", "Director")} #added in 1.27
 			"Director_Filters_ApplicationInstances"						{$Results.Add("View Filters page Application Instances only", "Director")}
 			"Director_Filters_Connections"								{$Results.Add("View Filters page Connections only", "Director")}
 			"Director_Filters_Machines"									{$Results.Add("View Filters page Machines only", "Director")}
@@ -35426,6 +35473,8 @@ Function GetRolePermissions
 			"Director_HDXInformation_Edit"								{$Results.Add("Edit HDX related Broker machine command properties", "Director")}
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
+			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
+			"Director_IntegrationsAndDataExport"						{$Results.Add("View Integrations and Data exports page", "Director")} #added in 1.27
 			"Director_KillApplication"									{$Results.Add("Perform Kill Application running on a machine", "Director")}
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
 			"Director_KillProcess"										{$Results.Add("Perform Kill Process running on a machine", "Director")}
@@ -35495,6 +35544,7 @@ Function GetRolePermissions
 			"Catalog_EditProperties"									{$Results.Add("Edit Machine Catalog Properties", "Machine Catalogs")}
 			"Catalog_Manage_ChangeTags"									{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
 			"Catalog_ManageAccounts"									{$Results.Add("Manage Active Directory Accounts", "Machine Catalogs")}
+			"Catalog_ManageWemSet"										{$Results.Add("Manage Catalog Configuration Set", "Machine Catalogs")} #added in 1.27
 			"Catalog_MoveFolder"										{$Results.Add("Move Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_PowerOperations_RDS"								{$Results.Add("Perform power operations on Windows Server machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_PowerOperations_VDI"								{$Results.Add("Perform power operations on Windows Desktop machines via Machine Catalog membership", "Machine Catalogs")}
@@ -35513,6 +35563,7 @@ Function GetRolePermissions
 			"Configuration_Restricted_Write"							{$Results.Add("Customer Update Site Configuration", "Other permissions")}
 			"Configuration_Unrestricted_Write"							{$Results.Add("Update Site Configuration", "Other permissions")}
 			"Database_Read"												{$Results.Add("Read database status information", "Other permissions")}
+			"DirectorAgent_Registration"								{$Results.Add("(1)", "Other permissions")}	#added in 1.27
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
@@ -35529,9 +35580,9 @@ Function GetRolePermissions
 
 			"Policies_Manage"											{$Results.Add("Manage Policies", "Policies")}
 			"Policies_Read"												{$Results.Add("View Policies", "Policies")}
+			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policies")} #added in 1.27
+			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policies")} #added in 1.27
 
-			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policy Sets")} #new in 2212
-			"PolicySets_Manage"											{$Results.Add("Manage Policy Sets", "Policy Sets")} #new in 2212
 			"PolicySets_Read"											{$Results.Add("View Policy Sets", "Policy Sets")} #new in 2212
 			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policy Sets")} #new in 2212
 
@@ -35539,6 +35590,13 @@ Function GetRolePermissions
 			"SecureBrowser_Read"										{$Results.Add("Read SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
 			"SecureBrowser_RemoveConfiguration"							{$Results.Add("Delete SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
 			"SecureBrowser_SetConfiguration"							{$Results.Add("Set SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
+
+			"ServiceAccount_AddScope"									{$Results.Add("Add Service Account to Scope", "Service Accounts")} #added in 1.27
+			"ServiceAccount_Create"										{$Results.Add("Create Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_Delete"										{$Results.Add("Delete Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_EditProperties"								{$Results.Add("Edit Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_Read"										{$Results.Add("Read Service Account", "Service Accounts")} #added in 1.27
+			"ServiceAccount_RemoveScope"								{$Results.Add("Remove Service Account from Scope", "Service Accounts")} #added in 1.27
 
 			"Setting_Edit"												{$Results.Add("Edit Settings", "Settings")} #new in 2212
 			"Setting_Read"												{$Results.Add("View Settings", "Settings")} #new in 2212
@@ -37165,13 +37223,12 @@ Function OutputLicensingOverview
 			Code  Name
 			----  ----
 			CVADS Citrix virtual apps and desktops service
-			XDT   XenDesktop
 			VADS  Virtual apps and desktops service
 			VAS   Virtual apps service
 			VDS   Virtual desktops service
+
 		#>
 		"CVADS"	{$LicensedProduct = "Citrix DaaS"; Break}
-		"XDT"	{$LicensedProduct = "XenDesktop"; Break}
 		"VADS"	{$LicensedProduct = "Citrix DaaS"; Break}
 		"VAS"	{$LicensedProduct = "Citrix DaaS"; Break}
 		"VDS"	{$LicensedProduct = "Citrix DaaS"; Break}
@@ -37194,7 +37251,7 @@ Function OutputLicensingOverview
 			MultitenantCustomer
 			XAOnly
 			XDOnly
-		#>
+					#>
 		Switch ($Script:CCSite2.ProductEdition)
 		{
 			"AzureVdi"				{$LicenseEditionType = "Azure VDI"; Break}
@@ -37208,45 +37265,20 @@ Function OutputLicensingOverview
 			Default					{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
 		}
 	}
-	ELseIf($Script:CCSite2.ProductCode -eq "XDT")
+	ElseIf($Script:CCSite2.ProductCode -eq "VADS")
 	{
 		<#
 			PS C:\webster> Get-ConfigProductEdition
 
 			cmdlet Get-ConfigProductEdition at command pipeline position 1
 			Supply values for the following parameters:
-			ProductCode: XDT
-			PLT
-			ENT
-			APP
-			ADV
-			STD
-			BAS
-		#>
-		Switch ($Script:CCSite2.ProductEdition)
-		{
-			"ADV" 	{$LicenseEditionType = "Advanced Edition"; Break}
-			"APP" 	{$LicenseEditionType = "App Edition"; Break}
-			"BAS" 	{$LicenseEditionType = "Basic Edition"; Break}
-			"ENT" 	{$LicenseEditionType = "Enterprise Edition"; Break}
-			"PLT" 	{$LicenseEditionType = "Premium Edition"; Break}
-			"STD" 	{$LicenseEditionType = "VDI Edition"; Break}
-			Default {$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
-		}
-	}
-	ElseIf($Script:CCSite2.ProductCode -eq "VADS")
-	{
-		<#
-		PS C:\webster> Get-ConfigProductEdition
-
-		cmdlet Get-ConfigProductEdition at command pipeline position 1
-		Supply values for the following parameters:
-		ProductCode: VADS
+			ProductCode: VADS
 			Advanced
 			Premium
 			StandardForAzure
 			PremiumForGCP
 			StandardForGCP
+			StandardForAws
 		#>
 		Switch ($Script:CCSite2.ProductEdition)
 		{
@@ -37255,6 +37287,7 @@ Function OutputLicensingOverview
 			"StandardForAzure" 	{$LicenseEditionType = "Citrix DaaS Standard for Azure"; Break}
 			"PremiumForGCP" 	{$LicenseEditionType = "Citrix DaaS Premium for Google Cloud"; Break}
 			"StandardForGCP" 	{$LicenseEditionType = "Citrix DaaS Standard for Google Cloud"; Break}
+			"StandardForAws" 	{$LicenseEditionType = "Citrix DaaS Standard for AWS"; Break}
 			Default		{$LicenseEditionType = "License edition could not be determined: $($Script:CCSite2.ProductEdition)"; Break}
 		}
 	}
@@ -37304,6 +37337,98 @@ Function OutputLicensingOverview
 		$LicenseModelType = $Script:CCSite1.LicenseModel.ToString()
 	}
 	$tmpdate = '{0:yyyy\.MMdd}' -f $Script:CCSite1.LicensingBurnInDate
+
+	#added in 1.27
+	If($null -eq $Script:CCSite1.LicensingGracePeriodActive)
+	{
+		$LicensingGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingGracePeriodActive = $Script:CCSite1.LicensingGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensingOutOfBoxGracePeriodActive)
+	{
+		$LicensingOutOfBoxGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingOutOfBoxGracePeriodActive = $Script:CCSite1.LicensingOutOfBoxGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensingGraceHoursLeft)
+	{
+		$LicensingGraceHoursLeft = ""
+	}
+	Else
+	{
+		$LicensingGraceHoursLeft = $Script:CCSite1.LicensingGraceHoursLeft.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicenseGraceSessionsRemaining)
+	{
+		$LicenseGraceSessionsRemaining = ""
+	}
+	Else
+	{
+		$LicenseGraceSessionsRemaining = $Script:CCSite1.LicenseGraceSessionsRemaining.ToString()
+	}
+	
+	#in 1.27 fixed the following to handle null values
+	If($null -eq $Script:CCSite1.LicensingGracePeriodActive)
+	{
+		$LicensingGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingGracePeriodActive = $Script:CVADSite1.LicensingGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensingOutOfBoxGracePeriodActive)
+	{
+		$LicensingOutOfBoxGracePeriodActive = ""
+	}
+	Else
+	{
+		$LicensingOutOfBoxGracePeriodActive = $Script:CVADSite1.LicensingOutOfBoxGracePeriodActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensedSessionsActive)
+	{
+		$LicensedSessionsActive = ""
+	}
+	Else
+	{
+		$LicensedSessionsActive = $Script:CCSite1.LicensedSessionsActive.ToString()
+	}
+	If($null -eq $Script:CCSite1.PeakConcurrentLicenseUsers)
+	{
+		$PeakConcurrentLicenseUsers = ""
+	}
+	Else
+	{
+		$PeakConcurrentLicenseUsers = $Script:CCSite1.PeakConcurrentLicenseUsers.ToString()
+	}
+	If($null -eq $Script:CCSite1.PeakConcurrentLicensedDevices)
+	{
+		$PeakConcurrentLicensedDevices = ""
+	}
+	Else
+	{
+		$PeakConcurrentLicensedDevices = $Script:CCSite1.PeakConcurrentLicensedDevices.ToString()
+	}
+	If($null -eq $Script:CCSite1.TotalUniqueLicenseUsers)
+	{
+		$TotalUniqueLicenseUsers = ""
+	}
+	Else
+	{
+		$TotalUniqueLicenseUsers = $Script:CCSite1.TotalUniqueLicenseUsers.ToString()
+	}
+	If($null -eq $Script:CCSite1.LicensedSessionsActive)
+	{
+		$LicensedSessionsActive = ""
+	}
+	Else
+	{
+		$LicensedSessionsActive = $Script:CCSite1.LicensedSessionsActive.ToString()
+	}
 	
 	If($MSWord -or $PDF)
 	{
@@ -37316,10 +37441,15 @@ Function OutputLicensingOverview
 		$ScriptInformation.Add(@{Data = "Edition"; Value = $LicenseEditionType; }) > $Null
 		$ScriptInformation.Add(@{Data = "License model"; Value = $LicenseModelType; }) > $Null
 		$ScriptInformation.Add(@{Data = "Required SA date"; Value = $tmpdate; }) > $Null
-		$ScriptInformation.Add(@{Data = "Licensed sessions active"; Value = $Script:CCSite1.LicensedSessionsActive.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Peak Licensed CCU"; Value = $Script:CCSite1.PeakConcurrentLicenseUsers.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Peak Licensed CCD"; Value = $Script:CCSite1.PeakConcurrentLicensedDevices.ToString(); }) > $Null
-		$ScriptInformation.Add(@{Data = "Total unique licensed users"; Value = $Script:CCSite1.TotalUniqueLicenseUsers.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensed sessions active"; Value = $LicensedSessionsActive; }) > $Null
+		$ScriptInformation.Add(@{Data = "Peak Licensed CCU"; Value = $PeakConcurrentLicenseUsers; }) > $Null
+		$ScriptInformation.Add(@{Data = "Peak Licensed CCD"; Value = $PeakConcurrentLicensedDevices; }) > $Null
+		$ScriptInformation.Add(@{Data = "Total unique licensed users"; Value = $TotalUniqueLicenseUsers; }) > $Null
+		$ScriptInformation.Add(@{Data = ""; Value = ""; }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensing Grace Period Active"; Value = $LicensingGracePeriodActive; }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensing out of Box Grace Period Active"; Value = $LicensingOutOfBoxGracePeriodActive; }) > $Null
+		$ScriptInformation.Add(@{Data = "Licensing Grace Hours Left"; Value = $LicensingGraceHoursLeft; }) > $Null
+		$ScriptInformation.Add(@{Data = "License Grace Sessions Remaining"; Value = $LicenseGraceSessionsRemaining; }) > $Null
 		
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
@@ -37346,10 +37476,15 @@ Function OutputLicensingOverview
 		Line 0 "Edition`t`t`t`t: " $LicenseEditionType
 		Line 0 "License model`t`t`t: " $LicenseModelType
 		Line 0 "Required SA date`t`t: " $tmpdate
-		Line 0 "Licensed sessons active`t`t: " $Script:CCSite1.LicensedSessionsActive.ToString()
-		Line 0 "Peak Licensed CCU`t`t: " $Script:CCSite1.PeakConcurrentLicenseUsers.ToString()
-		Line 0 "Peak Licensed CCD`t`t: " $Script:CCSite1.PeakConcurrentLicensedDevices.ToString()
-		Line 0 "Total unique licensed users`t: " $Script:CCSite1.TotalUniqueLicenseUsers.ToString()
+		Line 0 "Licensed sessons active`t`t: " $LicensedSessionsActive
+		Line 0 "Peak Licensed CCU`t`t: " $PeakConcurrentLicenseUsers
+		Line 0 "Peak Licensed CCD`t`t: " $PeakConcurrentLicensedDevices
+		Line 0 "Total unique licensed users`t: " $TotalUniqueLicenseUsers
+		Line 0 ""
+		Line 0 "Licensing Grace Period Active`t`t: " $LicensingGracePeriodActive
+		Line 0 "Licensing out of Box Grace Period Active: " $LicensingOutOfBoxGracePeriodActive
+		Line 0 "Licensing Grace Hours Left`t`t: " $LicensingGraceHoursLeft
+		Line 0 "License Grace Sessions Remaining`t: " $LicenseGraceSessionsRemaining
 		Line 0 ""
 	}
 	If($HTML)
@@ -37361,10 +37496,15 @@ Function OutputLicensingOverview
 		$rowdata += @(,('Edition',($global:htmlsb),$LicenseEditionType,$htmlwhite))
 		$rowdata += @(,('License model',($global:htmlsb),$LicenseModelType,$htmlwhite))
 		$rowdata += @(,('Required SA date',($global:htmlsb),$tmpdate,$htmlwhite))
-		$rowdata += @(,('Licensed sessons active',($global:htmlsb),$Script:CCSite1.LicensedSessionsActive.ToString(),$htmlwhite))
-		$rowdata += @(,("Peak Licensed CCU",($global:htmlsb),$Script:CCSite1.PeakConcurrentLicenseUsers.ToString(),$htmlwhite))
-		$rowdata += @(,("Peak Licensed CCD",($global:htmlsb),$Script:CCSite1.PeakConcurrentLicensedDevices.ToString(),$htmlwhite))
-		$rowdata += @(,("Total unique licensed users",($global:htmlsb),$Script:CCSite1.TotalUniqueLicenseUsers.ToString(),$htmlwhite))
+		$rowdata += @(,('Licensed sessons active',($global:htmlsb),$LicensedSessionsActive,$htmlwhite))
+		$rowdata += @(,("Peak Licensed CCU",($global:htmlsb),$PeakConcurrentLicenseUsers,$htmlwhite))
+		$rowdata += @(,("Peak Licensed CCD",($global:htmlsb),$PeakConcurrentLicensedDevices,$htmlwhite))
+		$rowdata += @(,("Total unique licensed users",($global:htmlsb),$TotalUniqueLicenseUsers,$htmlwhite))
+		$rowdata += @(,('',($global:htmlsb),"",$htmlwhite))
+		$rowdata += @(,('Licensing Grace Period Active',($global:htmlsb),$LicensingGracePeriodActive,$htmlwhite))
+		$rowdata += @(,('Licensing out of Box Grace Period Active',($global:htmlsb),$LicensingOutOfBoxGracePeriodActive,$htmlwhite))
+		$rowdata += @(,('Licensing Grace Hours Left',($global:htmlsb),$LicensingGraceHoursLeft,$htmlwhite))
+		$rowdata += @(,('License Grace Sessions Remaining',($global:htmlsb),$LicenseGraceSessionsRemaining,$htmlwhite))
 
 		$msg = ""
 		$columnWidths = @("150","200")
@@ -38424,74 +38564,12 @@ Function ProcessScriptSetup
 	} 
 
 	Write-Verbose "$(Get-Date -Format G): Loading Citrix.Common.GroupPolicy PSSnapin"
-	If(!(Check-NeededPSSnapins "Citrix.Common.GroupPolicy"))
+	Add-PSSnapin "Citrix.Common.GroupPolicy"
+	If(!$?)
 	{
-		#We're missing Citrix Snapins that we need
-		$ErrorActionPreference = $SaveEAPreference
-		Write-Error "
-	`n`n
-	Missing Citrix PowerShell Snap-ins Detected. 
-	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2305 or later installation media. 
-	`n`n
-	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
-	`n`n
-	x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
-	`n`n
-	Or from https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html
-	`n`n
-	Look for the section: Group Policy YYMM
-	`n`n
-	Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
-	`n`n
-	Script will abort.
-	`n
-		"
+		Write-Error "Unable to add the Citrix.Common.GroupPolicy snapin. Script cannot continue."
 		AbortScript
 	}
-	<#
-	In version 1.27, don't check the version as it will keep future DaaS Version from running the script
-	Else
-	{
-		#1.26, add snapin version check. 
-		#If the snapin version is less than 7.40, end the script
-		#code courtesy of Guy Leech
-		$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
-		
-		If([version]$Script:GPSnapinVersion -lt "7.40")
-		{
-			#1.16 added download location to error message
-			Write-Error "
-	`n`r
-	CVADS Group Policy snapin is not the correct version.
-	`n`n
-	Your Group Policy Snapin version is $Script:GPSnapinVersion and must be at least version 7.40.
-	`n`n
-	Please install the Citrix Group Policy Management Console from the CVAD 2311 or later installation media. 
-	`n`n
-	Note: This is required by the StoreFront and Citrix Policy cmdlets and functions.
-	`n`n
-	x:\x64\Citrix Policy\CitrixGroupPolicyManagement_x64.msi
-	`n`n
-	Or from https://www.citrix.com/downloads/citrix-cloud/product-software/xenapp-and-xendesktop-service.html
-	`n`n
-	Look for the section: Group Policy YYMM
-	`n`n
-	Installing this console installs the required Citrix.Common.GroupPolicy PowerShell snapin.
-	`n`n
-	Script will abort.
-	`n
-		"
-			AbortScript
-		}
-		Else
-		{
-			Write-Host "" -ForegroundColor White
-			Write-Host "You are running Group Policy Snapin version $($Script:GPSnapinVersion)." -ForegroundColor White
-			Write-Host "" -ForegroundColor White
-		}
-	}
-	#>
 
 	#1.27. Let's just show the version only.
 	#code courtesy of Guy Leech
