@@ -1343,7 +1343,7 @@
 	NAME: CC_Inventory_V1.ps1
 	VERSION: 1.27
 	AUTHOR: Carl Webster
-	LASTEDIT: August 27, 2024
+	LASTEDIT: October 7, 2024
 #>
 
 #endregion
@@ -1527,7 +1527,186 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
-#Version 1.27
+#Version 1.27 7-Oct-2024 Webster's Final Update
+#
+########################################################################################################################################
+#	KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES  #
+#                                                                                                                                      #
+#	Citrix broke the processing of policies, Site and Active directory, and other stuff with version 7.42 of the PowerShell SDK and    #
+#	Group Policy stuff.                                                                                                                #
+#                                                                                                                                      #
+#	I PERSONALLY WOULD NOT USE THE POWERSHELL SDK 7.42 (Sep4, 2024) OR GROUP POLICY 2407                                               #
+#                                                                                                                                      #
+#	VERBOSE: 10/7/2024 5:39:32 PM: Testing required PowerShell modules for Citrix Cloud                                                #
+#	VERBOSE: Cannot verify the Microsoft .NET Framework version 4.7.2 because it is not included in the list of permitted versions.    #
+#	VERBOSE: Loading module from path                                                                                                  #
+#			 'C:\Program Files\Citrix\CloudPowerShellModules\Citrix.PoshSdkProxy.Commands\Citrix.PoshSdkProxy.Commands.psm1'.          #
+#	VERBOSE: 10/7/2024 5:39:32 PM: Loading Citrix.Common.GroupPolicy PSSnapin                                                          #
+#	                                                                                                                                   #
+#	VERBOSE: 10/7/2024 5:39:32 PM: 	Citrix.Broker.Commands                                                                             #
+#                                                                                                                                      #
+#	You are running Remote SDK version . [Webster: Unable to now get the SDK version data]                                             #
+#                                                                                                                                      #
+#	You are running Group Policy Snapin version 7.42.100.66.                                                                           #
+#                                                                                                                                      #
+#	VERBOSE: 10/7/2024 5:39:34 PM: 	Does LocalSiteGPO PSDrive already exist?                                                           #
+#	VERBOSE: 10/7/2024 5:39:34 PM: 		Creating LocalSiteGPO PSDrive for Studio-based policies                                        #
+#	PS>TerminatingError(New-PSDrive): "A parameter cannot be found that matches parameter name 'controller'.                           #
+#	This failure might be caused by applying the default parameter binding. You can disable the default parameter binding in           #
+#	$PSDefaultParameterValues by setting $PSDefaultParameterValues["Disabled"] to be $true, and retry.                                 #
+#	The following default parameter was successfully bound for this cmdlet when the error occurred: -Verbose"                          #
+#                                                                                                                                      #
+#	*******************************************************************************************                                        #
+#	LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.                                        #
+#	*******************************************************************************************                                        #
+#                                                                                                                                      #
+#	KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES  #
+########################################################################################################################################
+#
+#	Added more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.AlternateSkipAlgorithmThreshold
+#			Type: int
+#			Default: 10
+#			Info: Minimum=0
+#			Summary: When using the -Skip parameter with various Broker SDK Get- cmdlets, this is the skip value above which 
+#					 an alternative optimized algorithm is used for fetching values from the database. 
+#
+#		Core.AutoTagRuleIdleIntervalsTimeSecs
+#			Type: int
+#			Default: 7200
+#			Info: Seconds Minimum=60
+#			Summary: Time interval that Auto Tag Rule site service will run auto tagging process when the site is idle. 
+#
+#		Core.MachineUnusedTokenExpiryHours
+#			Type: int
+#			Default: 48
+#			Info: Hours
+#			Summary: The time period for which the Machine Unused Token is valid. 
+#
+#		Core.MachineUnusedTokenMaxDelaySecs
+#			Type: int
+#			Default: 300
+#			Info: Seconds
+#			Summary: Maximum period between a VDA being powered-on and it registering for it to be trusted as being clean 
+#					 (previously unused) once registered. 
+#
+#		Core.MaxConsecutiveFailedRegistrationsBeforeSinBin
+#			Type: int
+#			Default: 2
+#			Info: Minimum=1
+#			Summary: Maximum times a worker can fail registration continuously before being put into the registration sinbin.
+#
+#		Core.RegistrationSinbinPeriodSecs
+#			Type: int
+#			Default: 180
+#			Info: Seconds, Minimum=60, Maximum=300
+#			Summary: Maximum time a worker is put into sin bin when a registration failure occurs multiple times 
+#				 for a worker within a timeframe.
+#
+#		Core.ScrambleLicensingData
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When enabled, scrambles personally identifiable information (PII) in licensing events.
+#
+#		Core.SetSiteDataWhenIdlePeriodSecs
+#			Type: int
+#			Default: 3600
+#			Info: Seconds Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data when the site is idle. 
+#
+#		Core.UserDrivenSuspendTimeoutMs
+#			Type: int
+#			Default: 15000
+#			Info: Milliseconds, Minimum=0
+#			Summary: How long to allow for a user-driven suspend action to complete (success or fail).
+#
+#		DBConnectionSettings.SqlLogin
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL login for use with SQL authenticated connections to the database.
+#
+#		DBConnectionSettings.SqlPassword
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL password for use with SQL authenticated connections to the database.
+#
+#		HostingManagementSettings.MaxConcurrentScheduleOverrideQueries
+#			Type: int
+#			Default: 5
+#			Info: Minimum=1, Maximum=30
+#			Summary: The maximum number of schedule override queries to autoscale plugins that are allowed to run concurrently. 
+#					 If there are more plugins to be queried at any given time than this limit allows, the additional queries are 
+#					 queued and start as soon as earlier ones complete.
+#
+#					 This limit exists to restrict the number of threads required to obtain all required schedule overrides. The number 
+#					 of threads used is typically double the number of concurrent schedule override queries.
+#
+#					 This setting requires the Broker services to be restarted before a new value takes effect.
+#
+#		HostingManagementSettings.NoPowerActionsPeriodBeforeSlowPollSecs
+#			Type: int
+#			Default: 100
+#			Info: Seconds Minimum=30, Maximum=300
+#			Summary: This value determines how long the service will wait before delaying calls to the database when there been no power 
+#					 actions found.
+#
+#		HostingManagementSettings.NoPowerActionsSlowPollIntervalSecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds Minimum=5, Maximum=30
+#			Summary: The interval between calls to the database when there have been no power actions.
+#
+#		HostingManagementSettings.NoWorkersPeriodBeforeSlowPollSecs
+#			Type: int
+#			Default: 100
+#			Info: Seconds Minimum=30, Maximum=300
+#			Summary: This value determines how long the service will wait before delaying calls to the database when there been no machines found.
+#
+#		HostingManagementSettings.NoWorkersSlowPollIntervalSecs
+#			Type: int
+#			Default: 60
+#			Info: Seconds Minimum=5, Maximum=120
+#			Summary: The interval between calls to the database when there have been no machines found.
+#
+#		HostingManagementSettings.ScheduleOverrideGenerationHour
+#			Type: int
+#			Default: 22
+#			Info: Minimum=1, Maximum=23
+#			Summary: The hour of the day when autoscale schedule overrides are generated for the following day. The hour is a 24-hour clock integer 
+#					 value and is evaluated in the time zone of the desktop group to which the generation relates.
+#
+#		HostingManagementSettings.ScheduleOverrideQueryTimeoutSecs
+#			Type: int
+#			Default: 60
+#			Info: Seconds Minimum=10, Maximum=120
+#			Summary: The maximum number of seconds for which a single schedule override query to an autoscale plugin is allowed to run before being 
+#					 timed-out and cancelled. A cancelled query is treated as though the plugin returned no schedule override, thus the next plugin 
+#					 in the sequence for the desktop group (if any) is then queried for a schedule override.
+#
+#		LhcState.IsElectedLastUpdatedAt
+#			Type: DateTIme
+#			Default: 0
+#			Info: 
+#			Summary: Indicates when this connector was elected leader.
+#
+#		LhcState.LeaderInHAModeLastUpdatedAt
+#			Type: DateTime
+#			Default: 0
+#			Info: 
+#			Summary: Indicates when this connector became leader.
+#
+#		MachineCommandQueuesSettings.MachineCommandForPingSuppressionSecs
+#			Type: Int
+#			Default: 30
+#			Info: Seconds Minimum=0, Maximum=120
+#			Summary: Period during which checks for pending machine commands to send in Ping responses are suppressed when no such pending commands 
+#					 are currently queued. This setting reduces database load at the potential cost of slight delays in sending commands.
+#
+#					 This setting only impacts commands sent using New-BrokerMachineCommand with a SendTrigger of NextContact.
+#
 #	In Function GetRolePermissions:
 #		Added new permissions
 #			Cost_Read
@@ -1563,11 +1742,15 @@ Param(
 #			LicensedSessionsActive
 #		Updated product editions
 #
+#	In Machine Details, for MCS catalogs:
+#		If the Provisioning Scheme doesn't exist, set the variables to "Unable to retrieve details because no ProvisioningSchemeUid"
+#		If no machine data is found, set the VDA and operating system variables to "Unable to retrieve details - no machine data"
+#
 #	No longer abort the script if the snapins or Group Policy module are not a specific version. Now, just find and display the versions used.
 #
 #	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/updated/renamed since version 2206
 #
-#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), 7.42 (2407), and 7.43 (2409)
+#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), and 7.42 (2407)
 #
 #Version 1.26 23-Jun-2023
 #	In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections 
@@ -3050,7 +3233,7 @@ $Error.Clear()
 
 $script:MyVersion   = "'1.27 Webster's Final Update"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "08/27/2024"
+$tmpdate            = [datetime] "10/07/2024"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -7268,24 +7451,24 @@ Function OutputMachines
 				}
 				Else
 				{
-					$CleanOnBoot                 = "Unable to retrieve details"
-					$CPUCount                    = "Unable to retrieve details"
-					$DedicatedTenancy            = "Unable to retrieve details"
-					$DiskSize                    = "Unable to retrieve details"
-					$HostingUnitName             = "Unable to retrieve details"
-					$IdentityPoolName            = "Unable to retrieve details"
-					$InstalledVDAVersion         = "Unable to retrieve details"
-					$MasterVM                    = "Unable to retrieve details"
-					$MasterImageVMDate           = "Unable to retrieve details"
-					$MemoryMB                    = "Unable to retrieve details"
-					$OperatingSystem             = "Unable to retrieve details"
-					$PreparedImageDefinitionName = "Unable to retrieve details"
-					$PreparedImageVersionNumber  = "Unable to retrieve details"
-					$ResetAdministratorPasswords = "Unable to retrieve details"
+					$CleanOnBoot                 = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$CPUCount                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$DedicatedTenancy            = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$DiskSize                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$HostingUnitName             = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$IdentityPoolName            = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$InstalledVDAVersion         = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MasterVM                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MasterImageVMDate           = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MemoryMB                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$OperatingSystem             = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$PreparedImageDefinitionName = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$PreparedImageVersionNumber  = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$ResetAdministratorPasswords = "Unable to retrieve details because no ProvisioningSchemeUid"
 					$TempDiskCacheSize           = $Null
 					$TempMemoryCacheSize         = $Null
-					$WindowsActivationType       = "Unable to retrieve details"
-					$xDiskImage                  = "Unable to retrieve details"
+					$WindowsActivationType       = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$xDiskImage                  = "Unable to retrieve details because no ProvisioningSchemeUid"
 					Remove-Variable TempDiskCacheSize
 					Remove-Variable TempMemoryCacheSize
 				}
@@ -7310,31 +7493,31 @@ Function OutputMachines
 			}
 			Else
 			{
-				$InstalledVDAVersion = "Unable to retrieve details"
-				$OperatingSystem     = "Unable to retrieve details"
+				$InstalledVDAVersion = "Unable to retrieve details - no machine data"
+				$OperatingSystem     = "Unable to retrieve details - no machine data"
 			}
 		}
 		Else
 		{
-			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.CatalogName)" -ForegroundColor White
-			$CleanOnBoot                 = "Unable to retrieve details"
-			$CPUCount                    = "Unable to retrieve details"
-			$DedicatedTenancy            = "Unable to retrieve details"
-			$DiskSize                    = "Unable to retrieve details"
-			$HostingUnitName             = "Unable to retrieve details"
-			$IdentityPoolName            = "Unable to retrieve details"
-			$InstalledVDAVersion         = "Unable to retrieve details"
-			$MasterVM                    = "Unable to retrieve details"
-			$MasterImageVMDate           = "Unable to retrieve details"
-			$MemoryMB                    = "Unable to retrieve details"
-			$OperatingSystem             = "Unable to retrieve details"
-			$PreparedImageDefinitionName = "Unable to retrieve details"
-			$PreparedImageVersionNumber  = "Unable to retrieve details"
-			$ResetAdministratorPasswords = "Unable to retrieve details"
+			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.CatalogName) - no machines in Catalog" -ForegroundColor White
+			$CleanOnBoot                 = "Unable to retrieve details - no machines in Catalog"
+			$CPUCount                    = "Unable to retrieve details - no machines in Catalog"
+			$DedicatedTenancy            = "Unable to retrieve details - no machines in Catalog"
+			$DiskSize                    = "Unable to retrieve details - no machines in Catalog"
+			$HostingUnitName             = "Unable to retrieve details - no machines in Catalog"
+			$IdentityPoolName            = "Unable to retrieve details - no machines in Catalog"
+			$InstalledVDAVersion         = "Unable to retrieve details - no machines in Catalog"
+			$MasterVM                    = "Unable to retrieve details - no machines in Catalog"
+			$MasterImageVMDate           = "Unable to retrieve details - no machines in Catalog"
+			$MemoryMB                    = "Unable to retrieve details - no machines in Catalog"
+			$OperatingSystem             = "Unable to retrieve details - no machines in Catalog"
+			$PreparedImageDefinitionName = "Unable to retrieve details - no machines in Catalog"
+			$PreparedImageVersionNumber  = "Unable to retrieve details - no machines in Catalog"
+			$ResetAdministratorPasswords = "Unable to retrieve details - no machines in Catalog"
 			$TempDiskCacheSize           = $Null
 			$TempMemoryCacheSize         = $Null
-			$WindowsActivationType       = "Unable to retrieve details"
-			$xDiskImage                  = "Unable to retrieve details"
+			$WindowsActivationType       = "Unable to retrieve details - no machines in Catalog"
+			$xDiskImage                  = "Unable to retrieve details - no machines in Catalog"
 			Remove-Variable TempDiskCacheSize
 			Remove-Variable TempMemoryCacheSize
 		}
@@ -35580,9 +35763,8 @@ Function GetRolePermissions
 
 			"Policies_Manage"											{$Results.Add("Manage Policies", "Policies")}
 			"Policies_Read"												{$Results.Add("View Policies", "Policies")}
-			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policies")} #added in 1.27
-			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policies")} #added in 1.27
 
+			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policies")} #new in 2212
 			"PolicySets_Read"											{$Results.Add("View Policy Sets", "Policy Sets")} #new in 2212
 			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policy Sets")} #new in 2212
 
@@ -39554,10 +39736,10 @@ ProcessDocumentOutput
 ProcessScriptEnd
 #endregion
 # SIG # Begin signature block
-# MIItTgYJKoZIhvcNAQcCoIItPzCCLTsCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# MIItSAYJKoZIhvcNAQcCoIItOTCCLTUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUFkthPyhU+4B+p4yBHI4RMnDg
-# N2GggiauMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUivNiuPpveehjjuh+XgDlyOKt
+# mRWggiaoMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -39688,112 +39870,112 @@ ProcessScriptEnd
 # LxDEDAhkPDOPriiMPMuPiAsNvzv0zh57ju+168u38HcT5ucoP6wSrqUvImxB+YJc
 # FWbMbA7KxYbD9iYzDAdLoNMHAmpqQDBISzSoUSC7rRuFCOJZDW3KBVAr6kocnqX9
 # oKcfBnTn8tZSkP2vhUgh+Vc7tJwD7YZF9LRhbr9o4iZghurIr6n+lB3nYxs6hlZ4
-# TjCCBsIwggSqoAMCAQICEAVEr/OUnQg5pr/bP1/lYRYwDQYJKoZIhvcNAQELBQAw
+# TjCCBrwwggSkoAMCAQICEAuuZrxaun+Vh8b56QTjMwQwDQYJKoZIhvcNAQELBQAw
 # YzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQD
 # EzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGlu
-# ZyBDQTAeFw0yMzA3MTQwMDAwMDBaFw0zNDEwMTMyMzU5NTlaMEgxCzAJBgNVBAYT
-# AlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjEgMB4GA1UEAxMXRGlnaUNlcnQg
-# VGltZXN0YW1wIDIwMjMwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQCj
-# U0WHHYOOW6w+VLMj4M+f1+XS512hDgncL0ijl3o7Kpxn3GIVWMGpkxGnzaqyat0Q
-# KYoeYmNp01icNXG/OpfrlFCPHCDqx5o7L5Zm42nnaf5bw9YrIBzBl5S0pVCB8s/L
-# B6YwaMqDQtr8fwkklKSCGtpqutg7yl3eGRiF+0XqDWFsnf5xXsQGmjzwxS55Dxtm
-# UuPI1j5f2kPThPXQx/ZILV5FdZZ1/t0QoRuDwbjmUpW1R9d4KTlr4HhZl+NEK0rV
-# lc7vCBfqgmRN/yPjyobutKQhZHDr1eWg2mOzLukF7qr2JPUdvJscsrdf3/Dudn0x
-# mWVHVZ1KJC+sK5e+n+T9e3M+Mu5SNPvUu+vUoCw0m+PebmQZBzcBkQ8ctVHNqkxm
-# g4hoYru8QRt4GW3k2Q/gWEH72LEs4VGvtK0VBhTqYggT02kefGRNnQ/fztFejKqr
-# UBXJs8q818Q7aESjpTtC/XN97t0K/3k0EH6mXApYTAA+hWl1x4Nk1nXNjxJ2VqUk
-# +tfEayG66B80mC866msBsPf7Kobse1I4qZgJoXGybHGvPrhvltXhEBP+YUcKjP7w
-# tsfVx95sJPC/QoLKoHE9nJKTBLRpcCcNT7e1NtHJXwikcKPsCvERLmTgyyIryvEo
-# EyFJUX4GZtM7vvrrkTjYUQfKlLfiUKHzOtOKg8tAewIDAQABo4IBizCCAYcwDgYD
-# VR0PAQH/BAQDAgeAMAwGA1UdEwEB/wQCMAAwFgYDVR0lAQH/BAwwCgYIKwYBBQUH
-# AwgwIAYDVR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMB8GA1UdIwQYMBaA
-# FLoW2W1NhS9zKXaaL3WMaiCPnshvMB0GA1UdDgQWBBSltu8T5+/N0GSh1VapZTGj
-# 3tXjSTBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3JsMy5kaWdpY2VydC5jb20v
-# RGlnaUNlcnRUcnVzdGVkRzRSU0E0MDk2U0hBMjU2VGltZVN0YW1waW5nQ0EuY3Js
-# MIGQBggrBgEFBQcBAQSBgzCBgDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGln
-# aWNlcnQuY29tMFgGCCsGAQUFBzAChkxodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5j
-# b20vRGlnaUNlcnRUcnVzdGVkRzRSU0E0MDk2U0hBMjU2VGltZVN0YW1waW5nQ0Eu
-# Y3J0MA0GCSqGSIb3DQEBCwUAA4ICAQCBGtbeoKm1mBe8cI1PijxonNgl/8ss5M3q
-# XSKS7IwiAqm4z4Co2efjxe0mgopxLxjdTrbebNfhYJwr7e09SI64a7p8Xb3CYTdo
-# SXej65CqEtcnhfOOHpLawkA4n13IoC4leCWdKgV6hCmYtld5j9smViuw86e9NwzY
-# mHZPVrlSwradOKmB521BXIxp0bkrxMZ7z5z6eOKTGnaiaXXTUOREEr4gDZ6pRND4
-# 5Ul3CFohxbTPmJUaVLq5vMFpGbrPFvKDNzRusEEm3d5al08zjdSNd311RaGlWCZq
-# A0Xe2VC1UIyvVr1MxeFGxSjTredDAHDezJieGYkD6tSRN+9NUvPJYCHEVkft2hFL
-# jDLDiOZY4rbbPvlfsELWj+MXkdGqwFXjhr+sJyxB0JozSqg21Llyln6XeThIX8rC
-# 3D0y33XWNmdaifj2p8flTzU8AL2+nCpseQHc2kTmOt44OwdeOVj0fHMxVaCAEcsU
-# DH6uvP6k63llqmjWIso765qCNVcoFstp8jKastLYOrixRoZruhf9xHdsFWyuq69z
-# OuhJRrfVf8y2OMDY7Bz1tqG4QyzfTkx9HmhwwHcK1ALgXGC7KP845VJa1qwXIiNO
-# 9OzTF/tQa/8Hdx9xl0RBybhG02wyfFgvZ0dl5Rtztpn5aywGRu9BHvDwX+Db2a2Q
-# gESvgBBBijCCB1kwggVBoAMCAQICEAts37ZngQ4q58taEbodSXAwDQYJKoZIhvcN
-# AQELBQAwaTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMUEw
-# PwYDVQQDEzhEaWdpQ2VydCBUcnVzdGVkIEc0IENvZGUgU2lnbmluZyBSU0E0MDk2
-# IFNIQTM4NCAyMDIxIENBMTAeFw0yNDA4MTMwMDAwMDBaFw0yNjEwMTgyMzU5NTla
-# MGExCzAJBgNVBAYTAlVTMRIwEAYDVQQIEwlUZW5uZXNzZWUxEDAOBgNVBAcTB0xl
-# YmFub24xFTATBgNVBAoTDENhcmwgV2Vic3RlcjEVMBMGA1UEAxMMQ2FybCBXZWJz
-# dGVyMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA05uJKNPzfNG5N8GS
-# g4WxSPvhr+xUjqkMKZClzi4Lxc2+sShnOoovmY9APkTu6fjfFYLCqKOnC70F04aO
-# ZvVF7xdnRFsk0woY5MAOAvEMDNNeakKtx8uRA7OE8eZXpuIQ/qI4YesL0MZdGSA9
-# QysSV7GZ4Ro3X/2aguCHjaSV8k+nOUWCImeAUs0IbiZka/Opxi+SQKRq0fGXLvkb
-# 9FOb65CeyzjJyVydLAMoXAggwTVMMzr6R0l8Ed04E42vSMBzF6Qo1+QDhsb1Ahsy
-# mEelthaA2t2YKogu4ekjIerSctYyDykk2HGMWcd9uK61hA4LTCRFWS7VULpb+vFr
-# 8obEAhREvkzsGuZPBL3ZJWSv1j0cM/yUVJl0tPdkd0sDZ8OoTWvJ9Dlzbc75aNgg
-# HIi86Ua8hEedesc/wyBGB76ZMoa8F+IgKiaXxBbLJ2a8R9D7FASAo/uZF49l0Z1K
-# IA6SZ/1zB71QMItofHNl6om6UYcjpreDIuAYu/v0G1nQKBb16ETFPfaMu0o/Qp+E
-# 6C9Hh9ILQTKbJ1VbKzNIERy7PFE4J5sFw0yE3SyOejCuQOuozBt8OLrggNAmdnob
-# 7TGmN4zbS5ZrD5PcDzIZ6+kW7l+xoLPyG4kVo8StdAIQdg2ldRdCvEGCY74Ltbev
-# Mu2aVDCdI7B3HqP0HgS8MhHf5b0CAwEAAaOCAgMwggH/MB8GA1UdIwQYMBaAFGg3
-# 4Ou2O/hfEYb7/mF7CIhl9E5CMB0GA1UdDgQWBBSNdamQ8btLpf1eLKSNwU/tTh+Y
-# NTA+BgNVHSAENzA1MDMGBmeBDAEEATApMCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3
-# LmRpZ2ljZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsG
-# AQUFBwMDMIG1BgNVHR8Ega0wgaowU6BRoE+GTWh0dHA6Ly9jcmwzLmRpZ2ljZXJ0
-# LmNvbS9EaWdpQ2VydFRydXN0ZWRHNENvZGVTaWduaW5nUlNBNDA5NlNIQTM4NDIw
-# MjFDQTEuY3JsMFOgUaBPhk1odHRwOi8vY3JsNC5kaWdpY2VydC5jb20vRGlnaUNl
-# cnRUcnVzdGVkRzRDb2RlU2lnbmluZ1JTQTQwOTZTSEEzODQyMDIxQ0ExLmNybDCB
-# lAYIKwYBBQUHAQEEgYcwgYQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2lj
-# ZXJ0LmNvbTBcBggrBgEFBQcwAoZQaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29t
-# L0RpZ2lDZXJ0VHJ1c3RlZEc0Q29kZVNpZ25pbmdSU0E0MDk2U0hBMzg0MjAyMUNB
-# MS5jcnQwCQYDVR0TBAIwADANBgkqhkiG9w0BAQsFAAOCAgEAQvF7bvX7Sz9/YviN
-# L6y080hXvG6WWF7f3YwplBOHeQy4bDGHJ0003j6MdnSQ+Tebcd1AIZaKsNJajT1N
-# RF4F+23Qeh/ynFk3kRuabCJkjsGPLDZQ+UKzfhfWQKOwWCIEgsmx2Qa3EMm/NLDb
-# Z9SqtuVVWqC6+b82JWg8Eht6h1iJbMnA3MtuM8ZuiHKdjKdTi81peQ7CRu6ek8nj
-# fmZEo8d59cFWA8HEM4S/k4f3u1/hjHkTA346r+wf3DsTJl+/jDiQDjTC8UF1wRMT
-# J0yJUQlvhUYqFyEIOnMJtyEPyfEr9P47/4kIr2/iQMnt8FDz/nZvLxYDaVjB/fvF
-# Lss22wEKX4tZ59nX7Y1vXA0Yk5Bw40eoGMz6XSQuK/Cjx7oKHAJhj370emc81FSJ
-# vlJv1JVdi4iUhfn6LfVcc01i5IcuEQp8ipGVqR70Ap3HKZK3hvcUQR+bzmt0H9tL
-# D1Kj2IJZrHa5SFyhu7ARymy8qohqKWV45Dx5+nZIvjehsPT5LAmHrbzpNRi26H3A
-# iJEH90jB++5XKnAoN9IFE4zj6Tfj4mudvw+ExDi24/zXkhNn8yOZuSd4onT/IN1E
-# zA7fx9rMKdcLJAp9tyuvRcsSDiXS6yNpEu/J5xXdBbiODaoMyRdydTKXW9dvJszC
-# VjNpjmFXfGsG3GAEDkrHS+nCR68xggYKMIIGBgIBATB9MGkxCzAJBgNVBAYTAlVT
-# MRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQgVHJ1
-# c3RlZCBHNCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAts
-# 37ZngQ4q58taEbodSXAwCQYFKw4DAhoFAKBAMBkGCSqGSIb3DQEJAzEMBgorBgEE
-# AYI3AgEEMCMGCSqGSIb3DQEJBDEWBBQKr5BCtyRIoOOVqp8nsXaQ+QopoTANBgkq
-# hkiG9w0BAQEFAASCAgCilprDgM+WOEf6VIoITPIE2RCEdOZCveExAgAAvvyFtt5Y
-# dn5lZrQBe9Y+uj9BIaqSIZ4kojDNZOKv+0wz/jfLwhkvevVZ7BQoQmI7b7fRZ9ot
-# Zyxw6yjcCuLg2M3g36F1T5EXZtE695ob/+DSLZOM8pVPyE+I7NBVifAOI0L9ZJMQ
-# Dp36TRIuSqMdU8gP14dYuyCckGOh2tSeX9SCNZjPdjwPNNjyi/mxFLGkE6X3c/e7
-# 3h4c9UX7B2ehFYbrfag1euq0VHY2CHK4bMhEroICufQuM+iYZoSR9u339tz/pROy
-# AlLx0qjMRMoYoPChEPy1idf9QM4TzCukBBced+3RkG5ytwvpIRs6pgCc+mOafqfX
-# iV1gZXb6UBwL3xNfpHWrvzNHFVMSNbtrGfzMTjJCynPJV7lkhgtw5pcO9wTpvIX0
-# 7Hu0Ls8X87sIOzNE9GAZI1b6dzbwU7kZzZnJ2OPNqgffLbDbFFTaFeZne2d+RmsF
-# dbqJCaU5DjPqb1NCZHoDUzvvhWkUcuLE1GFgduKLsZMywjq32FAhOsTi8tQ6VI5S
-# ZBPy6a5BBeH72mcMyT0w3ZyPFAjGiOv5bQIK/e3Xcf8GhPxvuqflirf8ZlMJVK/+
-# +T3L7XpYZOmvcIYy6klPLiQe3AkGzMvG03Ww16CS8scrR+gJgy8xruZqtbWZM6GC
-# AyAwggMcBgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcw
-# FQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3Rl
-# ZCBHNCBSU0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAVEr/OUnQg5pr/b
-# P1/lYRYwDQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcB
-# MBwGCSqGSIb3DQEJBTEPFw0yNDA4MjcxNjA5NTNaMC8GCSqGSIb3DQEJBDEiBCD5
-# xgTzvE7jn42sWVV0cw5Y9HlpJgjl/E8GQksB6Gk8YDANBgkqhkiG9w0BAQEFAASC
-# AgCL+4L969xJ6EN+k3Mji2hwgCiiQIPTML/o14zOESqG6zveWjPrsvYY4ZIhbfMq
-# aUXVnFwI1/AnWIiYES66WyQUnUQ7yq47xIcL80u6rsW3fL+enfa89QA78UNU9vq4
-# 3GJll8SFqOVgtuRvEaX5Rq79PKH8s8Ph5mgtzb5kaX+RmOKEzRZs+md55HBrU42h
-# VtOmNePyElkXJSeWCE50pgpCQoTpTtloQ2vlgK4dctC9Jv1xIk9tdbmiEAz5JuuM
-# FYrhSWd+FU1OtJUs3AhyEiMm+M9i9sBEqbFWkgEYegcx6+24y8ixc8sclYoD/KIv
-# zp9WejrqLNTxW0zMvDQt51dG2KjZw2qcpdImEcy12J01oXx+ksDZHs5P2QcO/XYS
-# M8G0Ru57dhZMeyBNWrrGw9NoQns0QlpIIsFhZfuFQj8msvvwMNK6lJjl1kHYWXYW
-# GFniZmthFfbReVh4k+sseBvlRx/92E6qbXjb/39vJVbyHFUexy6zwhji9E+aaTZu
-# iTHC2+SDBQQOI8kQRQghtdknnIK4bF11HLEKAwxnfMrn0dPqJO7Ns9M71pCHyqQG
-# 2e3+pfxIciYp4nXIWtTYVAh8eRlkl7l3ZqM5afPJQY0y9dPg/2u60n3Gw9iMQ69K
-# E5AJEEJCDhfvbG+qoKGqWuKTL5GaPVGuDddrF6ga3MrQgA==
+# ZyBDQTAeFw0yNDA5MjYwMDAwMDBaFw0zNTExMjUyMzU5NTlaMEIxCzAJBgNVBAYT
+# AlVTMREwDwYDVQQKEwhEaWdpQ2VydDEgMB4GA1UEAxMXRGlnaUNlcnQgVGltZXN0
+# YW1wIDIwMjQwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC+anOf9pUh
+# q5Ywultt5lmjtej9kR8YxIg7apnjpcH9CjAgQxK+CMR0Rne/i+utMeV5bUlYYSuu
+# M4vQngvQepVHVzNLO9RDnEXvPghCaft0djvKKO+hDu6ObS7rJcXa/UKvNminKQPT
+# v/1+kBPgHGlP28mgmoCw/xi6FG9+Un1h4eN6zh926SxMe6We2r1Z6VFZj75MU/HN
+# mtsgtFjKfITLutLWUdAoWle+jYZ49+wxGE1/UXjWfISDmHuI5e/6+NfQrxGFSKx+
+# rDdNMsePW6FLrphfYtk/FLihp/feun0eV+pIF496OVh4R1TvjQYpAztJpVIfdNsE
+# vxHofBf1BWkadc+Up0Th8EifkEEWdX4rA/FE1Q0rqViTbLVZIqi6viEk3RIySho1
+# XyHLIAOJfXG5PEppc3XYeBH7xa6VTZ3rOHNeiYnY+V4j1XbJ+Z9dI8ZhqcaDHOoj
+# 5KGg4YuiYx3eYm33aebsyF6eD9MF5IDbPgjvwmnAalNEeJPvIeoGJXaeBQjIK13S
+# lnzODdLtuThALhGtyconcVuPI8AaiCaiJnfdzUcb3dWnqUnjXkRFwLtsVAxFvGqs
+# xUA2Jq/WTjbnNjIUzIs3ITVC6VBKAOlb2u29Vwgfta8b2ypi6n2PzP0nVepsFk8n
+# lcuWfyZLzBaZ0MucEdeBiXL+nUOGhCjl+QIDAQABo4IBizCCAYcwDgYDVR0PAQH/
+# BAQDAgeAMAwGA1UdEwEB/wQCMAAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwgwIAYD
+# VR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMB8GA1UdIwQYMBaAFLoW2W1N
+# hS9zKXaaL3WMaiCPnshvMB0GA1UdDgQWBBSfVywDdw4oFZBmpWNe7k+SH3agWzBa
+# BgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3JsMy5kaWdpY2VydC5jb20vRGlnaUNl
+# cnRUcnVzdGVkRzRSU0E0MDk2U0hBMjU2VGltZVN0YW1waW5nQ0EuY3JsMIGQBggr
+# BgEFBQcBAQSBgzCBgDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQu
+# Y29tMFgGCCsGAQUFBzAChkxodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGln
+# aUNlcnRUcnVzdGVkRzRSU0E0MDk2U0hBMjU2VGltZVN0YW1waW5nQ0EuY3J0MA0G
+# CSqGSIb3DQEBCwUAA4ICAQA9rR4fdplb4ziEEkfZQ5H2EdubTggd0ShPz9Pce4FL
+# Jl6reNKLkZd5Y/vEIqFWKt4oKcKz7wZmXa5VgW9B76k9NJxUl4JlKwyjUkKhk3aY
+# x7D8vi2mpU1tKlY71AYXB8wTLrQeh83pXnWwwsxc1Mt+FWqz57yFq6laICtKjPIC
+# YYf/qgxACHTvypGHrC8k1TqCeHk6u4I/VBQC9VK7iSpU5wlWjNlHlFFv/M93748Y
+# TeoXU/fFa9hWJQkuzG2+B7+bMDvmgF8VlJt1qQcl7YFUMYgZU1WM6nyw23vT6QSg
+# wX5Pq2m0xQ2V6FJHu8z4LXe/371k5QrN9FQBhLLISZi2yemW0P8ZZfx4zvSWzVXp
+# Ab9k4Hpvpi6bUe8iK6WonUSV6yPlMwerwJZP/Gtbu3CKldMnn+LmmRTkTXpFIEB0
+# 6nXZrDwhCGED+8RsWQSIXZpuG4WLFQOhtloDRWGoCwwc6ZpPddOFkM2LlTbMcqFS
+# zm4cd0boGhBq7vkqI1uHRz6Fq1IX7TaRQuR+0BGOzISkcqwXu7nMpFu3mgrlgbAW
+# +BzikRVQ3K2YHcGkiKjA4gi4OA/kz1YCsdhIBHXqBzR0/Zd2QwQ/l4Gxftt/8wY3
+# grcc/nS//TVkej9nmUYu83BDtccHHXKibMs/yXHhDXNkoPIdynhVAku7aRZOwqw6
+# pDCCB1kwggVBoAMCAQICEAts37ZngQ4q58taEbodSXAwDQYJKoZIhvcNAQELBQAw
+# aTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMUEwPwYDVQQD
+# EzhEaWdpQ2VydCBUcnVzdGVkIEc0IENvZGUgU2lnbmluZyBSU0E0MDk2IFNIQTM4
+# NCAyMDIxIENBMTAeFw0yNDA4MTMwMDAwMDBaFw0yNjEwMTgyMzU5NTlaMGExCzAJ
+# BgNVBAYTAlVTMRIwEAYDVQQIEwlUZW5uZXNzZWUxEDAOBgNVBAcTB0xlYmFub24x
+# FTATBgNVBAoTDENhcmwgV2Vic3RlcjEVMBMGA1UEAxMMQ2FybCBXZWJzdGVyMIIC
+# IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA05uJKNPzfNG5N8GSg4WxSPvh
+# r+xUjqkMKZClzi4Lxc2+sShnOoovmY9APkTu6fjfFYLCqKOnC70F04aOZvVF7xdn
+# RFsk0woY5MAOAvEMDNNeakKtx8uRA7OE8eZXpuIQ/qI4YesL0MZdGSA9QysSV7GZ
+# 4Ro3X/2aguCHjaSV8k+nOUWCImeAUs0IbiZka/Opxi+SQKRq0fGXLvkb9FOb65Ce
+# yzjJyVydLAMoXAggwTVMMzr6R0l8Ed04E42vSMBzF6Qo1+QDhsb1AhsymEelthaA
+# 2t2YKogu4ekjIerSctYyDykk2HGMWcd9uK61hA4LTCRFWS7VULpb+vFr8obEAhRE
+# vkzsGuZPBL3ZJWSv1j0cM/yUVJl0tPdkd0sDZ8OoTWvJ9Dlzbc75aNggHIi86Ua8
+# hEedesc/wyBGB76ZMoa8F+IgKiaXxBbLJ2a8R9D7FASAo/uZF49l0Z1KIA6SZ/1z
+# B71QMItofHNl6om6UYcjpreDIuAYu/v0G1nQKBb16ETFPfaMu0o/Qp+E6C9Hh9IL
+# QTKbJ1VbKzNIERy7PFE4J5sFw0yE3SyOejCuQOuozBt8OLrggNAmdnob7TGmN4zb
+# S5ZrD5PcDzIZ6+kW7l+xoLPyG4kVo8StdAIQdg2ldRdCvEGCY74LtbevMu2aVDCd
+# I7B3HqP0HgS8MhHf5b0CAwEAAaOCAgMwggH/MB8GA1UdIwQYMBaAFGg34Ou2O/hf
+# EYb7/mF7CIhl9E5CMB0GA1UdDgQWBBSNdamQ8btLpf1eLKSNwU/tTh+YNTA+BgNV
+# HSAENzA1MDMGBmeBDAEEATApMCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2lj
+# ZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMD
+# MIG1BgNVHR8Ega0wgaowU6BRoE+GTWh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9E
+# aWdpQ2VydFRydXN0ZWRHNENvZGVTaWduaW5nUlNBNDA5NlNIQTM4NDIwMjFDQTEu
+# Y3JsMFOgUaBPhk1odHRwOi8vY3JsNC5kaWdpY2VydC5jb20vRGlnaUNlcnRUcnVz
+# dGVkRzRDb2RlU2lnbmluZ1JTQTQwOTZTSEEzODQyMDIxQ0ExLmNybDCBlAYIKwYB
+# BQUHAQEEgYcwgYQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNv
+# bTBcBggrBgEFBQcwAoZQaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lD
+# ZXJ0VHJ1c3RlZEc0Q29kZVNpZ25pbmdSU0E0MDk2U0hBMzg0MjAyMUNBMS5jcnQw
+# CQYDVR0TBAIwADANBgkqhkiG9w0BAQsFAAOCAgEAQvF7bvX7Sz9/YviNL6y080hX
+# vG6WWF7f3YwplBOHeQy4bDGHJ0003j6MdnSQ+Tebcd1AIZaKsNJajT1NRF4F+23Q
+# eh/ynFk3kRuabCJkjsGPLDZQ+UKzfhfWQKOwWCIEgsmx2Qa3EMm/NLDbZ9SqtuVV
+# WqC6+b82JWg8Eht6h1iJbMnA3MtuM8ZuiHKdjKdTi81peQ7CRu6ek8njfmZEo8d5
+# 9cFWA8HEM4S/k4f3u1/hjHkTA346r+wf3DsTJl+/jDiQDjTC8UF1wRMTJ0yJUQlv
+# hUYqFyEIOnMJtyEPyfEr9P47/4kIr2/iQMnt8FDz/nZvLxYDaVjB/fvFLss22wEK
+# X4tZ59nX7Y1vXA0Yk5Bw40eoGMz6XSQuK/Cjx7oKHAJhj370emc81FSJvlJv1JVd
+# i4iUhfn6LfVcc01i5IcuEQp8ipGVqR70Ap3HKZK3hvcUQR+bzmt0H9tLD1Kj2IJZ
+# rHa5SFyhu7ARymy8qohqKWV45Dx5+nZIvjehsPT5LAmHrbzpNRi26H3AiJEH90jB
+# ++5XKnAoN9IFE4zj6Tfj4mudvw+ExDi24/zXkhNn8yOZuSd4onT/IN1EzA7fx9rM
+# KdcLJAp9tyuvRcsSDiXS6yNpEu/J5xXdBbiODaoMyRdydTKXW9dvJszCVjNpjmFX
+# fGsG3GAEDkrHS+nCR68xggYKMIIGBgIBATB9MGkxCzAJBgNVBAYTAlVTMRcwFQYD
+# VQQKEw5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBH
+# NCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAts37ZngQ4q
+# 58taEbodSXAwCQYFKw4DAhoFAKBAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
+# MCMGCSqGSIb3DQEJBDEWBBT2llTbzBT881Ha7ddNSmo8PsmsdzANBgkqhkiG9w0B
+# AQEFAASCAgCJ0Li4swLpK1jvsJ1C1hqj4O4A6J/MIuU3EF4bLuO8RO8UG+8vsGkd
+# TdfJPnbZlP6AO6GHhiSmjq36Jt5aAqcemDfBQzY4zu7nHfmUJ+TkcRni1ly+NSh/
+# pDdYJOZNIvNOl6R9EL/Pc8moa3nSiWNiSYxbDf0+omCSm35huqpf8vSeJnlm551y
+# cxlQ5QVAxKyiS1Gl2I++oT0oKatgh9UFrBhDRAvwZRHpnHuncoDhSRAC8zoKsC+X
+# QeVGSQs+/kwKoWBgL10OndQ+sWjER9Q2iSoMUIAAIJvwJmv1ebLX76C4ZisVrSjl
+# 4I5uQaboEJV3dVupecOgRu3OzmqpLPgzUAAzTjo/Xp9fof2JiL9CgPwRG2Bkyqkz
+# DwmO+rFnc796AQE1a0cqAM/Xl7O/wHxfz9r+LwiNwI7B6ajZWiPdrlVh5ZBhEcGG
+# fOu0KZIC9favxKf4F+/tt4mZGFruqBwP9s0zxmyA29mTLTPPfwtAF61KQjWqfbAW
+# oSRcsYcsDA6Pz7xzP1uiw3KXvWDrTaztQpQnukTz+Po5+/O+CktqIu2kVcMxZHnr
+# Ph5urDgedlRXq9N4naocMvXjVObU8n106zaCz8szJl1TTVd2SvUolF/R8ZJZQxgq
+# flHXKhvXzjJtcFiX15JvEsOdyfXQO+r1doplaXcs/W2/KxJEAytwtaGCAyAwggMc
+# BgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
+# Ew5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBS
+# U0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAuuZrxaun+Vh8b56QTjMwQw
+# DQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
+# SIb3DQEJBTEPFw0yNDEwMDcyMzM5MDZaMC8GCSqGSIb3DQEJBDEiBCDMcwzxzlul
+# DQIcgAegRom8Ad+Ya0cJGUKWasv+jr0QDzANBgkqhkiG9w0BAQEFAASCAgBXKzTx
+# 3lhRgQkFDjHv/CocuDrTxyFDRJ4vsuJelDaZOFXrRENtgz8DVAHBAQPwAFXQ+kN3
+# kLUWMb7B5MGhvOtRpixfOpjPxHMT3mksqHn2Y0+r5mgKF3ERp5Lx/v61eXS6z6FN
+# T/r3SkEBBH8nRHTpJQDBZeicH2ivviN+GQpXGu80Cn9qQFbDp41k+fNGO7VLSbUn
+# yQzIPY7YmYAhmFY/I1HSL8NItR+wt3sFQfbDi8rX59eRNIfg4RSFtTEvPCW1UizJ
+# 00Dk6wsJwXWO1e7WXt5mZy6FKlxr61Ziwh9fCZ2CQiWWuci7zu5XDMu79xKjnCIa
+# qIbvsZiyl4wh9HRNxk0AW96NrlxwnUQeBnyxEPPpliwMuR1vARMCmUgHeAFNRf31
+# FP4qX/j9YJwB9vZprH26e3+ZFzPFx8w7Vltq8alZ5eYVaYqlEvIZvwxtClSXIBM8
+# RMF3tsAzNR/EHQmWg3wPJ8cNH5bVZqLftxms+d49IfJ/PkZO31ss54f3TnYaBP4G
+# NS0YllrP0COlmO93UsvOTRhLLQOt85aZ0NVzTfqg6T/uYn3HuK6qhRLCnV9dOX0B
+# juafVJM0ws8tjFuBwkRhVgVPSAji3qNjKwoX8XkpSXSrPEfUpx4eM6iLk/TXyG3v
+# 4JWlk74DnCV8OX8zBvs5byleeSb84qSf4M3CqA==
 # SIG # End signature block

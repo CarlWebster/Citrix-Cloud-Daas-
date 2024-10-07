@@ -1343,7 +1343,7 @@
 	NAME: CC_Inventory_V1.ps1
 	VERSION: 1.27
 	AUTHOR: Carl Webster
-	LASTEDIT: August 27, 2024
+	LASTEDIT: October 7, 2024
 #>
 
 #endregion
@@ -1527,7 +1527,186 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
-#Version 1.27
+#Version 1.27 7-Oct-2024 Webster's Final Update
+#
+########################################################################################################################################
+#	KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES  #
+#                                                                                                                                      #
+#	Citrix broke the processing of policies, Site and Active directory, and other stuff with version 7.42 of the PowerShell SDK and    #
+#	Group Policy stuff.                                                                                                                #
+#                                                                                                                                      #
+#	I PERSONALLY WOULD NOT USE THE POWERSHELL SDK 7.42 (Sep4, 2024) OR GROUP POLICY 2407                                               #
+#                                                                                                                                      #
+#	VERBOSE: 10/7/2024 5:39:32 PM: Testing required PowerShell modules for Citrix Cloud                                                #
+#	VERBOSE: Cannot verify the Microsoft .NET Framework version 4.7.2 because it is not included in the list of permitted versions.    #
+#	VERBOSE: Loading module from path                                                                                                  #
+#			 'C:\Program Files\Citrix\CloudPowerShellModules\Citrix.PoshSdkProxy.Commands\Citrix.PoshSdkProxy.Commands.psm1'.          #
+#	VERBOSE: 10/7/2024 5:39:32 PM: Loading Citrix.Common.GroupPolicy PSSnapin                                                          #
+#	                                                                                                                                   #
+#	VERBOSE: 10/7/2024 5:39:32 PM: 	Citrix.Broker.Commands                                                                             #
+#                                                                                                                                      #
+#	You are running Remote SDK version . [Webster: Unable to now get the SDK version data]                                             #
+#                                                                                                                                      #
+#	You are running Group Policy Snapin version 7.42.100.66.                                                                           #
+#                                                                                                                                      #
+#	VERBOSE: 10/7/2024 5:39:34 PM: 	Does LocalSiteGPO PSDrive already exist?                                                           #
+#	VERBOSE: 10/7/2024 5:39:34 PM: 		Creating LocalSiteGPO PSDrive for Studio-based policies                                        #
+#	PS>TerminatingError(New-PSDrive): "A parameter cannot be found that matches parameter name 'controller'.                           #
+#	This failure might be caused by applying the default parameter binding. You can disable the default parameter binding in           #
+#	$PSDefaultParameterValues by setting $PSDefaultParameterValues["Disabled"] to be $true, and retry.                                 #
+#	The following default parameter was successfully bound for this cmdlet when the error occurred: -Verbose"                          #
+#                                                                                                                                      #
+#	*******************************************************************************************                                        #
+#	LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.                                        #
+#	*******************************************************************************************                                        #
+#                                                                                                                                      #
+#	KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES KNOWN ISSUES  #
+########################################################################################################################################
+#
+#	Added more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.AlternateSkipAlgorithmThreshold
+#			Type: int
+#			Default: 10
+#			Info: Minimum=0
+#			Summary: When using the -Skip parameter with various Broker SDK Get- cmdlets, this is the skip value above which 
+#					 an alternative optimized algorithm is used for fetching values from the database. 
+#
+#		Core.AutoTagRuleIdleIntervalsTimeSecs
+#			Type: int
+#			Default: 7200
+#			Info: Seconds Minimum=60
+#			Summary: Time interval that Auto Tag Rule site service will run auto tagging process when the site is idle. 
+#
+#		Core.MachineUnusedTokenExpiryHours
+#			Type: int
+#			Default: 48
+#			Info: Hours
+#			Summary: The time period for which the Machine Unused Token is valid. 
+#
+#		Core.MachineUnusedTokenMaxDelaySecs
+#			Type: int
+#			Default: 300
+#			Info: Seconds
+#			Summary: Maximum period between a VDA being powered-on and it registering for it to be trusted as being clean 
+#					 (previously unused) once registered. 
+#
+#		Core.MaxConsecutiveFailedRegistrationsBeforeSinBin
+#			Type: int
+#			Default: 2
+#			Info: Minimum=1
+#			Summary: Maximum times a worker can fail registration continuously before being put into the registration sinbin.
+#
+#		Core.RegistrationSinbinPeriodSecs
+#			Type: int
+#			Default: 180
+#			Info: Seconds, Minimum=60, Maximum=300
+#			Summary: Maximum time a worker is put into sin bin when a registration failure occurs multiple times 
+#				 for a worker within a timeframe.
+#
+#		Core.ScrambleLicensingData
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When enabled, scrambles personally identifiable information (PII) in licensing events.
+#
+#		Core.SetSiteDataWhenIdlePeriodSecs
+#			Type: int
+#			Default: 3600
+#			Info: Seconds Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data when the site is idle. 
+#
+#		Core.UserDrivenSuspendTimeoutMs
+#			Type: int
+#			Default: 15000
+#			Info: Milliseconds, Minimum=0
+#			Summary: How long to allow for a user-driven suspend action to complete (success or fail).
+#
+#		DBConnectionSettings.SqlLogin
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL login for use with SQL authenticated connections to the database.
+#
+#		DBConnectionSettings.SqlPassword
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL password for use with SQL authenticated connections to the database.
+#
+#		HostingManagementSettings.MaxConcurrentScheduleOverrideQueries
+#			Type: int
+#			Default: 5
+#			Info: Minimum=1, Maximum=30
+#			Summary: The maximum number of schedule override queries to autoscale plugins that are allowed to run concurrently. 
+#					 If there are more plugins to be queried at any given time than this limit allows, the additional queries are 
+#					 queued and start as soon as earlier ones complete.
+#
+#					 This limit exists to restrict the number of threads required to obtain all required schedule overrides. The number 
+#					 of threads used is typically double the number of concurrent schedule override queries.
+#
+#					 This setting requires the Broker services to be restarted before a new value takes effect.
+#
+#		HostingManagementSettings.NoPowerActionsPeriodBeforeSlowPollSecs
+#			Type: int
+#			Default: 100
+#			Info: Seconds Minimum=30, Maximum=300
+#			Summary: This value determines how long the service will wait before delaying calls to the database when there been no power 
+#					 actions found.
+#
+#		HostingManagementSettings.NoPowerActionsSlowPollIntervalSecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds Minimum=5, Maximum=30
+#			Summary: The interval between calls to the database when there have been no power actions.
+#
+#		HostingManagementSettings.NoWorkersPeriodBeforeSlowPollSecs
+#			Type: int
+#			Default: 100
+#			Info: Seconds Minimum=30, Maximum=300
+#			Summary: This value determines how long the service will wait before delaying calls to the database when there been no machines found.
+#
+#		HostingManagementSettings.NoWorkersSlowPollIntervalSecs
+#			Type: int
+#			Default: 60
+#			Info: Seconds Minimum=5, Maximum=120
+#			Summary: The interval between calls to the database when there have been no machines found.
+#
+#		HostingManagementSettings.ScheduleOverrideGenerationHour
+#			Type: int
+#			Default: 22
+#			Info: Minimum=1, Maximum=23
+#			Summary: The hour of the day when autoscale schedule overrides are generated for the following day. The hour is a 24-hour clock integer 
+#					 value and is evaluated in the time zone of the desktop group to which the generation relates.
+#
+#		HostingManagementSettings.ScheduleOverrideQueryTimeoutSecs
+#			Type: int
+#			Default: 60
+#			Info: Seconds Minimum=10, Maximum=120
+#			Summary: The maximum number of seconds for which a single schedule override query to an autoscale plugin is allowed to run before being 
+#					 timed-out and cancelled. A cancelled query is treated as though the plugin returned no schedule override, thus the next plugin 
+#					 in the sequence for the desktop group (if any) is then queried for a schedule override.
+#
+#		LhcState.IsElectedLastUpdatedAt
+#			Type: DateTIme
+#			Default: 0
+#			Info: 
+#			Summary: Indicates when this connector was elected leader.
+#
+#		LhcState.LeaderInHAModeLastUpdatedAt
+#			Type: DateTime
+#			Default: 0
+#			Info: 
+#			Summary: Indicates when this connector became leader.
+#
+#		MachineCommandQueuesSettings.MachineCommandForPingSuppressionSecs
+#			Type: Int
+#			Default: 30
+#			Info: Seconds Minimum=0, Maximum=120
+#			Summary: Period during which checks for pending machine commands to send in Ping responses are suppressed when no such pending commands 
+#					 are currently queued. This setting reduces database load at the potential cost of slight delays in sending commands.
+#
+#					 This setting only impacts commands sent using New-BrokerMachineCommand with a SendTrigger of NextContact.
+#
 #	In Function GetRolePermissions:
 #		Added new permissions
 #			Cost_Read
@@ -1563,11 +1742,15 @@ Param(
 #			LicensedSessionsActive
 #		Updated product editions
 #
+#	In Machine Details, for MCS catalogs:
+#		If the Provisioning Scheme doesn't exist, set the variables to "Unable to retrieve details because no ProvisioningSchemeUid"
+#		If no machine data is found, set the VDA and operating system variables to "Unable to retrieve details - no machine data"
+#
 #	No longer abort the script if the snapins or Group Policy module are not a specific version. Now, just find and display the versions used.
 #
 #	Updated Function ProcessCitrixPolicies to match the CVAD script with all policies added/updated/renamed since version 2206
 #
-#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), 7.42 (2407), and 7.43 (2409)
+#	Updated for 7.39 (2308), 7.40 (2311), 7.41 (2402), and 7.42 (2407)
 #
 #Version 1.26 23-Jun-2023
 #	In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections 
@@ -3050,7 +3233,7 @@ $Error.Clear()
 
 $script:MyVersion   = "'1.27 Webster's Final Update"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "08/27/2024"
+$tmpdate            = [datetime] "10/07/2024"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -7268,24 +7451,24 @@ Function OutputMachines
 				}
 				Else
 				{
-					$CleanOnBoot                 = "Unable to retrieve details"
-					$CPUCount                    = "Unable to retrieve details"
-					$DedicatedTenancy            = "Unable to retrieve details"
-					$DiskSize                    = "Unable to retrieve details"
-					$HostingUnitName             = "Unable to retrieve details"
-					$IdentityPoolName            = "Unable to retrieve details"
-					$InstalledVDAVersion         = "Unable to retrieve details"
-					$MasterVM                    = "Unable to retrieve details"
-					$MasterImageVMDate           = "Unable to retrieve details"
-					$MemoryMB                    = "Unable to retrieve details"
-					$OperatingSystem             = "Unable to retrieve details"
-					$PreparedImageDefinitionName = "Unable to retrieve details"
-					$PreparedImageVersionNumber  = "Unable to retrieve details"
-					$ResetAdministratorPasswords = "Unable to retrieve details"
+					$CleanOnBoot                 = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$CPUCount                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$DedicatedTenancy            = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$DiskSize                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$HostingUnitName             = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$IdentityPoolName            = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$InstalledVDAVersion         = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MasterVM                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MasterImageVMDate           = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$MemoryMB                    = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$OperatingSystem             = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$PreparedImageDefinitionName = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$PreparedImageVersionNumber  = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$ResetAdministratorPasswords = "Unable to retrieve details because no ProvisioningSchemeUid"
 					$TempDiskCacheSize           = $Null
 					$TempMemoryCacheSize         = $Null
-					$WindowsActivationType       = "Unable to retrieve details"
-					$xDiskImage                  = "Unable to retrieve details"
+					$WindowsActivationType       = "Unable to retrieve details because no ProvisioningSchemeUid"
+					$xDiskImage                  = "Unable to retrieve details because no ProvisioningSchemeUid"
 					Remove-Variable TempDiskCacheSize
 					Remove-Variable TempMemoryCacheSize
 				}
@@ -7310,31 +7493,31 @@ Function OutputMachines
 			}
 			Else
 			{
-				$InstalledVDAVersion = "Unable to retrieve details"
-				$OperatingSystem     = "Unable to retrieve details"
+				$InstalledVDAVersion = "Unable to retrieve details - no machine data"
+				$OperatingSystem     = "Unable to retrieve details - no machine data"
 			}
 		}
 		Else
 		{
-			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.CatalogName)" -ForegroundColor White
-			$CleanOnBoot                 = "Unable to retrieve details"
-			$CPUCount                    = "Unable to retrieve details"
-			$DedicatedTenancy            = "Unable to retrieve details"
-			$DiskSize                    = "Unable to retrieve details"
-			$HostingUnitName             = "Unable to retrieve details"
-			$IdentityPoolName            = "Unable to retrieve details"
-			$InstalledVDAVersion         = "Unable to retrieve details"
-			$MasterVM                    = "Unable to retrieve details"
-			$MasterImageVMDate           = "Unable to retrieve details"
-			$MemoryMB                    = "Unable to retrieve details"
-			$OperatingSystem             = "Unable to retrieve details"
-			$PreparedImageDefinitionName = "Unable to retrieve details"
-			$PreparedImageVersionNumber  = "Unable to retrieve details"
-			$ResetAdministratorPasswords = "Unable to retrieve details"
+			Write-Host "Unable to retrieve details for Machine Catalog $($Catalog.CatalogName) - no machines in Catalog" -ForegroundColor White
+			$CleanOnBoot                 = "Unable to retrieve details - no machines in Catalog"
+			$CPUCount                    = "Unable to retrieve details - no machines in Catalog"
+			$DedicatedTenancy            = "Unable to retrieve details - no machines in Catalog"
+			$DiskSize                    = "Unable to retrieve details - no machines in Catalog"
+			$HostingUnitName             = "Unable to retrieve details - no machines in Catalog"
+			$IdentityPoolName            = "Unable to retrieve details - no machines in Catalog"
+			$InstalledVDAVersion         = "Unable to retrieve details - no machines in Catalog"
+			$MasterVM                    = "Unable to retrieve details - no machines in Catalog"
+			$MasterImageVMDate           = "Unable to retrieve details - no machines in Catalog"
+			$MemoryMB                    = "Unable to retrieve details - no machines in Catalog"
+			$OperatingSystem             = "Unable to retrieve details - no machines in Catalog"
+			$PreparedImageDefinitionName = "Unable to retrieve details - no machines in Catalog"
+			$PreparedImageVersionNumber  = "Unable to retrieve details - no machines in Catalog"
+			$ResetAdministratorPasswords = "Unable to retrieve details - no machines in Catalog"
 			$TempDiskCacheSize           = $Null
 			$TempMemoryCacheSize         = $Null
-			$WindowsActivationType       = "Unable to retrieve details"
-			$xDiskImage                  = "Unable to retrieve details"
+			$WindowsActivationType       = "Unable to retrieve details - no machines in Catalog"
+			$xDiskImage                  = "Unable to retrieve details - no machines in Catalog"
 			Remove-Variable TempDiskCacheSize
 			Remove-Variable TempMemoryCacheSize
 		}
@@ -35580,9 +35763,8 @@ Function GetRolePermissions
 
 			"Policies_Manage"											{$Results.Add("Manage Policies", "Policies")}
 			"Policies_Read"												{$Results.Add("View Policies", "Policies")}
-			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policies")} #added in 1.27
-			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policies")} #added in 1.27
 
+			"PolicySets_AddScope"										{$Results.Add("Add Policy Set to Scope", "Policies")} #new in 2212
 			"PolicySets_Read"											{$Results.Add("View Policy Sets", "Policy Sets")} #new in 2212
 			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policy Sets")} #new in 2212
 
