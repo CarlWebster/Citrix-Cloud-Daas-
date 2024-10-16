@@ -290,8 +290,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2022, at 6PM is 2022-06-01_1800.
-	The output filename will be ReportName_2022-06-01_1800.docx (or.pdf).
+	June 1, 2025, at 6PM is 2025-06-01_1800.
+	The output filename will be ReportName_2025-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -724,11 +724,11 @@
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
 	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
-	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2022 -EndDate 
-	09/30/2022	
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2025 -EndDate 
+	09/30/2025	
 	
-	Creates an HTML report with Configuration Logging details for the dates 09/01/2022 
-	through 09/30/2022.
+	Creates an HTML report with Configuration Logging details for the dates 09/01/2025 
+	through 09/30/2025.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -736,11 +736,11 @@
     If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
-	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2022 10:00:00" 
-	-EndDate "09/01/2022 14:00:00" -MSWord
+	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2025 10:00:00" 
+	-EndDate "09/01/2025 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2022 10:00:00AM through 09/01/2022 02:00:00PM.
+	09/01/2025 10:00:00AM through 09/01/2025 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
@@ -909,8 +909,8 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2022, at 6PM is 2022-06-01_1800.
-	The output filename will be CCSiteName_2022-06-01_1800.docx
+	June 1, 2025, at 6PM is 2025-06-01_1800.
+	The output filename will be CCSiteName_2025-06-01_1800.docx
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -933,8 +933,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2022, at 6PM is 2022-06-01_1800.
-	The output filename will be CCSiteName_2022-06-01_1800.pdf
+	June 1, 2025, at 6PM is 2025-06-01_1800.
+	The output filename will be CCSiteName_2025-06-01_1800.pdf
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -1497,7 +1497,7 @@ Param(
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("UN")]
-	[ValidateNotNullOrEmpty()]
+ -	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
 	[parameter(Mandatory=$False)] 
@@ -1528,6 +1528,11 @@ Param(
 # This script is based on the CVAD V3.00 doc script
 
 #Version 1.28 16-Oct-2024 Webster's For Real Final Update
+#
+#	Change the Site version data to use PowerShell's [version]
+#
+#	Cleanup old dead code that is no longer used
+#
 #	From Citrix to fix the Known Issues in 1.27:
 #		When you run the Group Policy PowerShell Provider with the DaaS SDK, have the DaaS SDK installed and the user authenticated, 
 #		then run the script with -controller localhost. Don't use $GLOBAL:XDSDKProxy because it's not a remote DDC address and it's 
@@ -1546,22 +1551,25 @@ Param(
 #		Verify that the Visual C++ Runtimes are installed.                                         
 #                                                                                           
 #		Install from the Microsoft download page                                                   
-#		https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             
-#		https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
+#			https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             
+#			https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
 #                                                                                           
 #		Please see the ReadMe file:                                                                
-#		https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      
-#*******************************************************************************************
+#			https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      
+#		*******************************************************************************************
 #
 #	Reformatted the tables for policies to reduce word wrapping.
 #	
 #	Removed all references to $Script:GPSnapinVersion and $Script:SDKVersion
+#
+#	Removed all premature references to product version 2409 (Since this is almost November). I jumped the gun on that.
 #
 #	Removed from all Citrix cmdlets AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
 #		Also removed from the Group Policy calls
 #
 #	Replaced using the Citrix.GroupPolicy.Commands Snapin with the module
 #
+#	Updated the help text
 #	Updated the ReadMe file
 #
 #Version 1.27 7-Oct-2024 Webster's Final Update
@@ -5446,40 +5454,6 @@ Function FormatHTMLTable
 		[Object[]] $columnArray = $Null
 	)
 
-	## FIXME - the help text for this function is wacky wrong - MBS
-	## FIXME - Use StringBuilder - MBS - this only builds the table header - benefit relatively small
-<#
-	If( $SuperVerbose )
-	{
-		wv "FormatHTMLTable: fontname '$fontname', size $fontSize, tableheader '$tableheader'"
-		wv "FormatHTMLTable: noborder $noborder, noheadcols $noheadcols"
-		If( $rowarray -and $rowarray.count -gt 0 )
-		{
-			wv "FormatHTMLTable: rowarray has $( $rowarray.count ) elements"
-		}
-		Else
-		{
-			wv "FormatHTMLTable: rowarray is empty"
-		}
-		If( $columnarray -and $columnarray.count -gt 0 )
-		{
-			wv "FormatHTMLTable: columnarray has $( $columnarray.count ) elements"
-		}
-		Else
-		{
-			wv "FormatHTMLTable: columnarray is empty"
-		}
-		If( $fixedwidth -and $fixedwidth.count -gt 0 )
-		{
-			wv "FormatHTMLTable: fixedwidth has $( $fixedwidth.count ) elements"
-		}
-		Else
-		{
-			wv "FormatHTMLTable: fixedwidth is empty"
-		}
-	}
-#>
-
 	$HTMLBody = "<b><font face='" + $fontname + "' size='" + ($fontsize + 1) + "'>" + $tableheader + "</font></b>" + $crlf
 
 	If( $Null -eq $columnArray -or $columnArray.Length -eq 0)
@@ -7598,41 +7572,6 @@ Function OutputMachines
 						Default					{$DeviceManagementType = "Unable to determine Device Management Type: $($IdentityPool.DeviceManagementType)"; Break}
 					}
 					#end added in 1.26
-				#}
-				#Else
-				#{
-				#	$IdentityDomain           = ""
-				#	$IdentityNamingScheme     = ""
-				#	$IdentityNamingSchemeType = "None"
-				#	$IdentityOU               = ""
-				#	#added in 1.26
-				#	<#
-				#		IdentityType	The type of identity type. 
-				#		This can be ActiveDirectory, AzureAD, HybridAzureAD, or Workgroup.
-				#	#>
-				#	Switch ($IdentityPool.IdentityType)
-				#	{
-				#		"ActiveDirectory"	{$IdentityType = "On-premises AD"; Break}
-				#		"AzureAD"			{$IdentityType = "Azure AD joined"; Break}
-				#		"HybridAzureAD"		{$IdentityType = "Hybrid Azure AD joined"; Break}
-				#		"Workgroup"			{$IdentityType = "Non-domain-joined"; Break}
-				#		Default				{$IdentityType = "-"; Break}
-				#	}
-				#	
-				#	<#
-				#		DeviceManagementType	The type of device management type. 
-				#		This can be Intune, IntuneWithCitrixTags, or None.
-				#	#>
-				#	Switch($IdentityPool.DeviceManagementType)
-				#	{
-				#		"Intune"				{$DeviceManagementType = "Microsoft Intune"; Break}
-				#		"IntuneWithCitrixTags"	{$DeviceManagementType = "Microsoft Intune with Citrix Tags"; Break}
-				#		"None"					{$DeviceManagementType = "None"; Break}
-				#		""						{$DeviceManagementType = ""; Break}
-				#		Default					{$DeviceManagementType = "Unable to determine Device Management Type: $($IdentityPool.DeviceManagementType)"; Break}
-				#	}
-				#	#end added in 1.26
-				#}
 			}
 			Else
 			{
@@ -8816,150 +8755,6 @@ Function OutputMachines
 				}
 			}
 		}
-		
-		<#In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections becauuse some idiot at Citrix 
-		made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
-		and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
-		data needed.
-		
-		#1.18, Citrix added support for MCS catalogs in the June 2022 update
-		#https://docs.citrix.com/en-us/citrix-daas/whats-new.html#june-2022
-		#Extended support for VDA upgrade. Using the Full Configuration interface, 
-		#you can now upgrade MCS-provisioned persistent machines. You can upgrade 
-		#them on a per-catalog or a per-machine basis.
-		If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
-		{
-			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.CatalogName -EA 0
-			
-			If(!$? -or $Null -eq $VDAUpgrade)
-			{
-				If($MSWord -or $PDF)
-				{
-					WriteWordLine 3 0 "VDA Upgrade"
-					WriteWordLine 0 0 "VDA upgrade is not configured for this catalog"
-					WriteWordLine 0 0 ""
-				}
-				If($Text)
-				{
-					Line 1 "VDA Upgrade"
-					Line 2 "VDA upgrade is not configured for this catalog"
-					Line 0 ""
-				}
-				If($HTML)
-				{
-					WriteHTMLLine 3 0 "VDA Upgrade"
-					WriteHTMLLine 0 0 "VDA upgrade is not configured for this catalog"
-					WriteHTMLLine 0 0 ""
-				}
-			}
-			Else
-			{
-				If($null -eq $VDAUpgrade.RecentSchedule)
-				{
-					$VDAUpgradeRecentSchedule = "Not set"
-				}
-				Else
-				{
-					$VDAUpgradeRecentSchedule = $VDAUpgrade.RecentSchedule.ToLocalTime()
-				}
-				
-				#Citrix has not defined any of the Enums
-				#Citrix finally sent me the enums on 13-Jul-2022
-				
-				
-				#Release type the VDA upgrades follow. Possible values are:
-				#o NotSet - Upgrade release type was not set by admin for this catalog.
-				#o CR - VDA upgrades follow CR release cycles.
-				#o LTSR - VDA upgrades follow LTSR release cycles.
-				
-				Switch($VDAUpgrade.UpgradeType)
-				{
-					"NotSet"	{$VDAUpgradeType = "Upgrade release type was not set by admin for this catalog"; Break}
-					"CR"		{$VDAUpgradeType = "VDA upgrades follow CR release cycles"; Break}
-					"LTSR"		{$VDAUpgradeType = "VDA upgrades follow LTSR release cycles"; Break}
-					Default		{$VDAUpgradeType = "VDA upgrade type could not be determined: $($VDAUpgrade.UpgradeType)"; Break}
-				}
-				
-				#Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
-				#o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
-				#o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
-				#o UpgradeAvailable - One or more machines in this catalog can be upgraded.
-				#o UpToDate - All VDAs in this catalog are on the most recently released version.
-				#o Unknown - Temporary state where the service is currently figuring out one of the above states.
-								
-				Switch($VDAUpgrade.UpgradeState)
-				{
-					"MissingUpgradeType"	{$VDAUpgradeState = "Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded"; Break}
-					"UpgradeScheduled"		{$VDAUpgradeState = "Upgrade was scheduled or is in progress for this catalog"; Break}
-					"UpgradeAvailable"		{$VDAUpgradeState = "One or more machines in this catalog can be upgraded"; Break}
-					"UpToDate"				{$VDAUpgradeState = "All VDAs in this catalog are on the most recently released version"; Break}
-					"Unknown"				{$VDAUpgradeState = "Temporary state where the service is currently figuring out the upgrade state"; Break}
-					Default					{$VDAUpgradeState = "VDA upgrade state could not be determined: $($VDAUpgrade.UpgradeState)"; Break}
-				}
-				
-				If($MSWord -or $PDF)
-				{
-					WriteWordLine 3 0 "VDA Upgrade"
-					[System.Collections.Hashtable[]] $CatalogInformation = @()
-					$CatalogInformation += @{Data = "Current schedule state"; Value = $VDAUpgrade.CurrentScheduleState.ToString(); }
-					$CatalogInformation += @{Data = "Duration in hours"; Value = $VDAUpgrade.DurationInHours.ToString(); }
-					$CatalogInformation += @{Data = "Failed upgrades"; Value = $VDAUpgrade.FailedUpgrades.ToString(); }
-					$CatalogInformation += @{Data = "In progress upgrades"; Value = $VDAUpgrade.InProgressUpgrades.ToString(); }
-					$CatalogInformation += @{Data = "Recent schedule"; Value = $VDAUpgradeRecentSchedule; }
-					$CatalogInformation += @{Data = "Scheduled time"; Value = $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(); }
-					$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgradeState; }
-					$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgradeType; }
-				
-					$Table = AddWordTable -Hashtable $CatalogInformation `
-					-Columns Data,Value `
-					-List `
-					-Format $wdTableGrid `
-					-AutoFit $wdAutoFitFixed;
-
-					SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-					$Table.Columns.Item(1).Width = 225;
-					$Table.Columns.Item(2).Width = 275;
-
-					$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-					FindWordDocumentEnd
-					$Table = $Null
-					WriteWordLine 0 0 ""
-				}
-				If($Text)
-				{
-					Line 1 "VDA Upgrade"
-					Line 2 "Current schedule state`t: " $VDAUpgrade.CurrentScheduleState.ToString()
-					Line 2 "Duration in hours`t: " $VDAUpgrade.DurationInHours.ToString()
-					Line 2 "Failed upgrades`t`t: " $VDAUpgrade.FailedUpgrades.ToString()
-					Line 2 "In progress upgrades`t: " $VDAUpgrade.InProgressUpgrades.ToString()
-					Line 2 "Recent schedule`t`t: " $VDAUpgradeRecentSchedule
-					Line 2 "Scheduled time`t`t: " $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime()
-					Line 2 "Upgrade state`t`t: " $VDAUpgradeState
-					Line 2 "Upgrade type`t`t: " $VDAUpgradeType
-					Line 0 ""
-				}
-				If($HTML)
-				{
-					WriteHTMLLine 3 0 "VDA Upgrade"
-					$rowdata = @()
-					$columnHeaders = @("Current schedule state",($global:htmlsb),$VDAUpgrade.CurrentScheduleState.ToString(),$htmlwhite)
-					$rowdata += @(,('Duration in hours',($global:htmlsb),$VDAUpgrade.DurationInHours.ToString(),$htmlwhite))
-					$rowdata += @(,('Failed upgrades',($global:htmlsb),$VDAUpgrade.FailedUpgrades.ToString(),$htmlwhite))
-					$rowdata += @(,('In progress upgrades',($global:htmlsb),$VDAUpgrade.InProgressUpgrades.ToString(),$htmlwhite))
-					$rowdata += @(,('Recent schedule',($global:htmlsb),$VDAUpgradeRecentSchedule,$htmlwhite))
-					$rowdata += @(,('Scheduled time',($global:htmlsb),$VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(),$htmlwhite))
-					$rowdata += @(,('Upgrade state',($global:htmlsb),$VDAUpgradeState,$htmlwhite))
-					$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgradeType,$htmlwhite))
-
-					$msg = ""
-					$columnWidths = @("200","500")
-					FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
-				}
-			}
-		}
-		#>
 		
 		#scopes
 		$Scopes = (Get-BrokerCatalog -Name $Catalog.Name @CCParams2).Scopes
@@ -11626,151 +11421,6 @@ Function OutputMachineDetails
 			}
 		}
 	}
-	
-	<#In version 1.26, I am commenting out the catalog and machine VDA Upgrade Service sections becauuse some idiot at Citrix 
-	made the bone-headed decision to remove the Get-VusCatalogInfo and Get-VusMachineInfo cmdlets with no advanced notification 
-	and no replacements. I was told to use the Get-VusCatalog and Get-VusMachine cmdlets, but those two cmdlets don't provide the 
-	data needed.
-		
-	If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
-	{
-		$VDAUpgrade = Get-VusMachineInfo -MachineUid $Machine.Uid -EA 0
-		
-		If(!$? -or $Null -eq $VDAUpgrade)
-		{
-			If($MSWord -or $PDF)
-			{
-				WriteWordLine 3 0 "VDA Upgrade"
-				WriteWordLine 0 0 "VDA upgrade is not configured for this machine"
-				WriteWordLine 0 0 ""
-			}
-			If($Text)
-			{
-				Line 1 "VDA Upgrade"
-				Line 2 "VDA upgrade is not configured for this machine"
-				Line 0 ""
-			}
-			If($HTML)
-			{
-				WriteHTMLLine 3 0 "VDA Upgrade"
-				WriteHTMLLine 0 0 "VDA upgrade is not configured for this machine"
-				WriteHTMLLine 0 0 ""
-			}
-		}
-		Else
-		{
-			If(validObject $VDAUpgrade RecentSchedule)
-			{
-				If($null -eq $VDAUpgrade.RecentSchedule)
-				{
-					$VDAUpgradeRecentSchedule = "Not set"
-				}
-				Else
-				{
-					$VDAUpgradeRecentSchedule = $VDAUpgrade.RecentSchedule.ToLocalTime()
-				}
-			}
-			Else
-			{
-				$VDAUpgradeRecentSchedule = "Not set"
-			}
-			
-			#Citrix has not defined any of the Enums
-			#Citrix finally sent me the enums on 13-Jul-2022
-			
-			#Release type the VDA upgrades follow. Possible values are:
-			#o NotSet - Upgrade release type was not set by admin for this catalog.
-			#o CR - VDA upgrades follow CR release cycles.
-			#o LTSR - VDA upgrades follow LTSR release cycles.
-
-			Switch($VDAUpgrade.UpgradeType)
-			{
-				"NotSet"	{$VDAUpgradeType = "Upgrade release type was not set by admin for this catalog"; Break}
-				"CR"		{$VDAUpgradeType = "VDA upgrades follow CR release cycles"; Break}
-				"LTSR"		{$VDAUpgradeType = "VDA upgrades follow LTSR release cycles"; Break}
-				Default		{$VDAUpgradeType = "VDA upgrade type could not be determined: $($VDAUpgrade.UpgradeType)"; Break}
-			}
-			
-			#Represents whether one or more VDAs in a catalog can be upgraded. Possible values are: \n
-			#o MissingUpgradeType - Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded.
-			#o UpgradeScheduled - Upgrade was scheduled or is in progress for this catalog.
-			#o UpgradeAvailable - One or more machines in this catalog can be upgraded.
-			#o UpToDate - All VDAs in this catalog are on the most recently released version.
-			#o Unknown - Temporary state where the service is currently figuring out one of the above states.
-			
-			Switch($VDAUpgrade.UpgradeState)
-			{
-				"MissingUpgradeType"	{$VDAUpgradeState = "Admin has not yet set UpgradeType, which is required to figure out whether catalog can be upgraded"; Break}
-				"UpgradeScheduled"		{$VDAUpgradeState = "Upgrade was scheduled or is in progress for this catalog"; Break}
-				"UpgradeAvailable"		{$VDAUpgradeState = "One or more machines in this catalog can be upgraded"; Break}
-				"UpToDate"				{$VDAUpgradeState = "All VDAs in this catalog are on the most recently released version"; Break}
-				"Unknown"				{$VDAUpgradeState = "Temporary state where the service is currently figuring out the upgrade state"; Break}
-				Default					{$VDAUpgradeState = "VDA upgrade state could not be determined: $($VDAUpgrade.UpgradeState)"; Break}
-			}
-			
-			If($MSWord -or $PDF)
-			{
-				WriteWordLine 3 0 "VDA Upgrade"
-				[System.Collections.Hashtable[]] $CatalogInformation = @()
-				$CatalogInformation += @{Data = "Current schedule state"; Value = $VDAUpgrade.CurrentScheduleState.ToString(); }
-				$CatalogInformation += @{Data = "Duration in hours"; Value = $VDAUpgrade.DurationInHours.ToString(); }
-				$CatalogInformation += @{Data = "Failed upgrades"; Value = $VDAUpgrade.FailedUpgrades.ToString(); }
-				$CatalogInformation += @{Data = "In progress upgrades"; Value = $VDAUpgrade.InProgressUpgrades.ToString(); }
-				$CatalogInformation += @{Data = "Recent schedule"; Value = $VDAUpgradeRecentSchedule; }
-				$CatalogInformation += @{Data = "Scheduled time"; Value = $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(); }
-				$CatalogInformation += @{Data = "Upgrade state"; Value = $VDAUpgradeState; }
-				$CatalogInformation += @{Data = "Upgrade type"; Value = $VDAUpgradeType; }
-			
-				$Table = AddWordTable -Hashtable $CatalogInformation `
-				-Columns Data,Value `
-				-List `
-				-Format $wdTableGrid `
-				-AutoFit $wdAutoFitFixed;
-
-				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-				$Table.Columns.Item(1).Width = 225;
-				$Table.Columns.Item(2).Width = 275;
-
-				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-				FindWordDocumentEnd
-				$Table = $Null
-				WriteWordLine 0 0 ""
-			}
-			If($Text)
-			{
-				Line 1 "VDA Upgrade"
-				Line 2 "Current schedule state`t: " $VDAUpgrade.CurrentScheduleState.ToString()
-				Line 2 "Duration in hours`t: " $VDAUpgrade.DurationInHours.ToString()
-				Line 2 "Failed upgrades`t`t: " $VDAUpgrade.FailedUpgrades.ToString()
-				Line 2 "In progress upgrades`t: " $VDAUpgrade.InProgressUpgrades.ToString()
-				Line 2 "Recent schedule`t`t: " $VDAUpgradeRecentSchedule
-				Line 2 "Scheduled time`t`t: " $VDAUpgrade.ScheduledTimeInUtc.ToLocalTime()
-				Line 2 "Upgrade state`t`t: " $VDAUpgradeState
-				Line 2 "Upgrade type`t`t: " $VDAUpgradeType
-				Line 0 ""
-			}
-			If($HTML)
-			{
-				WriteHTMLLine 3 0 "VDA Upgrade"
-				$rowdata = @()
-				$columnHeaders = @("Current schedule state",($global:htmlsb),$VDAUpgrade.CurrentScheduleState.ToString(),$htmlwhite)
-				$rowdata += @(,('Duration in hours',($global:htmlsb),$VDAUpgrade.DurationInHours.ToString(),$htmlwhite))
-				$rowdata += @(,('Failed upgrades',($global:htmlsb),$VDAUpgrade.FailedUpgrades.ToString(),$htmlwhite))
-				$rowdata += @(,('In progress upgrades',($global:htmlsb),$VDAUpgrade.InProgressUpgrades.ToString(),$htmlwhite))
-				$rowdata += @(,('Recent schedule',($global:htmlsb),$VDAUpgradeRecentSchedule,$htmlwhite))
-				$rowdata += @(,('Scheduled time',($global:htmlsb),$VDAUpgrade.ScheduledTimeInUtc.ToLocalTime(),$htmlwhite))
-				$rowdata += @(,('Upgrade state',($global:htmlsb),$VDAUpgradeState,$htmlwhite))
-				$rowdata += @(,('Upgrade type',($global:htmlsb),$VDAUpgradeType,$htmlwhite))
-
-				$msg = ""
-				$columnWidths = @("200","500")
-				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
-			}
-		}
-	}
-	#>
 }
 #endregion
 
@@ -38964,11 +38614,11 @@ Script cannot continue
 				Write-Host "Verify that the Visual C++ Runtimes are installed.                                         " -ForegroundColor Red
 				Write-Host "                                                                                           " -ForegroundColor Red
 				Write-Host "Install from the Microsoft download page                                                   " -ForegroundColor Red
-				Write-Host "https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             " -ForegroundColor Red
-				Write-Host "https://aka.ms/vs/17/release/vc_redist.x64.exe                                             " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                         " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                         " -ForegroundColor Red
 				Write-Host "                                                                                           " -ForegroundColor Red
 				Write-Host "Please see the ReadMe file:                                                                " -ForegroundColor Red
-				Write-Host "https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      " -ForegroundColor Red
+				Write-Host "	https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                  " -ForegroundColor Red
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
 				Write-Host "" -ForegroundColor White
 				Break
@@ -39063,7 +38713,7 @@ Script cannot continue
 
 	$Script:CCSite1 = Get-BrokerSite -EA 0
 
-#Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
+	#Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
 	If( !($?) -or $Null -eq $Script:CCSite1)
 	{
 		$ErrorActionPreference = $SaveEAPreference
@@ -39225,7 +38875,6 @@ Script cannot continue
 	$Script:DDCConfigData = Get-BrokerServiceConfigurationData @CCParams2 -SortBy SettingName
 	
 	Write-Verbose "$(Get-Date -Format G): Initial Site data has been gathered"
-	
 }
 #endregion
 
@@ -39724,8 +39373,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIItSAYJKoZIhvcNAQcCoIItOTCCLTUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUpTNjn/Xkq69s05c+a8aFU2bo
-# 6E2ggiaoMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWm8QbNZdwPlc8e9XVtw+YCEk
+# jDSggiaoMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -39935,33 +39584,33 @@ ProcessScriptEnd
 # VQQKEw5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBH
 # NCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAts37ZngQ4q
 # 58taEbodSXAwCQYFKw4DAhoFAKBAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MCMGCSqGSIb3DQEJBDEWBBQQNp4z7yPr5tAJM7c2LkMkThN97zANBgkqhkiG9w0B
-# AQEFAASCAgCLCegJsbm9twqnEdVLOGyy5iofkdNBSY6e9bNbhsP++XjSaM3QhsrV
-# AZ60dceayiu7ki+vv4cB64fhd/GJ/W/mdEnkoBVny3Pw8t5skGGiJK2eD4yj5LmT
-# suekBgd2qrcO9uU3DAx7oPyCBFtvcoQ7p2K9qHU1iMHPFo8bcD2qd0MSwgBpwr73
-# xD/ilpeKy3rcUUMO+Jbf1ruCK/tzFmjhOo5MPc/kilX7z913f1ikMkW3d1MQT6R6
-# k2Oi0423nIj01dTws+Ivp/4C+uxeFhI32jvgV9hK9lk6JshT/YLjJl7BHQhzQqBb
-# d+HUGmkQy3qaEOo+61iycmR9WAXbOnoLMpvMEOQgGhtJUJ/Yu/TInRRoTYD7/IkY
-# bSo0qIcoLcEzZcP3U361hg/t91BeyeArPkMdMBvd0oR0PF/kvPmynEaOGCL2FDMW
-# i98ko3VDnSCi0HoseXZjr0OIJrJLiX1aaJijX+7t5/V7GuPvQBlIztqiT6EE9zme
-# 0rvwZb2HIbKmQ/8US2AUcdQ0aKsTcIp4lPyBfKSsvCD9L1eRl/SO8DAyq2BnuK3P
-# DylHk92gIcm8uZ4uv/s/pSClkn4Q1jUHeAWqvLuy7rRZgjCeJJ+7IL70E71Hevv9
-# oIKLysQQkFF9o/4I/mERM7EtSeHkZvBoIX4L/JCpWhslZk3kFM2gQqGCAyAwggMc
+# MCMGCSqGSIb3DQEJBDEWBBSF+LUyrQdOc2Rs0mIgp7XgPEE6ZzANBgkqhkiG9w0B
+# AQEFAASCAgBKCelUddA+QxuQZY1rL263ynQ3zreAMk1fQ42JuknuypJT9Fpv3fju
+# hWVCod9qVZfVvtuUWik7vh2Ss6AhEJSqMba+zrzTXygvYJGSl5kOKmu2KNmTK18m
+# 0r9UCBTddCuthnSWVlX1zTWl4wmYrFvlzds4FX4sGr1A+yM+zc+k0m3FGdw1+N4A
+# 2Al+ifjDmMIZJFyA2iiyJEuw8DH5OlWNI3jeRF07wL5MBzeUHL11kY2m5E13t0K4
+# pFeRgj9zUWdCxn6d/r3YE1vfw9nUyFAHZYRAxB5lrKDPiuiUoLHaAh+KbJ2FTnmD
+# w5bKi3VxESiLGhGH6Whz3KusggxWxeRGBvC/NmDPV7xIVt7emy5E9tAOhfhNIIbs
+# bLT0p83PJWsa6KWc8htVZzbkT9mCYZLAR3hQLzImQMZDNPMZ3gX6RydEr+ZGoVtG
+# zror6mBrWY7eYM2eQtRkP+KjD7KWXC8hjIh4WQvsNRTqJCiNu/5v+Rkjb9QrBXq0
+# kRwfL7li2yOIrHOjR/hPh6XW0MIneNyMC2G8KcRnGqnWUu4hX8q8oi9e1BA3jRnd
+# twOSik3mSNKjAcYT1DdRchxZfcSR/2diQJb97tpOJD7kA/UjyRodnBrKgVe680eK
+# Bp6c+fLoxkmh6BOuEkiUU5iAJHv28ewLD9Y4nZqn9/+fOAJXnlRu26GCAyAwggMc
 # BgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
 # Ew5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBS
 # U0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAuuZrxaun+Vh8b56QTjMwQw
 # DQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-# SIb3DQEJBTEPFw0yNDEwMTYxMjIyMjVaMC8GCSqGSIb3DQEJBDEiBCBB2d1mgWFx
-# 7z9LoiZf6n3hesc1SAY7KJVvu0md3KoTwDANBgkqhkiG9w0BAQEFAASCAgAUAbAx
-# PMf441/hJnIIgsYcNIL4bHrWnOI3jUMDrtDA0l2UXXrgS3GB5UqNFYsHDV6X+Qyw
-# zAFybBzHL9bRCBYmTEefadTMOXbpL3YXhz/iSDYS2fwR4HeFSe+PRHwf82sfBy/4
-# c2QNGvAt7vwuH9VQtKjfpYAvOPCW8nvTFx0AUdNUWvpaDIS8DhmJL+/ep6TmKya4
-# Ni4MG2UxPEpBI4QDLxGXIFqw60ojsZSZeGrZ6VJSuSFEId+PyRamZFwmVlMrN57D
-# Lrw2my9zvBDwkvQcsNOJnIz6QUpwGEnENfKY7LIfPRgVNimS9ohTsHPVpE36OdX0
-# qMkaCyZxanQYxE5TyNyIKYR3mNn6Hpb2ZnUOoI6rpbIiEfnUr8P9F/ynlsm8a0mH
-# pALmpZV3xqVyVWFsrD4Xl9yGtRJmhhZ4lbMt6KtuOpEVct7CKolE9qgazDYWVH27
-# PsevL6ZfSzIC35gSfN6YQ4PrgIg0Ft9kaBlbbqKMv+3uyABPN9bcjaaCZApeM6Jx
-# nn6chmWLarkaj189i+0dGm1o0EE7w1rNYOkTeGMUG8gMA9VZ/Df7MC7zdDlb3xiU
-# PflYCXB8j+ETUued6YrDH7gU/u7GwWzRuodhqkeK3ebADBsTQSK+7iOIgKtCDX5J
-# nVwqLgk/2UO8fBA1itBqBVpZ+xRo3qAtbgvU2A==
+# SIb3DQEJBTEPFw0yNDEwMTYyMDA0MDFaMC8GCSqGSIb3DQEJBDEiBCDc3sdIT5GD
+# 1wbFTSRSNuhjIWSfGMJwy0dh0cx/xNYi7TANBgkqhkiG9w0BAQEFAASCAgCMT82+
+# xuS1f12CaaMvs42EzjdMKsq6HYDxzI1EDIglZK+92CxU9kZMnKvpZEHDWT/zKxvY
+# 4G7i4z3v+TZu2zU8ozg5QLIIAguDQRCMHgGTMk1DN8JBm8CPz5FqSKEuK06+Vju6
+# DruBsR/ZPOggIFkYCr/2PEACwOes3jJj+u6uWE2g6slGv6Eru4P1UR0XpEf5kLwT
+# gxSFrQ43sE5JNtffy4/E7aHNI47loXBZaW8eYxohRN771Ep0PfOI/zGOkDDaMju+
+# q87Ba7RCsT8SrOn6XQ8GTGGuwclu4QkomQ79ffo/R79ocCBXXs2u17NKEd1qfJnH
+# RsyT4KNe2SjG8LbLLYo2QXw09X1DsbRCj7ib+8jS/kTjNNEd+xKppMRwt5RwSJLs
+# Uo9WjdB0QJn/h/ke9vAlSODgwIdqU/oo2WSNK4hr/NjGmYPdu/WIOgGxn65WhceF
+# xWw8pHH1FC+I3rNTCMgAEZwKNtl+BUSgWGuQq1UZ0zu+oWXwgDl+5OWTWj9Ijdpr
+# uYvz5BVU6t8Pc3ZguHgLnZiFeDDEkaCgZelrqUKYtFcPWcPJnY1vwMVVLDADrUq2
+# F/oPyuO1lzPQl6hKL5kBEZMecye5sBTEez/1M4IbOK2KrPtFpKHYxrlJWFDrkMMF
+# OPg5v1kgYO9i3mLSFVpq1N5KpfcuzEiJDda8TQ==
 # SIG # End signature block
