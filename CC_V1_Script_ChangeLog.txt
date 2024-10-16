@@ -6,6 +6,51 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28 16-Oct-2024 Webster's For Real Final Update
+#
+#	Change the Site version data to use PowerShell's [version]
+#
+#	Cleanup old dead code that is no longer used
+#
+#	From Citrix to fix the Known Issues in 1.27:
+#		When you run the Group Policy PowerShell Provider with the DaaS SDK, have the DaaS SDK installed and the user authenticated, 
+#		then run the script with -controller localhost. Don't use $GLOBAL:XDSDKProxy because it's not a remote DDC address and it's 
+#		not needed. Once you have the user authenticated, the remote connection is already established and there is no need to specify 
+#		a remote DDC. The -BearerToken parameter is also not needed. It was introduced in an earlier version and later was fixed so 
+#		that it's not needed.
+#	End from Citrix
+#
+#	Updated the error message for when the LocalSiteGPO PSDrive cannot be created.
+#
+#		*******************************************************************************************
+#		LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.
+#                                                                                           
+#		Are the two Visual C++ Runtimes installed?                                                 
+#                                                                                           
+#		Verify that the Visual C++ Runtimes are installed.                                         
+#                                                                                           
+#		Install from the Microsoft download page                                                   
+#			https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             
+#			https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
+#                                                                                           
+#		Please see the ReadMe file:                                                                
+#			https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      
+#		*******************************************************************************************
+#
+#	Reformatted the tables for policies to reduce word wrapping.
+#	
+#	Removed all references to $Script:GPSnapinVersion and $Script:SDKVersion
+#
+#	Removed all premature references to product version 2409 (Since this is almost November). I jumped the gun on that.
+#
+#	Removed from all Citrix cmdlets AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#		Also removed from the Group Policy calls
+#
+#	Replaced using the Citrix.GroupPolicy.Commands Snapin with the module
+#
+#	Updated the help text
+#	Updated the ReadMe file
+
 #Version 1.27 7-Oct-2024 Webster's Final Update
 #
 ############################################################################################################################################
