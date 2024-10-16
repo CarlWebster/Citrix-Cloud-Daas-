@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.27
+	VERSION: 1.28 (Webster's For Real Final Update)
 	AUTHOR: Carl Webster
-	LASTEDIT: October 7, 2024
+	LASTEDIT: October 16, 2024
 #>
 
 #endregion
@@ -1527,6 +1527,43 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28 16-Oct-2024 Webster's For Real Final Update
+#	From Citrix to fix the Known Issues in 1.27:
+#		When you run the Group Policy PowerShell Provider with the DaaS SDK, have the DaaS SDK installed and the user authenticated, 
+#		then run the script with -controller localhost. Don't use $GLOBAL:XDSDKProxy because it's not a remote DDC address and it's 
+#		not needed. Once you have the user authenticated, the remote connection is already established and there is no need to specify 
+#		a remote DDC. The -BearerToken parameter is also not needed. It was introduced in an earlier version and later was fixed so 
+#		that it's not needed.
+#	End from Citrix
+#
+#	Updated the error message for when the LocalSiteGPO PSDrive cannot be created.
+#
+#		*******************************************************************************************
+#		LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.
+#                                                                                           
+#		Are the two Visual C++ Runtimes installed?                                                 
+#                                                                                           
+#		Verify that the Visual C++ Runtimes are installed.                                         
+#                                                                                           
+#		Install from the Microsoft download page                                                   
+#		https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             
+#		https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
+#                                                                                           
+#		Please see the ReadMe file:                                                                
+#		https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      
+#*******************************************************************************************
+#
+#	Reformatted the tables for policies to reduce word wrapping.
+#	
+#	Removed all references to $Script:GPSnapinVersion and $Script:SDKVersion
+#
+#	Removed from all Citrix cmdlets AdminAddress = $GLOBAL:XDSDKProxy and BearerToken = $GLOBAL:XDAuthToken
+#		Also removed from the Group Policy calls
+#
+#	Replaced using the Citrix.GroupPolicy.Commands Snapin with the module
+#
+#	Updated the ReadMe file
+#
 #Version 1.27 7-Oct-2024 Webster's Final Update
 #
 ########################################################################################################################################
@@ -3231,9 +3268,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = "'1.27 Webster's Final Update"
+$script:MyVersion   = "'1.28 Webster's For Real Final Update"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "10/07/2024"
+$tmpdate            = [datetime] "10/15/2024"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -6466,9 +6503,8 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Username           : $($UserName)"
 	Write-Verbose "$(Get-Date -Format G): VDA Registry Keys  : $($VDARegistryKeys)"
 	Write-Verbose "$(Get-Date -Format G): "
-	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version  : $($Script:CCSiteVersion)"
-	Write-Verbose "$(Get-Date -Format G): GP Snapin Version  : $($Script:GPSnapinVersion)"
-	Write-Verbose "$(Get-Date -Format G): SDK Version        : $($Script:SDKVersion)"
+	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version1 : $($Script:CCSiteVersion)"
+	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version2 : $($Script:CCSiteVersionReal)"
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): OS Detected        : $($Script:RunningOS)"
 	Write-Verbose "$(Get-Date -Format G): PoSH version       : $($Host.Version)"
@@ -7358,7 +7394,7 @@ Function OutputMachines
 						$Catalog.MinimumFunctionalLevel -eq "L7_30" -or
 						$Catalog.MinimumFunctionalLevel -eq "L7_34") -and
 					($xAllocationType -eq "Permanent" -and $xPersistType -eq "On local disk" ) -and 
-					((Get-ConfigEnabledFeature -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0) -contains "DedicatedFullDiskClone")) #fixed in 1.25
+					((Get-ConfigEnabledFeature -EA 0) -contains "DedicatedFullDiskClone")) #fixed in 1.25
 					{
 						If($MachineData.UseFullDiskCloneProvisioning -eq $True)
 						{
@@ -8678,7 +8714,7 @@ Function OutputMachines
 		#to prevent the "Get-BrokerCatalogRebootSchedule : Object does not exist" error
 		#get all the reboot schedules
 		
-		$CatalogRebootSchedules = Get-BrokerCatalogRebootSchedule -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+		$CatalogRebootSchedules = Get-BrokerCatalogRebootSchedule -EA 0
 		
 		If($? -and $Null -ne $CatalogRebootSchedules)
 		{
@@ -8793,7 +8829,7 @@ Function OutputMachines
 		#them on a per-catalog or a per-machine basis.
 		If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
 		{
-			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.CatalogName -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$VDAUpgrade = Get-VusCatalogInfo -CatalogName $Catalog.CatalogName -EA 0
 			
 			If(!$? -or $Null -eq $VDAUpgrade)
 			{
@@ -11598,7 +11634,7 @@ Function OutputMachineDetails
 		
 	If($Script:VDAUpdateService -eq $True -and ($Catalog.MachinesArePhysical -eq $True -or ($Catalog.ProvisioningType -eq "MCS" -and $xAllocationType -eq "Permanent")))
 	{
-		$VDAUpgrade = Get-VusMachineInfo -MachineUid $Machine.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+		$VDAUpgrade = Get-VusMachineInfo -MachineUid $Machine.Uid -EA 0
 		
 		If(!$? -or $Null -eq $VDAUpgrade)
 		{
@@ -12383,7 +12419,7 @@ Function OutputDeliveryGroupDetails
 		}
 		If($SPLUIDs -contains $Group.Uid)
 		{
-			$Results = Get-BrokerSessionPreLaunch -DesktopGroupUid $Group.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$Results = Get-BrokerSessionPreLaunch -DesktopGroupUid $Group.Uid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				If($Results.Enabled -and $Results.AssociatedUserFullNames.Count -eq 0)
@@ -12432,7 +12468,7 @@ Function OutputDeliveryGroupDetails
 		}
 		If($SLUIDs -contains $Group.Uid)
 		{
-			$Results = Get-BrokerSessionLinger -DesktopGroupUid $Group.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$Results = Get-BrokerSessionLinger -DesktopGroupUid $Group.Uid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				$xSessionLinger = "Keep session active"
@@ -14774,7 +14810,7 @@ Function OutputDeliveryGroupDetails
 		#restart schedules for delivery groups containing single-session OS machines.
 		#If($Group.SessionSupport -eq "MultiSession") 
 		#{
-			$RestartSchedules = Get-BrokerRebootScheduleV2 -DesktopGroupUid $Group.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$RestartSchedules = Get-BrokerRebootScheduleV2 -DesktopGroupUid $Group.Uid -EA 0
 			
 			If($? -and $Null -ne $RestartSchedules)
 			{
@@ -16357,7 +16393,7 @@ Function OutputApplicationDetails
 		ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 		{
 			$cnt++
-			$Results = Get-BrokerDesktopGroup -Uid $DGUid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				$DeliveryGroups += "$($Results.Name) Priority: $($Application.AssociatedDesktopGroupPriorities[$cnt])"
@@ -16368,7 +16404,7 @@ Function OutputApplicationDetails
 	{
 		ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 		{
-			$Results = Get-BrokerDesktopGroup -Uid $DGUid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 			If($? -and $Null -ne $Results)
 			{
 				$DeliveryGroups += $Results.Name
@@ -16867,7 +16903,7 @@ Function OutputApplicationSessions
 			}
 			
 			$RecordingStatus = "Not supported"
-			$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+			$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
 			
 			If($? -and $Null -ne $result)
 			{
@@ -17015,7 +17051,7 @@ Function OutputApplicationAdministrators
 	$DeliveryGroups = @()
 	ForEach($DGUid in $Application.AssociatedDesktopGroupUids)
 	{
-		$Results = Get-BrokerDesktopGroup -Uid $DGUid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+		$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 		If($? -and $Null -ne $Results)
 		{
 			$DeliveryGroups += $Results.Name
@@ -17187,7 +17223,7 @@ Function ProcessApplicationGroupDetails
 			$DGs = @()
 			ForEach($DGUid in $AppGroup.AssociatedDesktopGroupUids)
 			{
-				$results = Get-BrokerDesktopGroup -Uid $DGUid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+				$results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 				
 				If($? -and $Null -ne $results)
 				{
@@ -17931,13 +17967,14 @@ Function OutputSummaryPolicyTable
 			-Format $wdTableGrid `
 			-AutoFit $wdAutoFitFixed;
 
+			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 155
-			$Table.Columns.Item(2).Width = 185
-			$Table.Columns.Item(3).Width = 55;
-			$Table.Columns.Item(4).Width = 60;
-			$Table.Columns.Item(5).Width = 45;
+			$Table.Columns.Item(1).Width = 147;
+			$Table.Columns.Item(2).Width = 180;
+			$Table.Columns.Item(3).Width = 58;
+			$Table.Columns.Item(4).Width = 65;
+			$Table.Columns.Item(5).Width = 50;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -17956,8 +17993,8 @@ Function OutputSummaryPolicyTable
 			)
 
 			$msg = ""
-			$columnWidths = @("155","185","55","60","45")
-			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+			$columnWidths = @("200","240","55","60","45")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "600"
 		}
 	}
 	ElseIf($Null -eq $HDXPolicies)
@@ -18069,10 +18106,11 @@ Function ProcessCitrixPolicies
 				-Format $wdTableGrid `
 				-AutoFit $wdAutoFitFixed;
 
+				SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 				SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-				$Table.Columns.Item(1).Width = 90;
-				$Table.Columns.Item(2).Width = 200;
+				$Table.Columns.Item(1).Width = 100;
+				$Table.Columns.Item(2).Width = 400;
 
 				$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -18113,7 +18151,7 @@ Function ProcessCitrixPolicies
 				$rowdata += @(,('Priority',($global:htmlsb),$Policy.Priority,$htmlwhite))
 
 				$msg = ""
-				$columnWidths = @("90","200")
+				$columnWidths = @("100","400")
 				FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "290"
 			}
 
@@ -18217,13 +18255,14 @@ Function ProcessCitrixPolicies
 						-Format $wdTableGrid `
 						-AutoFit $wdAutoFitFixed;
 
+						SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 						SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-						$Table.Columns.Item(1).Width = 115;
-						$Table.Columns.Item(2).Width = 125;
-						$Table.Columns.Item(3).Width = 50;
-						$Table.Columns.Item(4).Width = 40;
-						$Table.Columns.Item(5).Width = 170;
+						$Table.Columns.Item(1).Width = 132;
+						$Table.Columns.Item(2).Width = 140;
+						$Table.Columns.Item(3).Width = 53;
+						$Table.Columns.Item(4).Width = 43;
+						$Table.Columns.Item(5).Width = 132;
 
 						$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -18241,8 +18280,8 @@ Function ProcessCitrixPolicies
 						'Value',($global:htmlsb))
 
 						$msg = ""
-						$columnWidths = @("115","125","50","40","170")
-						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+						$columnWidths = @("185","140","50","40","185")
+						FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "600"
 					}
 				}
 				Else
@@ -19589,7 +19628,7 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting UsageDataCollectionThroughClient State ) -and ($Setting.UsageDataCollectionThroughClient.State -ne "NotConfigured"))
 					{
 						#added in 2402 and renamed in 2407
-						If($CVADSiteVersion.Major -eq 7 -and $CVADSiteVersion.Minor -eq 41) #cvad 2402
+						If($CCSiteVersion.Major -eq 7 -and $CCSiteVersion.Minor -eq 41) #cvad 2402
 						{
 							$txt = "ICA\Usage data collection through client"	#2402 text
 						}
@@ -21061,7 +21100,7 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\File Redirection"
-					If($Script:CCSiteVersion -lt 7.37)
+					If($Script:CCSiteVersion.Minor -lt 37)
 					{
 						If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
 						{
@@ -21232,7 +21271,7 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ClientRemoveableDrives.State 
 						}
 					}
-					If($Script:CCSiteVersion -lt 7.37)
+					If($Script:CCSiteVersion.Minor -lt 37)
 					{
 						If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
 						{
@@ -21256,7 +21295,7 @@ Function ProcessCitrixPolicies
 							}
 						}
 					}
-					If($Script:CCSiteVersion -ge 7.37)
+					If($Script:CCSiteVersion.Minor -ge 37)
 					{
 						If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
 						{
@@ -34115,7 +34154,7 @@ Function OutputSiteSettings
 		$Scaling = "Horizontal load balancing"
 	}
 	
-	#$Results = Get-BrokerServiceConfigurationData -SettingName "Core.AllowMultipleRemotePCAssignments" -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+	#$Results = Get-BrokerServiceConfigurationData -SettingName "Core.AllowMultipleRemotePCAssignments" -EA 0
 	
 	If($Script:DDCConfigData.SettingName -Contains "Core.AllowMultipleRemotePCAssignments")
 	{
@@ -37276,7 +37315,7 @@ Function OutputHostingSessions
 		}
 		
 		$RecordingStatus = "Not supported"
-		$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+		$result = Get-BrokerSessionRecordingStatus -Session $Session.Uid -EA 0
 		
 		If($? -and $Null -ne $result)
 		{
@@ -37860,7 +37899,7 @@ Function OutputStoreFrontDeliveryGroups
 	$DeliveryGroups = @()
 	ForEach($DGUid in $SFInfo.DesktopGroupUids)
 	{
-		$Results = Get-BrokerDesktopGroup -Uid $DGUid -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+		$Results = Get-BrokerDesktopGroup -Uid $DGUid -EA 0
 		If($? -and $Null -ne $Results)
 		{
 			$DeliveryGroups += $Results.Name
@@ -38745,22 +38784,6 @@ Function ProcessScriptSetup
 		AbortScript
 	} 
 
-	Write-Verbose "$(Get-Date -Format G): Loading Citrix.Common.GroupPolicy PSSnapin"
-	Add-PSSnapin "Citrix.Common.GroupPolicy"
-	If(!$?)
-	{
-		Write-Error "Unable to add the Citrix.Common.GroupPolicy snapin. Script cannot continue."
-		AbortScript
-	}
-
-	#1.27. Let's just show the version only.
-	#code courtesy of Guy Leech
-	$Script:GPSnapinVersion = Get-PSSnapin -Name Citrix.Common.GroupPolicy | Select-Object -ExpandProperty Version
-
-	Write-Host "" -ForegroundColor White
-	Write-Host "You are running Group Policy Snapin version $($Script:GPSnapinVersion)." -ForegroundColor White
-	Write-Host "" -ForegroundColor White
-
 	Write-Verbose "$(Get-Date -Format G): Importing required Citrix PowerShell modules"
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.ADIdentity.Commands"
 	Import-Module "Citrix.ADIdentity.Commands" 4>$Null
@@ -38793,54 +38816,6 @@ Function ProcessScriptSetup
 		Write-Error "Unable to import the Citrix.Broker.Commands module. Script cannot continue."
 		AbortScript
 	}
-	<#
-	In version 1.27, don't check the version as it will keep future DaaS Version from running the script
-	Else
-	{
-		#1.26, add SDK version check. 
-		#If the SDK version is less than 7.38, end the script
-		#code courtesy of Guy Leech
-		$Script:SDKVersion = (((Get-Module -Name Citrix.Broker.Commands | `
-			Select-Object ImplementingAssembly) -as [string]) -split '[=,]') | `
-			Where-Object { $_ -as [version] } | `
-			Sort-Object -Descending | `
-			Select-Object -first 1
-		
-		If($Script:SDKVersion -lt 7.40)
-		{
-			Write-Error "
-	`n`r
-	CVADS Remote Powershell SDK is not the correct version.
-	`n`n
-	Your SDK version is $Script:SDKVersion and must be at least version 7.40.
-	`n`n
-	Please download the latest Remote SDK version from https://download.apps.cloud.com/CitrixPoshSdk.exe
-	`n`n
-	Script will now close.
-	`n
-		"
-			AbortScript
-		}
-		Else
-		{
-			Write-Host "" -ForegroundColor White
-			Write-Host "You are running Remote SDK version $($Script:SDKVersion)." -ForegroundColor White
-			Write-Host "" -ForegroundColor White
-		}
-	}
-	#>
-	
-	#1.27 use this instead. Let's just show the SDK version
-	#code courtesy of Guy Leech
-	$Script:SDKVersion = (((Get-Module -Name Citrix.Broker.Commands | `
-		Select-Object ImplementingAssembly) -as [string]) -split '[=,]') | `
-		Where-Object { $_ -as [version] } | `
-		Sort-Object -Descending | `
-		Select-Object -first 1
-	
-	Write-Host "" -ForegroundColor White
-	Write-Host "You are running Remote SDK version $($Script:SDKVersion)." -ForegroundColor White
-	Write-Host "" -ForegroundColor White
 	
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Common.Commands"
 	Import-Module "Citrix.Common.Commands" 4>$Null
@@ -38874,6 +38849,14 @@ Function ProcessScriptSetup
 		AbortScript
 	}
 	
+	Write-Verbose "$(Get-Date -Format G): Loading Citrix.GroupPolicy.Commands module"
+	Import-Module Citrix.GroupPolicy.Commands
+ 	If(!$?)
+	{
+		Write-Error "Unable to add the Citrix.GroupPolicy.Commands module. Script cannot continue."
+		AbortScript
+	}
+
 	Write-Verbose "$(Get-Date -Format G): `tCitrix.Host.Commands"
 	Import-Module "Citrix.Host.Commands" 4>$Null
 	If(!$?)
@@ -38962,8 +38945,7 @@ Script cannot continue
 			-Name LocalSiteGPO `
 			-psprovider citrixgrouppolicy `
 			-root \ `
-			-controller $GLOBAL:XDSDKProxy `
-			-BearerToken $GLOBAL:XDAuthToken `
+			-controller localhost `
 			-Scope Global *>$Null
 			
 			If(!$? -and $Null -eq $ThisError) #added in 1.16
@@ -38976,6 +38958,17 @@ Script cannot continue
 				Write-Host "" -ForegroundColor White
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
 				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off." -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Are the two Visual C++ Runtimes installed?                                                 " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Verify that the Visual C++ Runtimes are installed.                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Install from the Microsoft download page                                                   " -ForegroundColor Red
+				Write-Host "https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                             " -ForegroundColor Red
+				Write-Host "https://aka.ms/vs/17/release/vc_redist.x64.exe                                             " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Please see the ReadMe file:                                                                " -ForegroundColor Red
+				Write-Host "https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      " -ForegroundColor Red
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
 				Write-Host "" -ForegroundColor White
 				Break
@@ -39063,14 +39056,12 @@ Script cannot continue
 	$Script:CCParams2 = @{
 	EA             = 0;
 	MaxRecordCount = 999; # change required by Citrix [int]::MaxValue "Update your PowerShell scripts to limit the data returned per query to less than 1,000 results by December 1, 2021."
-	AdminAddress   = $GLOBAL:XDSDKProxy
-	BearerToken    = $GLOBAL:XDAuthToken
 	}
 
 	# Get Site information
 	Write-Verbose "$(Get-Date -Format G): Gathering initial Site data"
 
-	$Script:CCSite1 = Get-BrokerSite -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+	$Script:CCSite1 = Get-BrokerSite -EA 0
 
 #Do not indent the following write-error lines. Doing so will mess up the console formatting of the error message.
 	If( !($?) -or $Null -eq $Script:CCSite1)
@@ -39087,7 +39078,7 @@ cmdlet failed: $($error[ 0 ].ToString())
 		AbortScript
 	}
 
-	$Script:CCSite2 = Get-ConfigSite -AdminAddress $GLOBAL:XDSDKProxy -BearerToken $GLOBAL:XDAuthToken -EA 0
+	$Script:CCSite2 = Get-ConfigSite -EA 0
 
 	If( !($?) -or $Null -eq $Script:CCSite2)
 	{
@@ -39101,15 +39092,12 @@ cmdlet failed $($error[ 0 ].ToString())
 		AbortScript
 	}
 
-	$Script:CCSiteVersion = $Script:CCSite2.ProductVersion
-	$tmp = $Script:CCSiteVersion.Split(".")
-	[int]$MajorVersion = $tmp[0]
-	[int]$MinorVersion = $tmp[1]
+	[version]$Script:CCSiteVersion = $Script:CCSite2.ProductVersion
 
-	If($MajorVersion -eq 7)
+	If($Script:CCSiteVersion.Major -eq 7)
 	{
 		#this is a CVAD 7.x Site, now test to see if it is less than 7.26 (CVAD 2006)
-		If($MinorVersion -lt 26)
+		If($Script:CCSiteVersion.Minor -lt 26)
 		{
 			Write-Warning "You are running version $Script:CCSiteVersion"
 			Write-Warning "Are the PowerShell Snapins/Modules or Studio installed?"
@@ -39123,7 +39111,7 @@ Script cannot continue
 			AbortScript
 		}
 	}
-	ElseIf($MajorVersion -eq 0 -and $MinorVersion -eq 0)
+	ElseIf($Script:CCSiteVersion.Major -eq 0 -and $Script:CCSiteVersion.Minor -eq 0)
 	{
 		#something is wrong, we shouldn't be here
 		Write-Error "
@@ -39153,34 +39141,33 @@ Script cannot continue
 	$tmp = $Script:CCSiteVersion
 	Switch ($tmp)
 	{
-		"7.43"	{$Script:CCSiteVersion = "2409"; Break}
-		"7.42"	{$Script:CCSiteVersion = "2407"; Break}
-		"7.41"	{$Script:CCSiteVersion = "2402"; Break}
-		"7.40"	{$Script:CCSiteVersion = "2311"; Break}
-		"7.39"	{$Script:CCSiteVersion = "2308"; Break}
-		"7.38"	{$Script:CCSiteVersion = "2305"; Break}
-		"7.37"	{$Script:CCSiteVersion = "2303"; Break}
-		"7.36"	{$Script:CCSiteVersion = "2212"; Break}
-		"7.35"	{$Script:CCSiteVersion = "2209"; Break}
-		"7.34"	{$Script:CCSiteVersion = "2206"; Break}
-		"7.33"	{$Script:CCSiteVersion = "2203"; Break}
-		"7.32"	{$Script:CCSiteVersion = "2112"; Break}
-		"7.31"	{$Script:CCSiteVersion = "2109"; Break}
-		"7.30"	{$Script:CCSiteVersion = "2106"; Break}
-		"7.29"	{$Script:CCSiteVersion = "2103"; Break}
-		"7.28"	{$Script:CCSiteVersion = "2012"; Break}
-		"7.27"	{$Script:CCSiteVersion = "2009"; Break}
-		"7.26"	{$Script:CCSiteVersion = "2006"; Break}
-		"7.25"	{$Script:CCSiteVersion = "2003"; Break}
-		"7.24"	{$Script:CCSiteVersion = "1912"; Break}
-		"7.23"	{$Script:CCSiteVersion = "1909"; Break}
-		"7.22"	{$Script:CCSiteVersion = "1906"; Break}
-		"7.21"	{$Script:CCSiteVersion = "1903"; Break}
-		"7.20"	{$Script:CCSiteVersion = "1811"; Break}
-		"7.19"	{$Script:CCSiteVersion = "1808"; Break}
-		Default	{$Script:CCSiteVersion = $tmp; Break}
+		"7.42"	{$Script:CCSiteVersionReal = "2407"; Break}
+		"7.41"	{$Script:CCSiteVersionReal = "2402"; Break}
+		"7.40"	{$Script:CCSiteVersionReal = "2311"; Break}
+		"7.39"	{$Script:CCSiteVersionReal = "2308"; Break}
+		"7.38"	{$Script:CCSiteVersionReal = "2305"; Break}
+		"7.37"	{$Script:CCSiteVersionReal = "2303"; Break}
+		"7.36"	{$Script:CCSiteVersionReal = "2212"; Break}
+		"7.35"	{$Script:CCSiteVersionReal = "2209"; Break}
+		"7.34"	{$Script:CCSiteVersionReal = "2206"; Break}
+		"7.33"	{$Script:CCSiteVersionReal = "2203"; Break}
+		"7.32"	{$Script:CCSiteVersionReal = "2112"; Break}
+		"7.31"	{$Script:CCSiteVersionReal = "2109"; Break}
+		"7.30"	{$Script:CCSiteVersionReal = "2106"; Break}
+		"7.29"	{$Script:CCSiteVersionReal = "2103"; Break}
+		"7.28"	{$Script:CCSiteVersionReal = "2012"; Break}
+		"7.27"	{$Script:CCSiteVersionReal = "2009"; Break}
+		"7.26"	{$Script:CCSiteVersionReal = "2006"; Break}
+		"7.25"	{$Script:CCSiteVersionReal = "2003"; Break}
+		"7.24"	{$Script:CCSiteVersionReal = "1912"; Break}
+		"7.23"	{$Script:CCSiteVersionReal = "1909"; Break}
+		"7.22"	{$Script:CCSiteVersionReal = "1906"; Break}
+		"7.21"	{$Script:CCSiteVersionReal = "1903"; Break}
+		"7.20"	{$Script:CCSiteVersionReal = "1811"; Break}
+		"7.19"	{$Script:CCSiteVersionReal = "1808"; Break}
+		Default	{$Script:CCSiteVersionReal = $tmp; Break}
 	}
-	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CCSiteVersion"
+	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CCSiteVersionReal"
 
 	If($SiteName -ne "")
 	{
@@ -39347,9 +39334,8 @@ Function ProcessScriptEnd
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "VDA Registry Keys  : $($VDARegistryKeys)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version  : $($Script:CCSiteVersion)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "GP Snapin Version  : $($Script:GPSnapinVersion)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "SDK Version        : $($Script:SDKVersion)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version1 : $($Script:CCSiteVersion)" 4>$Null
+		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version2 : $($Script:CCSiteVersionReal)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "OS Detected        : $($Script:RunningOS)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PoSH version       : $($Host.Version)" 4>$Null
