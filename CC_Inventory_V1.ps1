@@ -1,4 +1,4 @@
-﻿#Requires -Version 5.0
+#Requires -Version 5.0
 #This File is in Unicode format. Do not edit in an ASCII editor. Notepad++ UTF-8-BOM
 
 #region help text
@@ -1495,10 +1495,10 @@ Param(
 	[ValidateNotNullOrEmpty()]
 	[string]$CoverPage="Sideline", 
 
-	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
-	[Alias("UN")]
- -	[ValidateNotNullOrEmpty()]
-	[string]$UserName=$env:username,
+[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
+[Alias("UN")]
+[ValidateNotNullOrEmpty()]
+[string]$UserName=$env:username,
 
 	[parameter(Mandatory=$False)] 
 	[string]$SmtpServer="",
