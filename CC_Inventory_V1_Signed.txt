@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28 (Webster's For Real Final Update)
+	VERSION: 1.28.001 (Webster's For Real Final Update)
 	AUTHOR: Carl Webster
-	LASTEDIT: October 16, 2024
+	LASTEDIT: June 26, 2025
 #>
 
 #endregion
@@ -1497,7 +1497,7 @@ Param(
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("UN")]
- -	[ValidateNotNullOrEmpty()]
+ 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
 	[parameter(Mandatory=$False)] 
@@ -1527,6 +1527,10 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.001 26-Jun-2025
+#	Fix a typo spotted by Mike Streetz. Remove an erroneous "-" on line 1500
+#	Go ahead and update the version lists for 7.43, 7.44, and 7.45
+#
 #Version 1.28 16-Oct-2024 Webster's For Real Final Update
 #
 #	Change the Site version data to use PowerShell's [version]
@@ -38791,6 +38795,9 @@ Script cannot continue
 	$tmp = $Script:CCSiteVersion
 	Switch ($tmp)
 	{
+		"7.45"	{$Script:CCSiteVersionReal = "2507"; Break}
+		"7.44"	{$Script:CCSiteVersionReal = "2503"; Break}
+		"7.43"	{$Script:CCSiteVersionReal = "2411"; Break}
 		"7.42"	{$Script:CCSiteVersionReal = "2407"; Break}
 		"7.41"	{$Script:CCSiteVersionReal = "2402"; Break}
 		"7.40"	{$Script:CCSiteVersionReal = "2311"; Break}
@@ -39373,8 +39380,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIItSAYJKoZIhvcNAQcCoIItOTCCLTUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUWm8QbNZdwPlc8e9XVtw+YCEk
-# jDSggiaoMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6MBkV+ToggaQ0kn8E3wakq9P
+# oW+ggiaoMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -39584,33 +39591,33 @@ ProcessScriptEnd
 # VQQKEw5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBH
 # NCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAts37ZngQ4q
 # 58taEbodSXAwCQYFKw4DAhoFAKBAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MCMGCSqGSIb3DQEJBDEWBBSF+LUyrQdOc2Rs0mIgp7XgPEE6ZzANBgkqhkiG9w0B
-# AQEFAASCAgBKCelUddA+QxuQZY1rL263ynQ3zreAMk1fQ42JuknuypJT9Fpv3fju
-# hWVCod9qVZfVvtuUWik7vh2Ss6AhEJSqMba+zrzTXygvYJGSl5kOKmu2KNmTK18m
-# 0r9UCBTddCuthnSWVlX1zTWl4wmYrFvlzds4FX4sGr1A+yM+zc+k0m3FGdw1+N4A
-# 2Al+ifjDmMIZJFyA2iiyJEuw8DH5OlWNI3jeRF07wL5MBzeUHL11kY2m5E13t0K4
-# pFeRgj9zUWdCxn6d/r3YE1vfw9nUyFAHZYRAxB5lrKDPiuiUoLHaAh+KbJ2FTnmD
-# w5bKi3VxESiLGhGH6Whz3KusggxWxeRGBvC/NmDPV7xIVt7emy5E9tAOhfhNIIbs
-# bLT0p83PJWsa6KWc8htVZzbkT9mCYZLAR3hQLzImQMZDNPMZ3gX6RydEr+ZGoVtG
-# zror6mBrWY7eYM2eQtRkP+KjD7KWXC8hjIh4WQvsNRTqJCiNu/5v+Rkjb9QrBXq0
-# kRwfL7li2yOIrHOjR/hPh6XW0MIneNyMC2G8KcRnGqnWUu4hX8q8oi9e1BA3jRnd
-# twOSik3mSNKjAcYT1DdRchxZfcSR/2diQJb97tpOJD7kA/UjyRodnBrKgVe680eK
-# Bp6c+fLoxkmh6BOuEkiUU5iAJHv28ewLD9Y4nZqn9/+fOAJXnlRu26GCAyAwggMc
+# MCMGCSqGSIb3DQEJBDEWBBSHkrovozpXn68MHL6Gjo9Or+7rLzANBgkqhkiG9w0B
+# AQEFAASCAgCmMazSmJLU2gheiwLNPTdWRlc+tsQTBq3tiYzkKw2otiuFOgYzN5uo
+# TxTbdM1ekUSOdlXSuq0nRNjW5C9mcqY45iHxPAUwQ1xkN5D4cDj8AOhGHUCIA818
+# dV4AahRrSlZdGCnwnX4w2fAiPEOrYDCtL4MlqWKVX4FJjdhrP19RReXHmdH1+LTw
+# UeMZxDJeMaO6sMH33PH5bkWBfuBticKClu/f6W8b3Tbb+UJXdlIXTdJpASHSDLWx
+# 3O3zrvVqcPlPfbA4FbeeKy4sPrXe7Z7YTZZIC7mjDmA0YCR+12fvv25EKIq8mCFa
+# gOMbNNg/3Y0YIcS29f1O0zTzG+wM0TdjSOCN/t0Zi2QMG+Z4OV0rq5U4x8+VeTJX
+# 6y5+2Id7u9CDABCYGRo3q3cl8Mee2U61uYEQYhdlCMN6d2/YaEUpCHp/ADAuecSk
+# 7dZyelNfyAEY/RWRJkmCfLoFAVovW+CiDL9FtlXrJ9Bqv3EnrGvLph+GZmgY7ylX
+# jj1Fo/QgPylK6YcZg6Vi38PVGa58K8P/fhNzJu5AZqCQ+Ys0eA9RaoieOrt1eSX+
+# 1cP/kmothmVMBZP8cxfFxUJ6Wem87hfB6A/lZIMv4mKulmGm9QCCJ9eOXnQOys1S
+# RGSSW82HnctqM3CCe3l+oV95gj8y0yRorBpm6HbAlKtFGYeI9QhC76GCAyAwggMc
 # BgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
 # Ew5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBS
 # U0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAuuZrxaun+Vh8b56QTjMwQw
 # DQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-# SIb3DQEJBTEPFw0yNDEwMTYyMDA0MDFaMC8GCSqGSIb3DQEJBDEiBCDc3sdIT5GD
-# 1wbFTSRSNuhjIWSfGMJwy0dh0cx/xNYi7TANBgkqhkiG9w0BAQEFAASCAgCMT82+
-# xuS1f12CaaMvs42EzjdMKsq6HYDxzI1EDIglZK+92CxU9kZMnKvpZEHDWT/zKxvY
-# 4G7i4z3v+TZu2zU8ozg5QLIIAguDQRCMHgGTMk1DN8JBm8CPz5FqSKEuK06+Vju6
-# DruBsR/ZPOggIFkYCr/2PEACwOes3jJj+u6uWE2g6slGv6Eru4P1UR0XpEf5kLwT
-# gxSFrQ43sE5JNtffy4/E7aHNI47loXBZaW8eYxohRN771Ep0PfOI/zGOkDDaMju+
-# q87Ba7RCsT8SrOn6XQ8GTGGuwclu4QkomQ79ffo/R79ocCBXXs2u17NKEd1qfJnH
-# RsyT4KNe2SjG8LbLLYo2QXw09X1DsbRCj7ib+8jS/kTjNNEd+xKppMRwt5RwSJLs
-# Uo9WjdB0QJn/h/ke9vAlSODgwIdqU/oo2WSNK4hr/NjGmYPdu/WIOgGxn65WhceF
-# xWw8pHH1FC+I3rNTCMgAEZwKNtl+BUSgWGuQq1UZ0zu+oWXwgDl+5OWTWj9Ijdpr
-# uYvz5BVU6t8Pc3ZguHgLnZiFeDDEkaCgZelrqUKYtFcPWcPJnY1vwMVVLDADrUq2
-# F/oPyuO1lzPQl6hKL5kBEZMecye5sBTEez/1M4IbOK2KrPtFpKHYxrlJWFDrkMMF
-# OPg5v1kgYO9i3mLSFVpq1N5KpfcuzEiJDda8TQ==
+# SIb3DQEJBTEPFw0yNTA2MjYxNjUyMDhaMC8GCSqGSIb3DQEJBDEiBCBhhysV5+t4
+# z5tpPJE9w1A0Mows8T3W4fVY5041iCZ3wjANBgkqhkiG9w0BAQEFAASCAgAZqyR2
+# EiMV4E/2X9huGrh8J8Rno6ATN2HsCpyc1L6UNyDzCg1tptNJZPxEhVFPYcG0na8V
+# O0zZFCzud898QPhz5VVkZJPNXcAvCftVF1iiw+C6Sj67vWLkerXQBwD/Ayskfi6L
+# p/saTR+4Y6eGX4keg1G957Y/T70dSHCH88lg4X/Y8+30zK8Gisv8Lj603GIGsl+/
+# w395OQgVMYzLi22q2w7nPIAK7jPZM/xGa9sPWJ9xeA0QVOxxs7zIj4+yIS3/IgiZ
+# J0LO7W4wsMmGoVkOKREt6zmYSCTaz1xr3cPqh7vFGCtGptbMRbzGTXKezzoGV8mj
+# E8LT+ZBZc4PJsTDqHdohJ2dygf5oXo1x8Xi+okIzSGfEIi9QzFMtuuTbWFYAfDsk
+# MjV9KEkgsNC8iD4IpX8hAOagbhMRK0vo1lmIKPrdpdVUT3InRGrnxnu4ZmZlLwD/
+# SDZJ8yMGjtWd2vY9ZsWCzaF9cclmtFN4kuEPPAKiiQ4wkHEym01aKprMEhrT9tHj
+# kNtdamumf9JkXXH/B4WmHjmM6jFWdlUXp9thzIQpL/AMKQ3//e+CivbfAH+oxKpn
+# Y47x1QfvclhE1+9e8hJjf15iAh9gjC2cpx1ecHMoOEEbf9wkgo4CBwpI47YAXYhr
+# dcevP9zwvGBeFZ2s02lYQ0h8fbk030S9wBChJg==
 # SIG # End signature block

@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28 (Webster's For Real Final Update)
+	VERSION: 1.28.001 (Webster's For Real Final Update)
 	AUTHOR: Carl Webster
-	LASTEDIT: October 16, 2024
+	LASTEDIT: June 26, 2025
 #>
 
 #endregion
@@ -1497,7 +1497,7 @@ Param(
 
 	[parameter(ParameterSetName="WordPDF",Mandatory=$False)] 
 	[Alias("UN")]
- -	[ValidateNotNullOrEmpty()]
+ 	[ValidateNotNullOrEmpty()]
 	[string]$UserName=$env:username,
 
 	[parameter(Mandatory=$False)] 
@@ -1527,6 +1527,10 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.001 26-Jun-2025
+#	Fix a typo spotted by Mike Streetz. Remove an erroneous "-" on line 1500
+#	Go ahead and update the version lists for 7.43, 7.44, and 7.45
+#
 #Version 1.28 16-Oct-2024 Webster's For Real Final Update
 #
 #	Change the Site version data to use PowerShell's [version]
@@ -38791,6 +38795,9 @@ Script cannot continue
 	$tmp = $Script:CCSiteVersion
 	Switch ($tmp)
 	{
+		"7.45"	{$Script:CCSiteVersionReal = "2507"; Break}
+		"7.44"	{$Script:CCSiteVersionReal = "2503"; Break}
+		"7.43"	{$Script:CCSiteVersionReal = "2411"; Break}
 		"7.42"	{$Script:CCSiteVersionReal = "2407"; Break}
 		"7.41"	{$Script:CCSiteVersionReal = "2402"; Break}
 		"7.40"	{$Script:CCSiteVersionReal = "2311"; Break}
