@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.001 (Webster's For Real Final Update)
+	VERSION: 1.28.002 (Webster's For Real Final Update)
 	AUTHOR: Carl Webster
-	LASTEDIT: June 26, 2025
+	LASTEDIT: June 30, 2025
 #>
 
 #endregion
@@ -1527,6 +1527,39 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.002 30-Jul-2025 - Thanks to Ferroque Systems, Michael Shuster, Lina FLorez, and Richard Faulkner for the help in gathering data for this update. 
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Admin_NameControl
+#			Admin_Sync
+#			Director_Analytics
+#			Director_BulkActions_Edit
+#			Director_CostSavings
+#			Director_InfrastructureMonitor_Edit
+#			Director_MTOPInformation_Edit
+#			Director_ProbeSummaryView
+#			Director_Search_Cond_Auth_Transaction
+#			Director_SecurePrivateAccess
+#			Director_Settings
+#			Director_ShadowSessionViaHDXSS
+#			Director_ShadowSessionViaHDXSS_Edit
+#			EntitlementPolicyRule_ChangeTags (New section Entitlement Policy Rules)
+#			EntitlementPolicyRule_Machine_ChangeTags (New section Entitlement Policy Rules)
+#			Hosts_DetectOrphanedResources
+#			Configuration_Restricted_ServiceRead
+#			Configuration_Restricted_ServiceWrite
+#			Director_Admin
+#			EdgeService_Admin
+#			Paladin_Admin
+#			PVS_Admin
+#			SkylightBroker
+#			Trust_MultiTenantAccessList
+#			Trust_VdaEnrollment
+#
+#		Updated description for
+#			Director_AlertWebhookProfile_Edit
+#			DirectorAgent_Registration
+#
 #Version 1.28.001 26-Jun-2025
 #	Fix a typo spotted by Mike Streetz. Remove an erroneous "-" on line 1500
 #	Go ahead and update the version lists for 7.43, 7.44, and 7.45
@@ -35220,9 +35253,11 @@ Function GetRolePermissions
 		Switch ($Permission)
 		{
 			"Admin_FullControl"											{$Results.Add("Manage Administrators", "Administrators")}
+			"Admin_NameControl"											{$Results.Add("Force Admin Name Update", "Administrators")} #added in 1.28.002
 			"Admin_Read"												{$Results.Add("View Administrators", "Administrators")}
 			"Admin_RoleControl"											{$Results.Add("Manage Administrator Custom Roles", "Administrators")}
 			"Admin_ScopeControl"										{$Results.Add("Manage Administrator Scopes", "Administrators")}
+			"Admin_Sync"												{$Results.Add("Allow Admin Sync", "Administrators")} #added in 1.28.002
 			"Manage_ServiceConfigurationData"							{$Results.Add("Manage ServiceSettings", "Administrators")}
 			
 			"AppGroupApplications_ChangeTags"							{$Results.Add("Edit Application tags (Application Group)", "Application Groups")}
@@ -35328,12 +35363,15 @@ Function GetRolePermissions
 			"Director_AlertPolicy_Edit"									{$Results.Add("Create\Edit\Delete Alert Policies", "Director")}
 			"Director_AlertPolicy_Read"									{$Results.Add("View Alert Policies", "Director")}
 			"Director_Alerts_Read"										{$Results.Add("View Alerts", "Director")}
-			"Director_AlertWebhookProfile_Edit"							{$Results.Add("(2)", "Director")} #added in 1.27
+			"Director_AlertWebhookProfile_Edit"							{$Results.Add("Create\Edit\Remove\View Webhook Profile Configurations", "Director")} #added in 1.27, updated in 1.28.002
+			"Director_Analytics"										{$Results.Add("View Analytics page", "Director")} #added in 1.28.002
 			"Director_ApplicationDashboard"								{$Results.Add("View Applications page", "Director")}
+			"Director_BulkActions_Edit"									{$Results.Add("Perform bulk actions for machine and session management", "Director")} #added in 1.28.002
 			"Director_ClientDetails_Read"								{$Results.Add("View Client Details page", "Director")}
 			"Director_ClientHelpDesk_Read"								{$Results.Add("View Client Activity Manager page", "Director")}
 			"Director_CloudAnalyticsConfiguration"						{$Results.Add("Create\Edit\Remove Cloud Analytics Configurations", "Director")}
 			"Director_Configuration"									{$Results.Add("View Configurations page", "Director")}
+			"Director_CostSavings"										{$Results.Add("View Cost Optimization page", "Director")} #added in 1.28.002
 			"Director_Dashboard_Read"									{$Results.Add("View Dashboard page", "Director")}
 			"Director_DesktopHardwareInformation_Edit"					{$Results.Add("Edit Machine Hardware related Broker machine command properties", "Director")}
 			"Director_DiskMetrics_Edit"									{$Results.Add("Edit Disk metrics related Broker machine command properties", "Director")}
@@ -35350,6 +35388,7 @@ Function GetRolePermissions
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
 			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
+			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Director")} #added in 1.28.002
 			"Director_IntegrationsAndDataExport"						{$Results.Add("View Integrations and Data exports page", "Director")} #added in 1.27
 			"Director_KillApplication"									{$Results.Add("Perform Kill Application running on a machine", "Director")}
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
@@ -35358,17 +35397,24 @@ Function GetRolePermissions
 			"Director_LatencyInformation_Edit"							{$Results.Add("Edit Latency related Broker machine command properties", "Director")}
 			"Director_MachineDetails_Read"								{$Results.Add("View Machine Details page", "Director")}
 			"Director_MachineMetricValues_Edit"							{$Results.Add("Edit Machine metric related Broker machine command properties", "Director")}
+			"Director_MTOPInformation_Edit"								{$Results.Add("Edit MTOP related Broker machine command properties", "Director")} #added in 1.28.001
 			"Director_PersonalizationInformation_Edit"					{$Results.Add("Edit Personalization related Broker machine command properties", "Director")}
 			"Director_PoliciesInformation_Edit"							{$Results.Add("Edit Policies related Broker machine command properties", "Director")}
 			"Director_ProbeConfigurationActions"						{$Results.Add("Create\Edit\Remove Probe Configurations", "Director")}
+			"Director_ProbeSummaryView"									{$Results.Add("View Probe Summary page", "Director")} #added in 1.28.002
 			"Director_ProfileLoadData_Edit"								{$Results.Add("Edit Profile Load Data related Broker machine command properties", "Director")}
 			"Director_ResetVDisk"										{$Results.Add("Perform Reset VDisk operation", "Director")}
 			"Director_ResetVDisk_Edit"									{$Results.Add("Edit Reset VDisk related Broker machine command properties", "Director")}
 			"Director_RoundTripInformation_Edit"						{$Results.Add("Edit Roundtrip Time related Broker machine command properties", "Director")}
 			"Director_SCOM_Read"										{$Results.Add("View SCOM Notifications", "Director")}
+			"Director_Search_Cond_Auth_Transaction"						{$Results.Add("View Conditional Authentication Transaction Data", "Director")} #added in 1.28.002
 			"Director_Search_Transaction"								{$Results.Add("View Transaction Data", "Director")}
+			"Director_SecurePrivateAccess"								{$Results.Add("View Secure Private Access page", "Director")} #added in 1.28.002
+			"Director_Settings"											{$Results.Add("View Settings page", "Director")} #added in 1.28.002
 			"Director_ShadowSession"									{$Results.Add("Perform Remote Assistance on a machine", "Director")}
 			"Director_ShadowSession_Edit"								{$Results.Add("Edit Remote Assistance related Broker machine command properties", "Director")}
+			"Director_ShadowSessionViaHDXSS"							{$Results.Add("Perform Remote Assistance on a machine via HDX Screen Sharing", "Director")} #added in 1.28.002
+			"Director_ShadowSessionViaHDXSS_Edit"						{$Results.Add("Edit HDX Screen Sharing related machine command properties", "Director")} #added in 1.28.002
 			"Director_SliceAndDice_Read"								{$Results.Add("View Filters page", "Director")}
 			"Director_StartupMetrics_Edit"								{$Results.Add("Edit Startup related Broker machine command properties", "Director")}
 			"Director_TaskManagerInformation_Edit"						{$Results.Add("Edit Task Manager related Broker machine command properties", "Director")}
@@ -35380,6 +35426,9 @@ Function GetRolePermissions
 			
 			"Director_ProbeAgentConfigurationActions"					{$Results.Add("Access to Probe Agent APIs", "DirectorProbeAgent")}
 
+			"EntitlementPolicyRule_ChangeTags"							{$Results.Add("Edit Entitlement Policy Rule tags", "Entitlement Policy Rules")} #added in 1.28.002
+			"EntitlementPolicyRule_Machine_ChangeTags"					{$Results.Add("Edit Entitlement Policy Rule machine tags", "Entitlement Policy Rules")} #added in 1.28.002
+
 			"Hosts_AddScope"											{$Results.Add("Add Host Connection to Scope", "Hosts")}
 			"Hosts_AddStorage"											{$Results.Add("Add storage to Resources", "Hosts")}
 			"Hosts_ChangeMaintenanceMode"								{$Results.Add("Enable/disable maintenance mode of a Host Connection", "Hosts")}
@@ -35387,6 +35436,7 @@ Function GetRolePermissions
 			"Hosts_CreateHost"											{$Results.Add("Add Host Connection or Resources", "Hosts")}
 			"Hosts_DeleteConnection"									{$Results.Add("Delete Host Connection", "Hosts")}
 			"Hosts_DeleteHost"											{$Results.Add("Delete Resources", "Hosts")}
+			"Hosts_DetectOrphanedResources"								{$Results.Add("Use Host Connection to Detect Orphaned Resources in Hypervisor", "Hosts")} #added in 1.28.002
 			"Hosts_EditConnectionProperties"							{$Results.Add("Edit Host Connection properties", "Hosts")}
 			"Hosts_EditHostProperties"									{$Results.Add("Edit Resources", "Hosts")}
 			"Hosts_Read"												{$Results.Add("View Host Connections and Resources", "Hosts")}
@@ -35418,7 +35468,7 @@ Function GetRolePermissions
 			"Catalog_Delete"											{$Results.Add("Delete Machine Catalog", "Machine Catalogs")}
 			"Catalog_EditFolder"										{$Results.Add("Edit Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_EditProperties"									{$Results.Add("Edit Machine Catalog Properties", "Machine Catalogs")}
-			"Catalog_Manage_ChangeTags"									{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
+			"Catalog_Machine_ChangeTags"								{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
 			"Catalog_ManageAccounts"									{$Results.Add("Manage Active Directory Accounts", "Machine Catalogs")}
 			"Catalog_ManageWemSet"										{$Results.Add("Manage Catalog Configuration Set", "Machine Catalogs")} #added in 1.27
 			"Catalog_MoveFolder"										{$Results.Add("Move Machine Catalog Folder", "Machine Catalogs")}
@@ -35436,21 +35486,30 @@ Function GetRolePermissions
 			"AutoTagRule_Edit"											{$Results.Add("Edit AutoTagRule", "Other permissions")}
 			"AutoTagRule_Read"											{$Results.Add("Read AutoTagRule", "Other permissions")}
 			"Configuration_Read"										{$Results.Add("Read Site Configuration (Configuration_Read)", "Other permissions")}
+			"Configuration_Restricted_ServiceRead"						{$Results.Add("", "Other permissions")} #added in 1.28.002
+			"Configuration_Restricted_ServiceWrite"						{$Results.Add(" (1) ", "Other permissions")} #added in 1.28.002
 			"Configuration_Restricted_Write"							{$Results.Add("Customer Update Site Configuration", "Other permissions")}
 			"Configuration_Unrestricted_Write"							{$Results.Add("Update Site Configuration", "Other permissions")}
 			"Database_Read"												{$Results.Add("Read database status information", "Other permissions")}
-			"DirectorAgent_Registration"								{$Results.Add("(1)", "Other permissions")}	#added in 1.27
+			"Director_Admin"											{$Results.Add("Director admin permission", "Other permissions")} #added in 1.28.002
+			"DirectorAgent_Registration"								{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Other permissions")} #added in 1.27, updated in 1.28.002
+			"EdgeService_Admin"											{$Results.Add("EdgeService LHC permission", "Other permissions")} #added in 1.28.002
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
 			"Global_Write"												{$Results.Add("Update Site Configuration (Global_Write)", "Other permissions")}
 			"Orchestration_RestApi"										{$Results.Add("Manage Orchestration Service REST API", "Other permissions")}
+			"Paladin_Admin"												{$Results.Add("Paladin service permission", "Other permissions")} #added in 1.28.002
 			"PerformUpgrade"											{$Results.Add("Perform upgrade", "Other permissions")}
+			"PVS_Admin"													{$Results.Add("PVS console admin permission", "Other permissions")} #added in 1.28.002
+			"SkylightBroker"											{$Results.Add(" (4) ", "Other permissions")} #added in 1.28.002
 			"Tag_Create"												{$Results.Add("Create tags", "Other permissions")}
 			"Tag_Delete"												{$Results.Add("Delete tags", "Other permissions")}
 			"Tag_Edit"													{$Results.Add("Edit tags", "Other permissions")}
 			"Tag_Read"													{$Results.Add("Read tags", "Other permissions")}
+			"Trust_MultiTenantAccessList"								{$Results.Add(" (3) ", "Other permissions")} #added in 1.28.002
 			"Trust_ServiceKeys"											{$Results.Add("Manage Trust Service Keys", "Other permissions")}
+			"Trust_VdaEnrollment"										{$Results.Add(" (2) ", "Other permissions")}
 			"VdaUpgrade_CatalogManage"									{$Results.Add("Manage VDA Upgrade Catalog Schedules", "Other permissions")}
 			"VdaUpgrade_MachineManage"									{$Results.Add("Manage VDA Upgrade Machine Schedules", "Other permissions")}
 
