@@ -6,6 +6,39 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.002 30-Jul-2025 - Thanks to Ferroque Systems, Michael Shuster, Lina FLorez, and Richard Faulkner for the help in gathering data for this update. 
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Admin_NameControl
+#			Admin_Sync
+#			Director_Analytics
+#			Director_BulkActions_Edit
+#			Director_CostSavings
+#			Director_InfrastructureMonitor_Edit
+#			Director_MTOPInformation_Edit
+#			Director_ProbeSummaryView
+#			Director_Search_Cond_Auth_Transaction
+#			Director_SecurePrivateAccess
+#			Director_Settings
+#			Director_ShadowSessionViaHDXSS
+#			Director_ShadowSessionViaHDXSS_Edit
+#			EntitlementPolicyRule_ChangeTags (New section Entitlement Policy Rules)
+#			EntitlementPolicyRule_Machine_ChangeTags (New section Entitlement Policy Rules)
+#			Hosts_DetectOrphanedResources
+#			Configuration_Restricted_ServiceRead
+#			Configuration_Restricted_ServiceWrite
+#			Director_Admin
+#			EdgeService_Admin
+#			Paladin_Admin
+#			PVS_Admin
+#			SkylightBroker
+#			Trust_MultiTenantAccessList
+#			Trust_VdaEnrollment
+#
+#		Updated description for
+#			Director_AlertWebhookProfile_Edit
+#			DirectorAgent_Registration
+
 #Version 1.28.001 26-JUn-2025
 #	Fix a typo spotted by Mike Streetz. Remove an erroneous "-" on line 1500
 #	Go ahead and update the version lists for 7.43, 7.44, and 7.45

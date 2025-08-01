@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.001 (Webster's For Real Final Update)
+	VERSION: 1.28.002 (Webster's For Real Final Update)
 	AUTHOR: Carl Webster
-	LASTEDIT: June 26, 2025
+	LASTEDIT: June 30, 2025
 #>
 
 #endregion
@@ -1527,6 +1527,39 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.002 30-Jul-2025 - Thanks to Ferroque Systems, Michael Shuster, Lina FLorez, and Richard Faulkner for the help in gathering data for this update. 
+#	In Function GetRolePermissions:
+#		Added new permissions
+#			Admin_NameControl
+#			Admin_Sync
+#			Director_Analytics
+#			Director_BulkActions_Edit
+#			Director_CostSavings
+#			Director_InfrastructureMonitor_Edit
+#			Director_MTOPInformation_Edit
+#			Director_ProbeSummaryView
+#			Director_Search_Cond_Auth_Transaction
+#			Director_SecurePrivateAccess
+#			Director_Settings
+#			Director_ShadowSessionViaHDXSS
+#			Director_ShadowSessionViaHDXSS_Edit
+#			EntitlementPolicyRule_ChangeTags (New section Entitlement Policy Rules)
+#			EntitlementPolicyRule_Machine_ChangeTags (New section Entitlement Policy Rules)
+#			Hosts_DetectOrphanedResources
+#			Configuration_Restricted_ServiceRead
+#			Configuration_Restricted_ServiceWrite
+#			Director_Admin
+#			EdgeService_Admin
+#			Paladin_Admin
+#			PVS_Admin
+#			SkylightBroker
+#			Trust_MultiTenantAccessList
+#			Trust_VdaEnrollment
+#
+#		Updated description for
+#			Director_AlertWebhookProfile_Edit
+#			DirectorAgent_Registration
+#
 #Version 1.28.001 26-Jun-2025
 #	Fix a typo spotted by Mike Streetz. Remove an erroneous "-" on line 1500
 #	Go ahead and update the version lists for 7.43, 7.44, and 7.45
@@ -35220,9 +35253,11 @@ Function GetRolePermissions
 		Switch ($Permission)
 		{
 			"Admin_FullControl"											{$Results.Add("Manage Administrators", "Administrators")}
+			"Admin_NameControl"											{$Results.Add("Force Admin Name Update", "Administrators")} #added in 1.28.002
 			"Admin_Read"												{$Results.Add("View Administrators", "Administrators")}
 			"Admin_RoleControl"											{$Results.Add("Manage Administrator Custom Roles", "Administrators")}
 			"Admin_ScopeControl"										{$Results.Add("Manage Administrator Scopes", "Administrators")}
+			"Admin_Sync"												{$Results.Add("Allow Admin Sync", "Administrators")} #added in 1.28.002
 			"Manage_ServiceConfigurationData"							{$Results.Add("Manage ServiceSettings", "Administrators")}
 			
 			"AppGroupApplications_ChangeTags"							{$Results.Add("Edit Application tags (Application Group)", "Application Groups")}
@@ -35328,12 +35363,15 @@ Function GetRolePermissions
 			"Director_AlertPolicy_Edit"									{$Results.Add("Create\Edit\Delete Alert Policies", "Director")}
 			"Director_AlertPolicy_Read"									{$Results.Add("View Alert Policies", "Director")}
 			"Director_Alerts_Read"										{$Results.Add("View Alerts", "Director")}
-			"Director_AlertWebhookProfile_Edit"							{$Results.Add("(2)", "Director")} #added in 1.27
+			"Director_AlertWebhookProfile_Edit"							{$Results.Add("Create\Edit\Remove\View Webhook Profile Configurations", "Director")} #added in 1.27, updated in 1.28.002
+			"Director_Analytics"										{$Results.Add("View Analytics page", "Director")} #added in 1.28.002
 			"Director_ApplicationDashboard"								{$Results.Add("View Applications page", "Director")}
+			"Director_BulkActions_Edit"									{$Results.Add("Perform bulk actions for machine and session management", "Director")} #added in 1.28.002
 			"Director_ClientDetails_Read"								{$Results.Add("View Client Details page", "Director")}
 			"Director_ClientHelpDesk_Read"								{$Results.Add("View Client Activity Manager page", "Director")}
 			"Director_CloudAnalyticsConfiguration"						{$Results.Add("Create\Edit\Remove Cloud Analytics Configurations", "Director")}
 			"Director_Configuration"									{$Results.Add("View Configurations page", "Director")}
+			"Director_CostSavings"										{$Results.Add("View Cost Optimization page", "Director")} #added in 1.28.002
 			"Director_Dashboard_Read"									{$Results.Add("View Dashboard page", "Director")}
 			"Director_DesktopHardwareInformation_Edit"					{$Results.Add("Edit Machine Hardware related Broker machine command properties", "Director")}
 			"Director_DiskMetrics_Edit"									{$Results.Add("Edit Disk metrics related Broker machine command properties", "Director")}
@@ -35350,6 +35388,7 @@ Function GetRolePermissions
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
 			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
+			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Director")} #added in 1.28.002
 			"Director_IntegrationsAndDataExport"						{$Results.Add("View Integrations and Data exports page", "Director")} #added in 1.27
 			"Director_KillApplication"									{$Results.Add("Perform Kill Application running on a machine", "Director")}
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
@@ -35358,17 +35397,24 @@ Function GetRolePermissions
 			"Director_LatencyInformation_Edit"							{$Results.Add("Edit Latency related Broker machine command properties", "Director")}
 			"Director_MachineDetails_Read"								{$Results.Add("View Machine Details page", "Director")}
 			"Director_MachineMetricValues_Edit"							{$Results.Add("Edit Machine metric related Broker machine command properties", "Director")}
+			"Director_MTOPInformation_Edit"								{$Results.Add("Edit MTOP related Broker machine command properties", "Director")} #added in 1.28.001
 			"Director_PersonalizationInformation_Edit"					{$Results.Add("Edit Personalization related Broker machine command properties", "Director")}
 			"Director_PoliciesInformation_Edit"							{$Results.Add("Edit Policies related Broker machine command properties", "Director")}
 			"Director_ProbeConfigurationActions"						{$Results.Add("Create\Edit\Remove Probe Configurations", "Director")}
+			"Director_ProbeSummaryView"									{$Results.Add("View Probe Summary page", "Director")} #added in 1.28.002
 			"Director_ProfileLoadData_Edit"								{$Results.Add("Edit Profile Load Data related Broker machine command properties", "Director")}
 			"Director_ResetVDisk"										{$Results.Add("Perform Reset VDisk operation", "Director")}
 			"Director_ResetVDisk_Edit"									{$Results.Add("Edit Reset VDisk related Broker machine command properties", "Director")}
 			"Director_RoundTripInformation_Edit"						{$Results.Add("Edit Roundtrip Time related Broker machine command properties", "Director")}
 			"Director_SCOM_Read"										{$Results.Add("View SCOM Notifications", "Director")}
+			"Director_Search_Cond_Auth_Transaction"						{$Results.Add("View Conditional Authentication Transaction Data", "Director")} #added in 1.28.002
 			"Director_Search_Transaction"								{$Results.Add("View Transaction Data", "Director")}
+			"Director_SecurePrivateAccess"								{$Results.Add("View Secure Private Access page", "Director")} #added in 1.28.002
+			"Director_Settings"											{$Results.Add("View Settings page", "Director")} #added in 1.28.002
 			"Director_ShadowSession"									{$Results.Add("Perform Remote Assistance on a machine", "Director")}
 			"Director_ShadowSession_Edit"								{$Results.Add("Edit Remote Assistance related Broker machine command properties", "Director")}
+			"Director_ShadowSessionViaHDXSS"							{$Results.Add("Perform Remote Assistance on a machine via HDX Screen Sharing", "Director")} #added in 1.28.002
+			"Director_ShadowSessionViaHDXSS_Edit"						{$Results.Add("Edit HDX Screen Sharing related machine command properties", "Director")} #added in 1.28.002
 			"Director_SliceAndDice_Read"								{$Results.Add("View Filters page", "Director")}
 			"Director_StartupMetrics_Edit"								{$Results.Add("Edit Startup related Broker machine command properties", "Director")}
 			"Director_TaskManagerInformation_Edit"						{$Results.Add("Edit Task Manager related Broker machine command properties", "Director")}
@@ -35380,6 +35426,9 @@ Function GetRolePermissions
 			
 			"Director_ProbeAgentConfigurationActions"					{$Results.Add("Access to Probe Agent APIs", "DirectorProbeAgent")}
 
+			"EntitlementPolicyRule_ChangeTags"							{$Results.Add("Edit Entitlement Policy Rule tags", "Entitlement Policy Rules")} #added in 1.28.002
+			"EntitlementPolicyRule_Machine_ChangeTags"					{$Results.Add("Edit Entitlement Policy Rule machine tags", "Entitlement Policy Rules")} #added in 1.28.002
+
 			"Hosts_AddScope"											{$Results.Add("Add Host Connection to Scope", "Hosts")}
 			"Hosts_AddStorage"											{$Results.Add("Add storage to Resources", "Hosts")}
 			"Hosts_ChangeMaintenanceMode"								{$Results.Add("Enable/disable maintenance mode of a Host Connection", "Hosts")}
@@ -35387,6 +35436,7 @@ Function GetRolePermissions
 			"Hosts_CreateHost"											{$Results.Add("Add Host Connection or Resources", "Hosts")}
 			"Hosts_DeleteConnection"									{$Results.Add("Delete Host Connection", "Hosts")}
 			"Hosts_DeleteHost"											{$Results.Add("Delete Resources", "Hosts")}
+			"Hosts_DetectOrphanedResources"								{$Results.Add("Use Host Connection to Detect Orphaned Resources in Hypervisor", "Hosts")} #added in 1.28.002
 			"Hosts_EditConnectionProperties"							{$Results.Add("Edit Host Connection properties", "Hosts")}
 			"Hosts_EditHostProperties"									{$Results.Add("Edit Resources", "Hosts")}
 			"Hosts_Read"												{$Results.Add("View Host Connections and Resources", "Hosts")}
@@ -35418,7 +35468,7 @@ Function GetRolePermissions
 			"Catalog_Delete"											{$Results.Add("Delete Machine Catalog", "Machine Catalogs")}
 			"Catalog_EditFolder"										{$Results.Add("Edit Machine Catalog Folder", "Machine Catalogs")}
 			"Catalog_EditProperties"									{$Results.Add("Edit Machine Catalog Properties", "Machine Catalogs")}
-			"Catalog_Manage_ChangeTags"									{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
+			"Catalog_Machine_ChangeTags"								{$Results.Add("Edit Catalog machine tags", "Machine Catalogs")}
 			"Catalog_ManageAccounts"									{$Results.Add("Manage Active Directory Accounts", "Machine Catalogs")}
 			"Catalog_ManageWemSet"										{$Results.Add("Manage Catalog Configuration Set", "Machine Catalogs")} #added in 1.27
 			"Catalog_MoveFolder"										{$Results.Add("Move Machine Catalog Folder", "Machine Catalogs")}
@@ -35436,21 +35486,30 @@ Function GetRolePermissions
 			"AutoTagRule_Edit"											{$Results.Add("Edit AutoTagRule", "Other permissions")}
 			"AutoTagRule_Read"											{$Results.Add("Read AutoTagRule", "Other permissions")}
 			"Configuration_Read"										{$Results.Add("Read Site Configuration (Configuration_Read)", "Other permissions")}
+			"Configuration_Restricted_ServiceRead"						{$Results.Add("", "Other permissions")} #added in 1.28.002
+			"Configuration_Restricted_ServiceWrite"						{$Results.Add(" (1) ", "Other permissions")} #added in 1.28.002
 			"Configuration_Restricted_Write"							{$Results.Add("Customer Update Site Configuration", "Other permissions")}
 			"Configuration_Unrestricted_Write"							{$Results.Add("Update Site Configuration", "Other permissions")}
 			"Database_Read"												{$Results.Add("Read database status information", "Other permissions")}
-			"DirectorAgent_Registration"								{$Results.Add("(1)", "Other permissions")}	#added in 1.27
+			"Director_Admin"											{$Results.Add("Director admin permission", "Other permissions")} #added in 1.28.002
+			"DirectorAgent_Registration"								{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Other permissions")} #added in 1.27, updated in 1.28.002
+			"EdgeService_Admin"											{$Results.Add("EdgeService LHC permission", "Other permissions")} #added in 1.28.002
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
 			"Global_Write"												{$Results.Add("Update Site Configuration (Global_Write)", "Other permissions")}
 			"Orchestration_RestApi"										{$Results.Add("Manage Orchestration Service REST API", "Other permissions")}
+			"Paladin_Admin"												{$Results.Add("Paladin service permission", "Other permissions")} #added in 1.28.002
 			"PerformUpgrade"											{$Results.Add("Perform upgrade", "Other permissions")}
+			"PVS_Admin"													{$Results.Add("PVS console admin permission", "Other permissions")} #added in 1.28.002
+			"SkylightBroker"											{$Results.Add(" (4) ", "Other permissions")} #added in 1.28.002
 			"Tag_Create"												{$Results.Add("Create tags", "Other permissions")}
 			"Tag_Delete"												{$Results.Add("Delete tags", "Other permissions")}
 			"Tag_Edit"													{$Results.Add("Edit tags", "Other permissions")}
 			"Tag_Read"													{$Results.Add("Read tags", "Other permissions")}
+			"Trust_MultiTenantAccessList"								{$Results.Add(" (3) ", "Other permissions")} #added in 1.28.002
 			"Trust_ServiceKeys"											{$Results.Add("Manage Trust Service Keys", "Other permissions")}
+			"Trust_VdaEnrollment"										{$Results.Add(" (2) ", "Other permissions")}
 			"VdaUpgrade_CatalogManage"									{$Results.Add("Manage VDA Upgrade Catalog Schedules", "Other permissions")}
 			"VdaUpgrade_MachineManage"									{$Results.Add("Manage VDA Upgrade Machine Schedules", "Other permissions")}
 
@@ -39378,10 +39437,10 @@ ProcessDocumentOutput
 ProcessScriptEnd
 #endregion
 # SIG # Begin signature block
-# MIItSAYJKoZIhvcNAQcCoIItOTCCLTUCAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
+# MIIthQYJKoZIhvcNAQcCoIItdjCCLXICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQU6MBkV+ToggaQ0kn8E3wakq9P
-# oW+ggiaoMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUkd9+H/JLthPn8PETpjhCwUni
+# SDSggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -39440,184 +39499,185 @@ ProcessScriptEnd
 # Dd9nZn6yW0HQO+T0O/QEY+nvwlQAUaCKKsnOeMzV6ocEGLPOr0mIr/OSmbaz5mEP
 # 0oUA51Aa5BuVnRmhuZyxm7EAHu/QD09CbMkKvO5D+jpxpchNJqU1/YldvIViHTLS
 # oCtU7ZpXwdv6EM8Zt4tKG48BtieVU+i2iW1bvGjUI+iLUaJW+fCmgKDWHrO8Dw9T
-# dSmq6hN35N6MgSGtBxBHEa2HPQfRdbzP82Z+MIIGrjCCBJagAwIBAgIQBzY3tyRU
-# fNhHrP0oZipeWzANBgkqhkiG9w0BAQsFADBiMQswCQYDVQQGEwJVUzEVMBMGA1UE
+# dSmq6hN35N6MgSGtBxBHEa2HPQfRdbzP82Z+MIIGsDCCBJigAwIBAgIQCK1AsmDS
+# nEyfXs2pvZOu2TANBgkqhkiG9w0BAQwFADBiMQswCQYDVQQGEwJVUzEVMBMGA1UE
 # ChMMRGlnaUNlcnQgSW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSEwHwYD
-# VQQDExhEaWdpQ2VydCBUcnVzdGVkIFJvb3QgRzQwHhcNMjIwMzIzMDAwMDAwWhcN
-# MzcwMzIyMjM1OTU5WjBjMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQs
-# IEluYy4xOzA5BgNVBAMTMkRpZ2lDZXJ0IFRydXN0ZWQgRzQgUlNBNDA5NiBTSEEy
-# NTYgVGltZVN0YW1waW5nIENBMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKC
-# AgEAxoY1BkmzwT1ySVFVxyUDxPKRN6mXUaHW0oPRnkyibaCwzIP5WvYRoUQVQl+k
-# iPNo+n3znIkLf50fng8zH1ATCyZzlm34V6gCff1DtITaEfFzsbPuK4CEiiIY3+va
-# PcQXf6sZKz5C3GeO6lE98NZW1OcoLevTsbV15x8GZY2UKdPZ7Gnf2ZCHRgB720RB
-# idx8ald68Dd5n12sy+iEZLRS8nZH92GDGd1ftFQLIWhuNyG7QKxfst5Kfc71ORJn
-# 7w6lY2zkpsUdzTYNXNXmG6jBZHRAp8ByxbpOH7G1WE15/tePc5OsLDnipUjW8LAx
-# E6lXKZYnLvWHpo9OdhVVJnCYJn+gGkcgQ+NDY4B7dW4nJZCYOjgRs/b2nuY7W+yB
-# 3iIU2YIqx5K/oN7jPqJz+ucfWmyU8lKVEStYdEAoq3NDzt9KoRxrOMUp88qqlnNC
-# aJ+2RrOdOqPVA+C/8KI8ykLcGEh/FDTP0kyr75s9/g64ZCr6dSgkQe1CvwWcZklS
-# UPRR8zZJTYsg0ixXNXkrqPNFYLwjjVj33GHek/45wPmyMKVM1+mYSlg+0wOI/rOP
-# 015LdhJRk8mMDDtbiiKowSYI+RQQEgN9XyO7ZONj4KbhPvbCdLI/Hgl27KtdRnXi
-# YKNYCQEoAA6EVO7O6V3IXjASvUaetdN2udIOa5kM0jO0zbECAwEAAaOCAV0wggFZ
-# MBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFLoW2W1NhS9zKXaaL3WMaiCP
-# nshvMB8GA1UdIwQYMBaAFOzX44LScV1kTN8uZz/nupiuHA9PMA4GA1UdDwEB/wQE
-# AwIBhjATBgNVHSUEDDAKBggrBgEFBQcDCDB3BggrBgEFBQcBAQRrMGkwJAYIKwYB
-# BQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBBBggrBgEFBQcwAoY1aHR0
-# cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5j
-# cnQwQwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0Rp
-# Z2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcmwwIAYDVR0gBBkwFzAIBgZngQwBBAIwCwYJ
-# YIZIAYb9bAcBMA0GCSqGSIb3DQEBCwUAA4ICAQB9WY7Ak7ZvmKlEIgF+ZtbYIULh
-# sBguEE0TzzBTzr8Y+8dQXeJLKftwig2qKWn8acHPHQfpPmDI2AvlXFvXbYf6hCAl
-# NDFnzbYSlm/EUExiHQwIgqgWvalWzxVzjQEiJc6VaT9Hd/tydBTX/6tPiix6q4XN
-# Q1/tYLaqT5Fmniye4Iqs5f2MvGQmh2ySvZ180HAKfO+ovHVPulr3qRCyXen/KFSJ
-# 8NWKcXZl2szwcqMj+sAngkSumScbqyQeJsG33irr9p6xeZmBo1aGqwpFyd/EjaDn
-# mPv7pp1yr8THwcFqcdnGE4AJxLafzYeHJLtPo0m5d2aR8XKc6UsCUqc3fpNTrDsd
-# CEkPlM05et3/JWOZJyw9P2un8WbDQc1PtkCbISFA0LcTJM3cHXg65J6t5TRxktcm
-# a+Q4c6umAU+9Pzt4rUyt+8SVe+0KXzM5h0F4ejjpnOHdI/0dKNPH+ejxmF/7K9h+
-# 8kaddSweJywm228Vex4Ziza4k9Tm8heZWcpw8De/mADfIBZPJ/tgZxahZrrdVcA6
-# KYawmKAr7ZVBtzrVFZgxtGIJDwq9gdkT/r+k0fNX2bwE+oLeMt8EifAAzV3C+dAj
-# fwAL5HYCJtnwZXZCpimHCUcr5n8apIUP/JiW9lVUKx+A+sDyDivl1vupL0QVSucT
-# Dh3bNzgaoSv27dZ8/DCCBrAwggSYoAMCAQICEAitQLJg0pxMn17Nqb2TrtkwDQYJ
-# KoZIhvcNAQEMBQAwYjELMAkGA1UEBhMCVVMxFTATBgNVBAoTDERpZ2lDZXJ0IElu
-# YzEZMBcGA1UECxMQd3d3LmRpZ2ljZXJ0LmNvbTEhMB8GA1UEAxMYRGlnaUNlcnQg
-# VHJ1c3RlZCBSb290IEc0MB4XDTIxMDQyOTAwMDAwMFoXDTM2MDQyODIzNTk1OVow
-# aTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMUEwPwYDVQQD
-# EzhEaWdpQ2VydCBUcnVzdGVkIEc0IENvZGUgU2lnbmluZyBSU0E0MDk2IFNIQTM4
-# NCAyMDIxIENBMTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANW0L0LQ
-# KK14t13VOVkbsYhC9TOM6z2Bl3DFu8SFJjCfpI5o2Fz16zQkB+FLT9N4Q/QX1x7a
-# +dLVZxpSTw6hV/yImcGRzIEDPk1wJGSzjeIIfTR9TIBXEmtDmpnyxTsf8u/LR1oT
-# pkyzASAl8xDTi7L7CPCK4J0JwGWn+piASTWHPVEZ6JAheEUuoZ8s4RjCGszF7pNJ
-# cEIyj/vG6hzzZWiRok1MghFIUmjeEL0UV13oGBNlxX+yT4UsSKRWhDXW+S6cqgAV
-# 0Tf+GgaUwnzI6hsy5srC9KejAw50pa85tqtgEuPo1rn3MeHcreQYoNjBI0dHs6EP
-# bqOrbZgGgxu3amct0r1EGpIQgY+wOwnXx5syWsL/amBUi0nBk+3htFzgb+sm+YzV
-# svk4EObqzpH1vtP7b5NhNFy8k0UogzYqZihfsHPOiyYlBrKD1Fz2FRlM7WLgXjPy
-# 6OjsCqewAyuRsjZ5vvetCB51pmXMu+NIUPN3kRr+21CiRshhWJj1fAIWPIMorTmG
-# 7NS3DVPQ+EfmdTCN7DCTdhSmW0tddGFNPxKRdt6/WMtyEClB8NXFbSZ2aBFBE1ia
-# 3CYrAfSJTVnbeM+BSj5AR1/JgVBzhRAjIVlgimRUwcwhGug4GXxmHM14OEUwmU//
-# Y09Mu6oNCFNBfFg9R7P6tuyMMgkCzGw8DFYRAgMBAAGjggFZMIIBVTASBgNVHRMB
-# Af8ECDAGAQH/AgEAMB0GA1UdDgQWBBRoN+Drtjv4XxGG+/5hewiIZfROQjAfBgNV
-# HSMEGDAWgBTs1+OC0nFdZEzfLmc/57qYrhwPTzAOBgNVHQ8BAf8EBAMCAYYwEwYD
-# VR0lBAwwCgYIKwYBBQUHAwMwdwYIKwYBBQUHAQEEazBpMCQGCCsGAQUFBzABhhho
-# dHRwOi8vb2NzcC5kaWdpY2VydC5jb20wQQYIKwYBBQUHMAKGNWh0dHA6Ly9jYWNl
-# cnRzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydFRydXN0ZWRSb290RzQuY3J0MEMGA1Ud
-# HwQ8MDowOKA2oDSGMmh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9EaWdpQ2VydFRy
-# dXN0ZWRSb290RzQuY3JsMBwGA1UdIAQVMBMwBwYFZ4EMAQMwCAYGZ4EMAQQBMA0G
-# CSqGSIb3DQEBDAUAA4ICAQA6I0Q9jQh27o+8OpnTVuACGqX4SDTzLLbmdGb3lHKx
-# AMqvbDAnExKekESfS/2eo3wm1Te8Ol1IbZXVP0n0J7sWgUVQ/Zy9toXgdn43ccsi
-# 91qqkM/1k2rj6yDR1VB5iJqKisG2vaFIGH7c2IAaERkYzWGZgVb2yeN258TkG19D
-# +D6U/3Y5PZ7Umc9K3SjrXyahlVhI1Rr+1yc//ZDRdobdHLBgXPMNqO7giaG9OeE4
-# Ttpuuzad++UhU1rDyulq8aI+20O4M8hPOBSSmfXdzlRt2V0CFB9AM3wD4pWywiF1
-# c1LLRtjENByipUuNzW92NyyFPxrOJukYvpAHsEN/lYgggnDwzMrv/Sk1XB+JOFX3
-# N4qLCaHLC+kxGv8uGVw5ceG+nKcKBtYmZ7eS5k5f3nqsSc8upHSSrds8pJyGH+PB
-# VhsrI/+PteqIe3Br5qC6/To/RabE6BaRUotBwEiES5ZNq0RA443wFSjO7fEYVgcq
-# LxDEDAhkPDOPriiMPMuPiAsNvzv0zh57ju+168u38HcT5ucoP6wSrqUvImxB+YJc
-# FWbMbA7KxYbD9iYzDAdLoNMHAmpqQDBISzSoUSC7rRuFCOJZDW3KBVAr6kocnqX9
-# oKcfBnTn8tZSkP2vhUgh+Vc7tJwD7YZF9LRhbr9o4iZghurIr6n+lB3nYxs6hlZ4
-# TjCCBrwwggSkoAMCAQICEAuuZrxaun+Vh8b56QTjMwQwDQYJKoZIhvcNAQELBQAw
-# YzELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMTswOQYDVQQD
-# EzJEaWdpQ2VydCBUcnVzdGVkIEc0IFJTQTQwOTYgU0hBMjU2IFRpbWVTdGFtcGlu
-# ZyBDQTAeFw0yNDA5MjYwMDAwMDBaFw0zNTExMjUyMzU5NTlaMEIxCzAJBgNVBAYT
-# AlVTMREwDwYDVQQKEwhEaWdpQ2VydDEgMB4GA1UEAxMXRGlnaUNlcnQgVGltZXN0
-# YW1wIDIwMjQwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC+anOf9pUh
-# q5Ywultt5lmjtej9kR8YxIg7apnjpcH9CjAgQxK+CMR0Rne/i+utMeV5bUlYYSuu
-# M4vQngvQepVHVzNLO9RDnEXvPghCaft0djvKKO+hDu6ObS7rJcXa/UKvNminKQPT
-# v/1+kBPgHGlP28mgmoCw/xi6FG9+Un1h4eN6zh926SxMe6We2r1Z6VFZj75MU/HN
-# mtsgtFjKfITLutLWUdAoWle+jYZ49+wxGE1/UXjWfISDmHuI5e/6+NfQrxGFSKx+
-# rDdNMsePW6FLrphfYtk/FLihp/feun0eV+pIF496OVh4R1TvjQYpAztJpVIfdNsE
-# vxHofBf1BWkadc+Up0Th8EifkEEWdX4rA/FE1Q0rqViTbLVZIqi6viEk3RIySho1
-# XyHLIAOJfXG5PEppc3XYeBH7xa6VTZ3rOHNeiYnY+V4j1XbJ+Z9dI8ZhqcaDHOoj
-# 5KGg4YuiYx3eYm33aebsyF6eD9MF5IDbPgjvwmnAalNEeJPvIeoGJXaeBQjIK13S
-# lnzODdLtuThALhGtyconcVuPI8AaiCaiJnfdzUcb3dWnqUnjXkRFwLtsVAxFvGqs
-# xUA2Jq/WTjbnNjIUzIs3ITVC6VBKAOlb2u29Vwgfta8b2ypi6n2PzP0nVepsFk8n
-# lcuWfyZLzBaZ0MucEdeBiXL+nUOGhCjl+QIDAQABo4IBizCCAYcwDgYDVR0PAQH/
-# BAQDAgeAMAwGA1UdEwEB/wQCMAAwFgYDVR0lAQH/BAwwCgYIKwYBBQUHAwgwIAYD
-# VR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9bAcBMB8GA1UdIwQYMBaAFLoW2W1N
-# hS9zKXaaL3WMaiCPnshvMB0GA1UdDgQWBBSfVywDdw4oFZBmpWNe7k+SH3agWzBa
-# BgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3JsMy5kaWdpY2VydC5jb20vRGlnaUNl
-# cnRUcnVzdGVkRzRSU0E0MDk2U0hBMjU2VGltZVN0YW1waW5nQ0EuY3JsMIGQBggr
-# BgEFBQcBAQSBgzCBgDAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQu
-# Y29tMFgGCCsGAQUFBzAChkxodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGln
-# aUNlcnRUcnVzdGVkRzRSU0E0MDk2U0hBMjU2VGltZVN0YW1waW5nQ0EuY3J0MA0G
-# CSqGSIb3DQEBCwUAA4ICAQA9rR4fdplb4ziEEkfZQ5H2EdubTggd0ShPz9Pce4FL
-# Jl6reNKLkZd5Y/vEIqFWKt4oKcKz7wZmXa5VgW9B76k9NJxUl4JlKwyjUkKhk3aY
-# x7D8vi2mpU1tKlY71AYXB8wTLrQeh83pXnWwwsxc1Mt+FWqz57yFq6laICtKjPIC
-# YYf/qgxACHTvypGHrC8k1TqCeHk6u4I/VBQC9VK7iSpU5wlWjNlHlFFv/M93748Y
-# TeoXU/fFa9hWJQkuzG2+B7+bMDvmgF8VlJt1qQcl7YFUMYgZU1WM6nyw23vT6QSg
-# wX5Pq2m0xQ2V6FJHu8z4LXe/371k5QrN9FQBhLLISZi2yemW0P8ZZfx4zvSWzVXp
-# Ab9k4Hpvpi6bUe8iK6WonUSV6yPlMwerwJZP/Gtbu3CKldMnn+LmmRTkTXpFIEB0
-# 6nXZrDwhCGED+8RsWQSIXZpuG4WLFQOhtloDRWGoCwwc6ZpPddOFkM2LlTbMcqFS
-# zm4cd0boGhBq7vkqI1uHRz6Fq1IX7TaRQuR+0BGOzISkcqwXu7nMpFu3mgrlgbAW
-# +BzikRVQ3K2YHcGkiKjA4gi4OA/kz1YCsdhIBHXqBzR0/Zd2QwQ/l4Gxftt/8wY3
-# grcc/nS//TVkej9nmUYu83BDtccHHXKibMs/yXHhDXNkoPIdynhVAku7aRZOwqw6
-# pDCCB1kwggVBoAMCAQICEAts37ZngQ4q58taEbodSXAwDQYJKoZIhvcNAQELBQAw
-# aTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMUEwPwYDVQQD
-# EzhEaWdpQ2VydCBUcnVzdGVkIEc0IENvZGUgU2lnbmluZyBSU0E0MDk2IFNIQTM4
-# NCAyMDIxIENBMTAeFw0yNDA4MTMwMDAwMDBaFw0yNjEwMTgyMzU5NTlaMGExCzAJ
-# BgNVBAYTAlVTMRIwEAYDVQQIEwlUZW5uZXNzZWUxEDAOBgNVBAcTB0xlYmFub24x
-# FTATBgNVBAoTDENhcmwgV2Vic3RlcjEVMBMGA1UEAxMMQ2FybCBXZWJzdGVyMIIC
-# IjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA05uJKNPzfNG5N8GSg4WxSPvh
-# r+xUjqkMKZClzi4Lxc2+sShnOoovmY9APkTu6fjfFYLCqKOnC70F04aOZvVF7xdn
-# RFsk0woY5MAOAvEMDNNeakKtx8uRA7OE8eZXpuIQ/qI4YesL0MZdGSA9QysSV7GZ
-# 4Ro3X/2aguCHjaSV8k+nOUWCImeAUs0IbiZka/Opxi+SQKRq0fGXLvkb9FOb65Ce
-# yzjJyVydLAMoXAggwTVMMzr6R0l8Ed04E42vSMBzF6Qo1+QDhsb1AhsymEelthaA
-# 2t2YKogu4ekjIerSctYyDykk2HGMWcd9uK61hA4LTCRFWS7VULpb+vFr8obEAhRE
-# vkzsGuZPBL3ZJWSv1j0cM/yUVJl0tPdkd0sDZ8OoTWvJ9Dlzbc75aNggHIi86Ua8
-# hEedesc/wyBGB76ZMoa8F+IgKiaXxBbLJ2a8R9D7FASAo/uZF49l0Z1KIA6SZ/1z
-# B71QMItofHNl6om6UYcjpreDIuAYu/v0G1nQKBb16ETFPfaMu0o/Qp+E6C9Hh9IL
-# QTKbJ1VbKzNIERy7PFE4J5sFw0yE3SyOejCuQOuozBt8OLrggNAmdnob7TGmN4zb
-# S5ZrD5PcDzIZ6+kW7l+xoLPyG4kVo8StdAIQdg2ldRdCvEGCY74LtbevMu2aVDCd
-# I7B3HqP0HgS8MhHf5b0CAwEAAaOCAgMwggH/MB8GA1UdIwQYMBaAFGg34Ou2O/hf
-# EYb7/mF7CIhl9E5CMB0GA1UdDgQWBBSNdamQ8btLpf1eLKSNwU/tTh+YNTA+BgNV
-# HSAENzA1MDMGBmeBDAEEATApMCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LmRpZ2lj
-# ZXJ0LmNvbS9DUFMwDgYDVR0PAQH/BAQDAgeAMBMGA1UdJQQMMAoGCCsGAQUFBwMD
-# MIG1BgNVHR8Ega0wgaowU6BRoE+GTWh0dHA6Ly9jcmwzLmRpZ2ljZXJ0LmNvbS9E
-# aWdpQ2VydFRydXN0ZWRHNENvZGVTaWduaW5nUlNBNDA5NlNIQTM4NDIwMjFDQTEu
-# Y3JsMFOgUaBPhk1odHRwOi8vY3JsNC5kaWdpY2VydC5jb20vRGlnaUNlcnRUcnVz
-# dGVkRzRDb2RlU2lnbmluZ1JTQTQwOTZTSEEzODQyMDIxQ0ExLmNybDCBlAYIKwYB
-# BQUHAQEEgYcwgYQwJAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNv
-# bTBcBggrBgEFBQcwAoZQaHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lD
-# ZXJ0VHJ1c3RlZEc0Q29kZVNpZ25pbmdSU0E0MDk2U0hBMzg0MjAyMUNBMS5jcnQw
-# CQYDVR0TBAIwADANBgkqhkiG9w0BAQsFAAOCAgEAQvF7bvX7Sz9/YviNL6y080hX
-# vG6WWF7f3YwplBOHeQy4bDGHJ0003j6MdnSQ+Tebcd1AIZaKsNJajT1NRF4F+23Q
-# eh/ynFk3kRuabCJkjsGPLDZQ+UKzfhfWQKOwWCIEgsmx2Qa3EMm/NLDbZ9SqtuVV
-# WqC6+b82JWg8Eht6h1iJbMnA3MtuM8ZuiHKdjKdTi81peQ7CRu6ek8njfmZEo8d5
-# 9cFWA8HEM4S/k4f3u1/hjHkTA346r+wf3DsTJl+/jDiQDjTC8UF1wRMTJ0yJUQlv
-# hUYqFyEIOnMJtyEPyfEr9P47/4kIr2/iQMnt8FDz/nZvLxYDaVjB/fvFLss22wEK
-# X4tZ59nX7Y1vXA0Yk5Bw40eoGMz6XSQuK/Cjx7oKHAJhj370emc81FSJvlJv1JVd
-# i4iUhfn6LfVcc01i5IcuEQp8ipGVqR70Ap3HKZK3hvcUQR+bzmt0H9tLD1Kj2IJZ
-# rHa5SFyhu7ARymy8qohqKWV45Dx5+nZIvjehsPT5LAmHrbzpNRi26H3AiJEH90jB
-# ++5XKnAoN9IFE4zj6Tfj4mudvw+ExDi24/zXkhNn8yOZuSd4onT/IN1EzA7fx9rM
-# KdcLJAp9tyuvRcsSDiXS6yNpEu/J5xXdBbiODaoMyRdydTKXW9dvJszCVjNpjmFX
-# fGsG3GAEDkrHS+nCR68xggYKMIIGBgIBATB9MGkxCzAJBgNVBAYTAlVTMRcwFQYD
-# VQQKEw5EaWdpQ2VydCwgSW5jLjFBMD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBH
-# NCBDb2RlIFNpZ25pbmcgUlNBNDA5NiBTSEEzODQgMjAyMSBDQTECEAts37ZngQ4q
-# 58taEbodSXAwCQYFKw4DAhoFAKBAMBkGCSqGSIb3DQEJAzEMBgorBgEEAYI3AgEE
-# MCMGCSqGSIb3DQEJBDEWBBSHkrovozpXn68MHL6Gjo9Or+7rLzANBgkqhkiG9w0B
-# AQEFAASCAgCmMazSmJLU2gheiwLNPTdWRlc+tsQTBq3tiYzkKw2otiuFOgYzN5uo
-# TxTbdM1ekUSOdlXSuq0nRNjW5C9mcqY45iHxPAUwQ1xkN5D4cDj8AOhGHUCIA818
-# dV4AahRrSlZdGCnwnX4w2fAiPEOrYDCtL4MlqWKVX4FJjdhrP19RReXHmdH1+LTw
-# UeMZxDJeMaO6sMH33PH5bkWBfuBticKClu/f6W8b3Tbb+UJXdlIXTdJpASHSDLWx
-# 3O3zrvVqcPlPfbA4FbeeKy4sPrXe7Z7YTZZIC7mjDmA0YCR+12fvv25EKIq8mCFa
-# gOMbNNg/3Y0YIcS29f1O0zTzG+wM0TdjSOCN/t0Zi2QMG+Z4OV0rq5U4x8+VeTJX
-# 6y5+2Id7u9CDABCYGRo3q3cl8Mee2U61uYEQYhdlCMN6d2/YaEUpCHp/ADAuecSk
-# 7dZyelNfyAEY/RWRJkmCfLoFAVovW+CiDL9FtlXrJ9Bqv3EnrGvLph+GZmgY7ylX
-# jj1Fo/QgPylK6YcZg6Vi38PVGa58K8P/fhNzJu5AZqCQ+Ys0eA9RaoieOrt1eSX+
-# 1cP/kmothmVMBZP8cxfFxUJ6Wem87hfB6A/lZIMv4mKulmGm9QCCJ9eOXnQOys1S
-# RGSSW82HnctqM3CCe3l+oV95gj8y0yRorBpm6HbAlKtFGYeI9QhC76GCAyAwggMc
-# BgkqhkiG9w0BCQYxggMNMIIDCQIBATB3MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQK
-# Ew5EaWdpQ2VydCwgSW5jLjE7MDkGA1UEAxMyRGlnaUNlcnQgVHJ1c3RlZCBHNCBS
-# U0E0MDk2IFNIQTI1NiBUaW1lU3RhbXBpbmcgQ0ECEAuuZrxaun+Vh8b56QTjMwQw
-# DQYJYIZIAWUDBAIBBQCgaTAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqG
-# SIb3DQEJBTEPFw0yNTA2MjYxNjUyMDhaMC8GCSqGSIb3DQEJBDEiBCBhhysV5+t4
-# z5tpPJE9w1A0Mows8T3W4fVY5041iCZ3wjANBgkqhkiG9w0BAQEFAASCAgAZqyR2
-# EiMV4E/2X9huGrh8J8Rno6ATN2HsCpyc1L6UNyDzCg1tptNJZPxEhVFPYcG0na8V
-# O0zZFCzud898QPhz5VVkZJPNXcAvCftVF1iiw+C6Sj67vWLkerXQBwD/Ayskfi6L
-# p/saTR+4Y6eGX4keg1G957Y/T70dSHCH88lg4X/Y8+30zK8Gisv8Lj603GIGsl+/
-# w395OQgVMYzLi22q2w7nPIAK7jPZM/xGa9sPWJ9xeA0QVOxxs7zIj4+yIS3/IgiZ
-# J0LO7W4wsMmGoVkOKREt6zmYSCTaz1xr3cPqh7vFGCtGptbMRbzGTXKezzoGV8mj
-# E8LT+ZBZc4PJsTDqHdohJ2dygf5oXo1x8Xi+okIzSGfEIi9QzFMtuuTbWFYAfDsk
-# MjV9KEkgsNC8iD4IpX8hAOagbhMRK0vo1lmIKPrdpdVUT3InRGrnxnu4ZmZlLwD/
-# SDZJ8yMGjtWd2vY9ZsWCzaF9cclmtFN4kuEPPAKiiQ4wkHEym01aKprMEhrT9tHj
-# kNtdamumf9JkXXH/B4WmHjmM6jFWdlUXp9thzIQpL/AMKQ3//e+CivbfAH+oxKpn
-# Y47x1QfvclhE1+9e8hJjf15iAh9gjC2cpx1ecHMoOEEbf9wkgo4CBwpI47YAXYhr
-# dcevP9zwvGBeFZ2s02lYQ0h8fbk030S9wBChJg==
+# VQQDExhEaWdpQ2VydCBUcnVzdGVkIFJvb3QgRzQwHhcNMjEwNDI5MDAwMDAwWhcN
+# MzYwNDI4MjM1OTU5WjBpMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQs
+# IEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRydXN0ZWQgRzQgQ29kZSBTaWduaW5n
+# IFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExMIICIjANBgkqhkiG9w0BAQEFAAOCAg8A
+# MIICCgKCAgEA1bQvQtAorXi3XdU5WRuxiEL1M4zrPYGXcMW7xIUmMJ+kjmjYXPXr
+# NCQH4UtP03hD9BfXHtr50tVnGlJPDqFX/IiZwZHMgQM+TXAkZLON4gh9NH1MgFcS
+# a0OamfLFOx/y78tHWhOmTLMBICXzENOLsvsI8IrgnQnAZaf6mIBJNYc9URnokCF4
+# RS6hnyzhGMIazMXuk0lwQjKP+8bqHPNlaJGiTUyCEUhSaN4QvRRXXegYE2XFf7JP
+# hSxIpFaENdb5LpyqABXRN/4aBpTCfMjqGzLmysL0p6MDDnSlrzm2q2AS4+jWufcx
+# 4dyt5Big2MEjR0ezoQ9uo6ttmAaDG7dqZy3SvUQakhCBj7A7CdfHmzJawv9qYFSL
+# ScGT7eG0XOBv6yb5jNWy+TgQ5urOkfW+0/tvk2E0XLyTRSiDNipmKF+wc86LJiUG
+# soPUXPYVGUztYuBeM/Lo6OwKp7ADK5GyNnm+960IHnWmZcy740hQ83eRGv7bUKJG
+# yGFYmPV8AhY8gyitOYbs1LcNU9D4R+Z1MI3sMJN2FKZbS110YU0/EpF23r9Yy3IQ
+# KUHw1cVtJnZoEUETWJrcJisB9IlNWdt4z4FKPkBHX8mBUHOFECMhWWCKZFTBzCEa
+# 6DgZfGYczXg4RTCZT/9jT0y7qg0IU0F8WD1Hs/q27IwyCQLMbDwMVhECAwEAAaOC
+# AVkwggFVMBIGA1UdEwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFGg34Ou2O/hfEYb7
+# /mF7CIhl9E5CMB8GA1UdIwQYMBaAFOzX44LScV1kTN8uZz/nupiuHA9PMA4GA1Ud
+# DwEB/wQEAwIBhjATBgNVHSUEDDAKBggrBgEFBQcDAzB3BggrBgEFBQcBAQRrMGkw
+# JAYIKwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBBBggrBgEFBQcw
+# AoY1aHR0cDovL2NhY2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJv
+# b3RHNC5jcnQwQwYDVR0fBDwwOjA4oDagNIYyaHR0cDovL2NybDMuZGlnaWNlcnQu
+# Y29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcmwwHAYDVR0gBBUwEzAHBgVngQwB
+# AzAIBgZngQwBBAEwDQYJKoZIhvcNAQEMBQADggIBADojRD2NCHbuj7w6mdNW4AIa
+# pfhINPMstuZ0ZveUcrEAyq9sMCcTEp6QRJ9L/Z6jfCbVN7w6XUhtldU/SfQnuxaB
+# RVD9nL22heB2fjdxyyL3WqqQz/WTauPrINHVUHmImoqKwba9oUgYftzYgBoRGRjN
+# YZmBVvbJ43bnxOQbX0P4PpT/djk9ntSZz0rdKOtfJqGVWEjVGv7XJz/9kNF2ht0c
+# sGBc8w2o7uCJob054ThO2m67Np375SFTWsPK6Wrxoj7bQ7gzyE84FJKZ9d3OVG3Z
+# XQIUH0AzfAPilbLCIXVzUstG2MQ0HKKlS43Nb3Y3LIU/Gs4m6Ri+kAewQ3+ViCCC
+# cPDMyu/9KTVcH4k4Vfc3iosJocsL6TEa/y4ZXDlx4b6cpwoG1iZnt5LmTl/eeqxJ
+# zy6kdJKt2zyknIYf48FWGysj/4+16oh7cGvmoLr9Oj9FpsToFpFSi0HASIRLlk2r
+# REDjjfAVKM7t8RhWByovEMQMCGQ8M4+uKIw8y4+ICw2/O/TOHnuO77Xry7fwdxPm
+# 5yg/rBKupS8ibEH5glwVZsxsDsrFhsP2JjMMB0ug0wcCampAMEhLNKhRILutG4UI
+# 4lkNbcoFUCvqShyepf2gpx8GdOfy1lKQ/a+FSCH5Vzu0nAPthkX0tGFuv2jiJmCG
+# 6sivqf6UHedjGzqGVnhOMIIGtDCCBJygAwIBAgIQDcesVwX/IZkuQEMiDDpJhjAN
+# BgkqhkiG9w0BAQsFADBiMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQg
+# SW5jMRkwFwYDVQQLExB3d3cuZGlnaWNlcnQuY29tMSEwHwYDVQQDExhEaWdpQ2Vy
+# dCBUcnVzdGVkIFJvb3QgRzQwHhcNMjUwNTA3MDAwMDAwWhcNMzgwMTE0MjM1OTU5
+# WjBpMQswCQYDVQQGEwJVUzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNV
+# BAMTOERpZ2lDZXJ0IFRydXN0ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hB
+# MjU2IDIwMjUgQ0ExMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAtHgx
+# 0wqYQXK+PEbAHKx126NGaHS0URedTa2NDZS1mZaDLFTtQ2oRjzUXMmxCqvkbsDpz
+# 4aH+qbxeLho8I6jY3xL1IusLopuW2qftJYJaDNs1+JH7Z+QdSKWM06qchUP+AbdJ
+# gMQB3h2DZ0Mal5kYp77jYMVQXSZH++0trj6Ao+xh/AS7sQRuQL37QXbDhAktVJMQ
+# bzIBHYJBYgzWIjk8eDrYhXDEpKk7RdoX0M980EpLtlrNyHw0Xm+nt5pnYJU3Gmq6
+# bNMI1I7Gb5IBZK4ivbVCiZv7PNBYqHEpNVWC2ZQ8BbfnFRQVESYOszFI2Wv82wnJ
+# RfN20VRS3hpLgIR4hjzL0hpoYGk81coWJ+KdPvMvaB0WkE/2qHxJ0ucS638ZxqU1
+# 4lDnki7CcoKCz6eum5A19WZQHkqUJfdkDjHkccpL6uoG8pbF0LJAQQZxst7VvwDD
+# jAmSFTUms+wV/FbWBqi7fTJnjq3hj0XbQcd8hjj/q8d6ylgxCZSKi17yVp2NL+cn
+# T6Toy+rN+nM8M7LnLqCrO2JP3oW//1sfuZDKiDEb1AQ8es9Xr/u6bDTnYCTKIsDq
+# 1BtmXUqEG1NqzJKS4kOmxkYp2WyODi7vQTCBZtVFJfVZ3j7OgWmnhFr4yUozZtqg
+# PrHRVHhGNKlYzyjlroPxul+bgIspzOwbtmsgY1MCAwEAAaOCAV0wggFZMBIGA1Ud
+# EwEB/wQIMAYBAf8CAQAwHQYDVR0OBBYEFO9vU0rp5AZ8esrikFb2L9RJ7MtOMB8G
+# A1UdIwQYMBaAFOzX44LScV1kTN8uZz/nupiuHA9PMA4GA1UdDwEB/wQEAwIBhjAT
+# BgNVHSUEDDAKBggrBgEFBQcDCDB3BggrBgEFBQcBAQRrMGkwJAYIKwYBBQUHMAGG
+# GGh0dHA6Ly9vY3NwLmRpZ2ljZXJ0LmNvbTBBBggrBgEFBQcwAoY1aHR0cDovL2Nh
+# Y2VydHMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZFJvb3RHNC5jcnQwQwYD
+# VR0fBDwwOjA4oDagNIYyaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL0RpZ2lDZXJ0
+# VHJ1c3RlZFJvb3RHNC5jcmwwIAYDVR0gBBkwFzAIBgZngQwBBAIwCwYJYIZIAYb9
+# bAcBMA0GCSqGSIb3DQEBCwUAA4ICAQAXzvsWgBz+Bz0RdnEwvb4LyLU0pn/N0IfF
+# iBowf0/Dm1wGc/Do7oVMY2mhXZXjDNJQa8j00DNqhCT3t+s8G0iP5kvN2n7Jd2E4
+# /iEIUBO41P5F448rSYJ59Ib61eoalhnd6ywFLerycvZTAz40y8S4F3/a+Z1jEMK/
+# DMm/axFSgoR8n6c3nuZB9BfBwAQYK9FHaoq2e26MHvVY9gCDA/JYsq7pGdogP8HR
+# trYfctSLANEBfHU16r3J05qX3kId+ZOczgj5kjatVB+NdADVZKON/gnZruMvNYY2
+# o1f4MXRJDMdTSlOLh0HCn2cQLwQCqjFbqrXuvTPSegOOzr4EWj7PtspIHBldNE2K
+# 9i697cvaiIo2p61Ed2p8xMJb82Yosn0z4y25xUbI7GIN/TpVfHIqQ6Ku/qjTY6hc
+# 3hsXMrS+U0yy+GWqAXam4ToWd2UQ1KYT70kZjE4YtL8Pbzg0c1ugMZyZZd/BdHLi
+# Ru7hAWE6bTEm4XYRkA6Tl4KSFLFk43esaUeqGkH/wyW4N7OigizwJWeukcyIPbAv
+# jSabnf7+Pu0VrFgoiovRDiyx3zEdmcif/sYQsfch28bZeUz2rtY/9TCA6TD8dC3J
+# E3rYkrhLULy7Dc90G6e8BlqmyIjlgp2+VqsS9/wQD7yFylIz0scmbKvFoW2jNrbM
+# 1pD2T7m3XDCCBu0wggTVoAMCAQICEAqA7xhLjfEFgtHEdqeVdGgwDQYJKoZIhvcN
+# AQELBQAwaTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMUEw
+# PwYDVQQDEzhEaWdpQ2VydCBUcnVzdGVkIEc0IFRpbWVTdGFtcGluZyBSU0E0MDk2
+# IFNIQTI1NiAyMDI1IENBMTAeFw0yNTA2MDQwMDAwMDBaFw0zNjA5MDMyMzU5NTla
+# MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
+# AxMyRGlnaUNlcnQgU0hBMjU2IFJTQTQwOTYgVGltZXN0YW1wIFJlc3BvbmRlciAy
+# MDI1IDEwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDQRqwtEsae0Oqu
+# YFazK1e6b1H/hnAKAd/KN8wZQjBjMqiZ3xTWcfsLwOvRxUwXcGx8AUjni6bz52fG
+# Tfr6PHRNv6T7zsf1Y/E3IU8kgNkeECqVQ+3bzWYesFtkepErvUSbf+EIYLkrLKd6
+# qJnuzK8Vcn0DvbDMemQFoxQ2Dsw4vEjoT1FpS54dNApZfKY61HAldytxNM89PZXU
+# P/5wWWURK+IfxiOg8W9lKMqzdIo7VA1R0V3Zp3DjjANwqAf4lEkTlCDQ0/fKJLKL
+# kzGBTpx6EYevvOi7XOc4zyh1uSqgr6UnbksIcFJqLbkIXIPbcNmA98Oskkkrvt6l
+# PAw/p4oDSRZreiwB7x9ykrjS6GS3NR39iTTFS+ENTqW8m6THuOmHHjQNC3zbJ6nJ
+# 6SXiLSvw4Smz8U07hqF+8CTXaETkVWz0dVVZw7knh1WZXOLHgDvundrAtuvz0D3T
+# +dYaNcwafsVCGZKUhQPL1naFKBy1p6llN3QgshRta6Eq4B40h5avMcpi54wm0i2e
+# PZD5pPIssoszQyF4//3DoK2O65Uck5Wggn8O2klETsJ7u8xEehGifgJYi+6I03Uu
+# T1j7FnrqVrOzaQoVJOeeStPeldYRNMmSF3voIgMFtNGh86w3ISHNm0IaadCKCkUe
+# 2LnwJKa8TIlwCUNVwppwn4D3/Pt5pwIDAQABo4IBlTCCAZEwDAYDVR0TAQH/BAIw
+# ADAdBgNVHQ4EFgQU5Dv88jHt/f3X85FxYxlQQ89hjOgwHwYDVR0jBBgwFoAU729T
+# SunkBnx6yuKQVvYv1Ensy04wDgYDVR0PAQH/BAQDAgeAMBYGA1UdJQEB/wQMMAoG
+# CCsGAQUFBwMIMIGVBggrBgEFBQcBAQSBiDCBhTAkBggrBgEFBQcwAYYYaHR0cDov
+# L29jc3AuZGlnaWNlcnQuY29tMF0GCCsGAQUFBzAChlFodHRwOi8vY2FjZXJ0cy5k
+# aWdpY2VydC5jb20vRGlnaUNlcnRUcnVzdGVkRzRUaW1lU3RhbXBpbmdSU0E0MDk2
+# U0hBMjU2MjAyNUNBMS5jcnQwXwYDVR0fBFgwVjBUoFKgUIZOaHR0cDovL2NybDMu
+# ZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0VGltZVN0YW1waW5nUlNBNDA5
+# NlNIQTI1NjIwMjVDQTEuY3JsMCAGA1UdIAQZMBcwCAYGZ4EMAQQCMAsGCWCGSAGG
+# /WwHATANBgkqhkiG9w0BAQsFAAOCAgEAZSqt8RwnBLmuYEHs0QhEnmNAciH45PYi
+# T9s1i6UKtW+FERp8FgXRGQ/YAavXzWjZhY+hIfP2JkQ38U+wtJPBVBajYfrbIYG+
+# Dui4I4PCvHpQuPqFgqp1PzC/ZRX4pvP/ciZmUnthfAEP1HShTrY+2DE5qjzvZs7J
+# IIgt0GCFD9ktx0LxxtRQ7vllKluHWiKk6FxRPyUPxAAYH2Vy1lNM4kzekd8oEARz
+# FAWgeW3az2xejEWLNN4eKGxDJ8WDl/FQUSntbjZ80FU3i54tpx5F/0Kr15zW/mJA
+# xZMVBrTE2oi0fcI8VMbtoRAmaaslNXdCG1+lqvP4FbrQ6IwSBXkZagHLhFU9HCrG
+# /syTRLLhAezu/3Lr00GrJzPQFnCEH1Y58678IgmfORBPC1JKkYaEt2OdDh4GmO0/
+# 5cHelAK2/gTlQJINqDr6JfwyYHXSd+V08X1JUPvB4ILfJdmL+66Gp3CSBXG6IwXM
+# ZUXBhtCyIaehr0XkBoDIGMUG1dUtwq1qmcwbdUfcSYCn+OwncVUXf53VJUNOaMWM
+# ts0VlRYxe5nK+At+DI96HAlXHAL5SlfYxJ7La54i71McVWRP66bW+yERNpbJCjyC
+# YG2j+bdpxo/1Cy4uPcU3AWVPGrbn5PhDBf3Froguzzhk++ami+r3Qrx5bIbY3TVz
+# giFI7Gq3zWcwggdZMIIFQaADAgECAhALbN+2Z4EOKufLWhG6HUlwMA0GCSqGSIb3
+# DQEBCwUAMGkxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjFB
+# MD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBHNCBDb2RlIFNpZ25pbmcgUlNBNDA5
+# NiBTSEEzODQgMjAyMSBDQTEwHhcNMjQwODEzMDAwMDAwWhcNMjYxMDE4MjM1OTU5
+# WjBhMQswCQYDVQQGEwJVUzESMBAGA1UECBMJVGVubmVzc2VlMRAwDgYDVQQHEwdM
+# ZWJhbm9uMRUwEwYDVQQKEwxDYXJsIFdlYnN0ZXIxFTATBgNVBAMTDENhcmwgV2Vi
+# c3RlcjCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANObiSjT83zRuTfB
+# koOFsUj74a/sVI6pDCmQpc4uC8XNvrEoZzqKL5mPQD5E7un43xWCwqijpwu9BdOG
+# jmb1Re8XZ0RbJNMKGOTADgLxDAzTXmpCrcfLkQOzhPHmV6biEP6iOGHrC9DGXRkg
+# PUMrElexmeEaN1/9moLgh42klfJPpzlFgiJngFLNCG4mZGvzqcYvkkCkatHxly75
+# G/RTm+uQnss4yclcnSwDKFwIIME1TDM6+kdJfBHdOBONr0jAcxekKNfkA4bG9QIb
+# MphHpbYWgNrdmCqILuHpIyHq0nLWMg8pJNhxjFnHfbiutYQOC0wkRVku1VC6W/rx
+# a/KGxAIURL5M7BrmTwS92SVkr9Y9HDP8lFSZdLT3ZHdLA2fDqE1ryfQ5c23O+WjY
+# IByIvOlGvIRHnXrHP8MgRge+mTKGvBfiIComl8QWyydmvEfQ+xQEgKP7mRePZdGd
+# SiAOkmf9cwe9UDCLaHxzZeqJulGHI6a3gyLgGLv79BtZ0CgW9ehExT32jLtKP0Kf
+# hOgvR4fSC0EymydVWyszSBEcuzxROCebBcNMhN0sjnowrkDrqMwbfDi64IDQJnZ6
+# G+0xpjeM20uWaw+T3A8yGevpFu5fsaCz8huJFaPErXQCEHYNpXUXQrxBgmO+C7W3
+# rzLtmlQwnSOwdx6j9B4EvDIR3+W9AgMBAAGjggIDMIIB/zAfBgNVHSMEGDAWgBRo
+# N+Drtjv4XxGG+/5hewiIZfROQjAdBgNVHQ4EFgQUjXWpkPG7S6X9XiykjcFP7U4f
+# mDUwPgYDVR0gBDcwNTAzBgZngQwBBAEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3
+# dy5kaWdpY2VydC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggr
+# BgEFBQcDAzCBtQYDVR0fBIGtMIGqMFOgUaBPhk1odHRwOi8vY3JsMy5kaWdpY2Vy
+# dC5jb20vRGlnaUNlcnRUcnVzdGVkRzRDb2RlU2lnbmluZ1JTQTQwOTZTSEEzODQy
+# MDIxQ0ExLmNybDBToFGgT4ZNaHR0cDovL2NybDQuZGlnaWNlcnQuY29tL0RpZ2lD
+# ZXJ0VHJ1c3RlZEc0Q29kZVNpZ25pbmdSU0E0MDk2U0hBMzg0MjAyMUNBMS5jcmww
+# gZQGCCsGAQUFBwEBBIGHMIGEMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdp
+# Y2VydC5jb20wXAYIKwYBBQUHMAKGUGh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNv
+# bS9EaWdpQ2VydFRydXN0ZWRHNENvZGVTaWduaW5nUlNBNDA5NlNIQTM4NDIwMjFD
+# QTEuY3J0MAkGA1UdEwQCMAAwDQYJKoZIhvcNAQELBQADggIBAELxe271+0s/f2L4
+# jS+stPNIV7xullhe392MKZQTh3kMuGwxhydNNN4+jHZ0kPk3m3HdQCGWirDSWo09
+# TUReBftt0Hof8pxZN5EbmmwiZI7Bjyw2UPlCs34X1kCjsFgiBILJsdkGtxDJvzSw
+# 22fUqrblVVqguvm/NiVoPBIbeodYiWzJwNzLbjPGbohynYynU4vNaXkOwkbunpPJ
+# 435mRKPHefXBVgPBxDOEv5OH97tf4Yx5EwN+Oq/sH9w7EyZfv4w4kA40wvFBdcET
+# EydMiVEJb4VGKhchCDpzCbchD8nxK/T+O/+JCK9v4kDJ7fBQ8/52by8WA2lYwf37
+# xS7LNtsBCl+LWefZ1+2Nb1wNGJOQcONHqBjM+l0kLivwo8e6ChwCYY9+9HpnPNRU
+# ib5Sb9SVXYuIlIX5+i31XHNNYuSHLhEKfIqRlake9AKdxymSt4b3FEEfm85rdB/b
+# Sw9So9iCWax2uUhcobuwEcpsvKqIailleOQ8efp2SL43obD0+SwJh6286TUYtuh9
+# wIiRB/dIwfvuVypwKDfSBROM4+k34+Jrnb8PhMQ4tuP815ITZ/MjmbkneKJ0/yDd
+# RMwO38fazCnXCyQKfbcrr0XLEg4l0usjaRLvyecV3QW4jg2qDMkXcnUyl1vXbybM
+# wlYzaY5hV3xrBtxgBA5Kx0vpwkevMYIGEDCCBgwCAQEwfTBpMQswCQYDVQQGEwJV
+# UzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRy
+# dXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExAhAL
+# bN+2Z4EOKufLWhG6HUlwMAkGBSsOAwIaBQCgQDAZBgkqhkiG9w0BCQMxDAYKKwYB
+# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUtCqLerTQmj+xiARTZbuhy0qk3yQwDQYJ
+# KoZIhvcNAQEBBQAEggIAnRu5xlMuKW9oCLozXuGpaJrsM3vUHn003w7pW2fsBn5n
+# JeFOnUH6dNK0szRJnc1M+HIaIDzdEdoXLxNQEk2kPg+ocZEbvXVO4BF+ka0Z+u6j
+# 0BL57TtC2uf9EP1OoPKD2eHGTW8FhgWQ5X37wO3V7dGypBj3U2DpHjHRdj10lAEC
+# rIwzg6mcuOcRkRddVu7FHvH/c9JNiT7ep7OEkJBn6AFliOma0eNe95jVVyz+87ts
+# KkHVXicAkai+JPh6evRBq+TntW9ANUoFpUpTov/G/GiUJTIoJBfCtp3+1FrBfikq
+# 0RsDZkZcv6XRp2ixk/MjsmUEe+ZrFX02lqWypJIXUAr0ACDNVh8N0yv0G2Mcenpy
+# 9R3jRQ6Rs46dtkQgt2AGrFp2mOV7tUAIIpyrGWxStyvHi6tbxfJXD+YZnn9IFiYQ
+# WxOI8EctVHui+kFUFSbPO8ypAQsHZVgxnHfNxtLVc4OT1ufAvbsliZewc5umyrxJ
+# QhscB0PMhpzyP6A6Uv6sev9wlf2C49PECDi8Z0X+doPdt/i9iwXQMwog4Z/wW/mB
+# 1bFvLaqcF2Bx3XkNNEPCTi495F/dhSqYcikTWBsqccw8QRNjS5nTyApigE2VHN1F
+# PurAHSmFMLcsIlei7Cba5VXRB9adkcXMIiIncVr9IQldP90keMPNat4uNNTPd4Wh
+# ggMmMIIDIgYJKoZIhvcNAQkGMYIDEzCCAw8CAQEwfTBpMQswCQYDVQQGEwJVUzEX
+# MBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRydXN0
+# ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hBMjU2IDIwMjUgQ0ExAhAKgO8Y
+# S43xBYLRxHanlXRoMA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqG
+# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjUwNzMwMTkwOTI0WjAvBgkqhkiG9w0B
+# CQQxIgQghgj/ot4yDtFEYye2kI8NvzEc6xs7YCSRTSPeguRyrbwwDQYJKoZIhvcN
+# AQEBBQAEggIACeye4Al534hRKU9Xl4Cna/BujjwJVodVr/jPiSRFYjNwG5NKc3JA
+# Le6LAGnqwqTR4S1ypgADF1GdFy8SN4wFiuNKrqMBvDJIABxMWvwn6wfKCX5sN3PK
+# lMCN6iInd5Y9rxLsFII4D5YnmQFfVqEmJRGRIJEMxKlH/5G+HXU3PJoeHzH0JW/U
+# BhO/hOlKR3EuQmZdQtFlYfazAATn1fQ1N6UGCyU9L4waLJg4V7VOIJGXzWB0jfxx
+# 8NMPTYekv47Zv4R+To4e9RDtwDK1TCnrAIa0wsLSbILd6Hs+oK2n1OYb2c/vjRrP
+# Ka56bE9r1ZWwl/gkeeMfUDI90JKM4mZH9PbPj24bvrdG03ue6UVXXlZ63YA6UNFt
+# WwFDN9SzZ1jEmFNPU/gcm3HJoT5gA4wWe0XCJk6GQOI2LL1/rLtohUQLwMGtjZct
+# IqzgHJM6bK8DcTQ7FcHfetMZSQ44qq7uz9p7diStIv8MXD2jINSG18m/UbArlg1d
+# EnE1FcDm8pE996zo9hS2+oldf0qOeVHV9+eG6InuI3SCaxCKslaW9NWI6dh+R+t6
+# SxHXJfQIzGqHW5K9wjLi5HyrQ/IZ55Z6w49Z/oVsFqAX25161yMgTwFxSJsrPEQf
+# J3/VHuzDbdNFHj+U58uUTABOFvInSgXEcYi+J57h6yRcaEi/P7DxU5o=
 # SIG # End signature block
