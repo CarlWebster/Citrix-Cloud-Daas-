@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.002 (Webster's For Real Final Update)
+	VERSION: 1.28.003
 	AUTHOR: Carl Webster
-	LASTEDIT: June 30, 2025
+	LASTEDIT: August 1, 2025
 #>
 
 #endregion
@@ -1527,6 +1527,71 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.003 1-Aug-2025 (Thanks to CG from Citrix who privded this information)
+#	Added more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.MaxOpEventsToPurge (2411)
+#			Type: int
+#			Default: 7000
+#			Info: Minimum=1000
+#			Summary: Maximum number of already sent operational events to purge 
+#					 from the journal in a single database delete operation. The 
+#					 default value allows a maximum of ~20 million events per day 
+#					 to be deleted.
+#
+#		HostingManagementSettings.CancelAutoMaintenanceMode (2503)
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When this setting is True, if a VDA has been automatically placed 
+#					 into maintenance mode following multiple failed registrations 
+#					 (see MaxFailedRegistrationsAllowed) but later registers successfully, 
+#					 the VDA is automatically removed from maintenance mode.
+#
+#					 When this setting is False, or the VDA was placed into maintenance 
+#					 mode by the admin, then the VDA remains in maintenance mode even if 
+#					 it later registers successfully.
+#
+#		LhcSettings.TrustServiceKeySyncIntervalSecs (2503)
+#			Type: int
+#			Default: 120
+#			Info: Seconds Minimum=60
+#			Summary: The interval at which LHC would check with Trust service for updated service keys.
+#
+#		XmsSettings.PowerStateCacheEntryExpiryTimeSecs (2503)
+#			Type: int
+#			Default: 1800
+#			Info: Seconds Minimum=60
+#			Summary: Time after which a power state cache entry is expired.
+#
+#		XmsSettings.PowerStateCachePollingIntervalSecs (2411)
+#			Type: int
+#			Default: 300
+#			Info: Seconds Minimum=60
+#			Summary: Time after which the power state cache is refreshed from the database.
+#
+#		XmsSettings.UniqueDeviceIdOptions (2411)
+#			Type: int
+#			Default: 0
+#			Info: Minimum=0 Maximum=3
+#			Summary: Specifies options to use when trying to ensure that the client device 
+#					 ID received from WSP/SF is unique. This setting should not be changed 
+#					 from its default value except to workaround specific issues observed 
+#					 in a particular site.
+#
+#					 The value is a bit mask where the bits have the following meanings:
+#
+#					 Bit 0: When set, causes the client device ID to be unconditionally 
+#					 qualified by the client's IP address. This can rectify session 
+#					 reconnection problems caused by non-unique device IDs, but can 
+#					 conversely cause session reconnection problems if network infrastructure 
+#					 such as firewalls or load balancers causes the IP address of a client 
+#					 device to change over time even when actively connected to a VDA.
+#
+#					 Bit 1: When set, if no device ID is received or its value is known to be 
+#					 non-unique, do not try substituting the client name for the device ID, 
+#					 but instead use the client IP address. This may avoid problems caused 
+#					 where multiple devices are reporting the same non-unique client name.
+#
 #Version 1.28.002 30-Jul-2025 - Thanks to Ferroque Systems, Michael Shuster, Lina FLorez, and Richard Faulkner for the help in gathering data for this update. 
 #	In Function GetRolePermissions:
 #		Added new permissions
@@ -39439,8 +39504,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIIthQYJKoZIhvcNAQcCoIItdjCCLXICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUkd9+H/JLthPn8PETpjhCwUni
-# SDSggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUTQmq58R2HFqy8+Rwf4sSt+hG
+# HdSggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -39651,33 +39716,33 @@ ProcessScriptEnd
 # UzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRy
 # dXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExAhAL
 # bN+2Z4EOKufLWhG6HUlwMAkGBSsOAwIaBQCgQDAZBgkqhkiG9w0BCQMxDAYKKwYB
-# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUtCqLerTQmj+xiARTZbuhy0qk3yQwDQYJ
-# KoZIhvcNAQEBBQAEggIAnRu5xlMuKW9oCLozXuGpaJrsM3vUHn003w7pW2fsBn5n
-# JeFOnUH6dNK0szRJnc1M+HIaIDzdEdoXLxNQEk2kPg+ocZEbvXVO4BF+ka0Z+u6j
-# 0BL57TtC2uf9EP1OoPKD2eHGTW8FhgWQ5X37wO3V7dGypBj3U2DpHjHRdj10lAEC
-# rIwzg6mcuOcRkRddVu7FHvH/c9JNiT7ep7OEkJBn6AFliOma0eNe95jVVyz+87ts
-# KkHVXicAkai+JPh6evRBq+TntW9ANUoFpUpTov/G/GiUJTIoJBfCtp3+1FrBfikq
-# 0RsDZkZcv6XRp2ixk/MjsmUEe+ZrFX02lqWypJIXUAr0ACDNVh8N0yv0G2Mcenpy
-# 9R3jRQ6Rs46dtkQgt2AGrFp2mOV7tUAIIpyrGWxStyvHi6tbxfJXD+YZnn9IFiYQ
-# WxOI8EctVHui+kFUFSbPO8ypAQsHZVgxnHfNxtLVc4OT1ufAvbsliZewc5umyrxJ
-# QhscB0PMhpzyP6A6Uv6sev9wlf2C49PECDi8Z0X+doPdt/i9iwXQMwog4Z/wW/mB
-# 1bFvLaqcF2Bx3XkNNEPCTi495F/dhSqYcikTWBsqccw8QRNjS5nTyApigE2VHN1F
-# PurAHSmFMLcsIlei7Cba5VXRB9adkcXMIiIncVr9IQldP90keMPNat4uNNTPd4Wh
+# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUWHkFQhK5f7V9Kc84rirwb5QuCUMwDQYJ
+# KoZIhvcNAQEBBQAEggIAqqB492nO7HHnodAOSmc/Ml9f7jDisWMQaoV2TJHFaGZK
+# dcAc6bN/G1X0zMcL6SoQIyHJCrfnjVxYN5K1s/0Tgrc1sM6JO3jcvFEwsl6oMGjT
+# w/6UVtgJWgCBTTW7pGgNPec39L2cytVJHblWM7CafH7gQ2bVqZWNpSsQSAF9nDbN
+# eVeHn+kvo3l7ctvXqHBbI86YO466RmcEtKIth7fBShEneIJ3NJri+hB6qPJoot+N
+# 1WfwiLIodAB/zOKsMGTAOEK0jqthAa/UGSALe5gq70wmyFP9Q1YBDRXXDvxlyMot
+# UAbxu/JMHuEAKQAovTw64+onVF+8dsW5RBEnSo3hFKYvZCaGU8ZGwhahQ6AzqBiv
+# X1kqOgYth7ifxBQlKRsiDdZG4bvLPfLpb3AJWlw4UU7MFkTktyTLyK1dMJJMio90
+# L74XMfDeCXsYAYry6Lq7APMsqJ3jBrLAx0vhDnzbxel4BGnG71/UdoeVZVZqXs7u
+# kMKjDbUMOdcjMYCaxtHoLIafNYf9HQWKsu2XWBG9Qr4QUu8mw/RMsk8tsj/lgJ8N
+# Wa4kyMmHtEXK1C+8bqvFz0LLLipehTpKciAW5yag057f+UYi5yToCJ7Lu1fpP0UY
+# Fn7PDVGtoNoe2W7zn+aAtsyL/zDzB0ulYUrHDH13Z8DyYP6+nyBPpn0uXG2mnOyh
 # ggMmMIIDIgYJKoZIhvcNAQkGMYIDEzCCAw8CAQEwfTBpMQswCQYDVQQGEwJVUzEX
 # MBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRydXN0
 # ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hBMjU2IDIwMjUgQ0ExAhAKgO8Y
 # S43xBYLRxHanlXRoMA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqG
-# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjUwNzMwMTkwOTI0WjAvBgkqhkiG9w0B
-# CQQxIgQghgj/ot4yDtFEYye2kI8NvzEc6xs7YCSRTSPeguRyrbwwDQYJKoZIhvcN
-# AQEBBQAEggIACeye4Al534hRKU9Xl4Cna/BujjwJVodVr/jPiSRFYjNwG5NKc3JA
-# Le6LAGnqwqTR4S1ypgADF1GdFy8SN4wFiuNKrqMBvDJIABxMWvwn6wfKCX5sN3PK
-# lMCN6iInd5Y9rxLsFII4D5YnmQFfVqEmJRGRIJEMxKlH/5G+HXU3PJoeHzH0JW/U
-# BhO/hOlKR3EuQmZdQtFlYfazAATn1fQ1N6UGCyU9L4waLJg4V7VOIJGXzWB0jfxx
-# 8NMPTYekv47Zv4R+To4e9RDtwDK1TCnrAIa0wsLSbILd6Hs+oK2n1OYb2c/vjRrP
-# Ka56bE9r1ZWwl/gkeeMfUDI90JKM4mZH9PbPj24bvrdG03ue6UVXXlZ63YA6UNFt
-# WwFDN9SzZ1jEmFNPU/gcm3HJoT5gA4wWe0XCJk6GQOI2LL1/rLtohUQLwMGtjZct
-# IqzgHJM6bK8DcTQ7FcHfetMZSQ44qq7uz9p7diStIv8MXD2jINSG18m/UbArlg1d
-# EnE1FcDm8pE996zo9hS2+oldf0qOeVHV9+eG6InuI3SCaxCKslaW9NWI6dh+R+t6
-# SxHXJfQIzGqHW5K9wjLi5HyrQ/IZ55Z6w49Z/oVsFqAX25161yMgTwFxSJsrPEQf
-# J3/VHuzDbdNFHj+U58uUTABOFvInSgXEcYi+J57h6yRcaEi/P7DxU5o=
+# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjUwODAxMTY0MzU4WjAvBgkqhkiG9w0B
+# CQQxIgQg012n6GArH8yBdlx++bf1ZIwFFYgOdBKYPSf0k0oBXgAwDQYJKoZIhvcN
+# AQEBBQAEggIAGfYMK9z/vbeekmOXmpgkXisN7QEred3hWYvfya3L4wdclfUTW6S/
+# mASPes24tz9x4B7K9yvB2S7qPp3ivYd+1ZL3jxxvzNx5zqK5od3OoyB0NlzbYHQ3
+# O0LnVsiLfIXahapH3LmCv9gkTUZBR9OIVhVEtTvKJwwQXDT0BauJYU3mAUvdQQyl
+# Byi/BZdh9xTu4jeuV4RjAqufu+Xoxi7xjxhNfN1UDVAbgAl1l7fBol9ZN7HbeM8A
+# hb5gKnaeAy1jtiKLNADX0FbQgGB4XBc8evoonOELFzFNlya4hxrkSn9EFE28b8yh
+# 2LHCYa3MJrzfOi6Pu3oEVBwKafNffXUB7BciBvLc2Ehh5Iwbg08gHQ7LfI3Jo0Vt
+# ImkdLrw4/LQHzsgHzZzj+fuUR9q8okUXMfYuhwAFcWxDk9s9yf/JgdtXfXZe9qRu
+# rfqXfnLgAOV3ceHwCotCuV6rL0eoISpZILsyYLUj5Z0RyYUF9mnTJ37Q2mgzfuFp
+# 1yV9XIK0T3bCalnq6HSH0ugJNPl5TM+La8V01Hd2scsCVFuWS0DGksGygdBLU1oK
+# k6dOk6yPUFGU/3FSJLBc0QgtaOB4P97zx5ZxqHSHVhJKQo77VXNS0sR8OITMk+90
+# zGzbIxtorf7qagGOftsXkGVbQR1qNZp6UjgZyiQckoZweBHthr8q2Sk=
 # SIG # End signature block

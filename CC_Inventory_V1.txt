@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.002 (Webster's For Real Final Update)
+	VERSION: 1.28.003
 	AUTHOR: Carl Webster
-	LASTEDIT: June 30, 2025
+	LASTEDIT: August 1, 2025
 #>
 
 #endregion
@@ -1527,6 +1527,71 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.003 1-Aug-2025 (Thanks to CG from Citrix who privded this information)
+#	Added more settings configurable by Set-BrokerServiceConfigurationData
+#		Core.MaxOpEventsToPurge (2411)
+#			Type: int
+#			Default: 7000
+#			Info: Minimum=1000
+#			Summary: Maximum number of already sent operational events to purge 
+#					 from the journal in a single database delete operation. The 
+#					 default value allows a maximum of ~20 million events per day 
+#					 to be deleted.
+#
+#		HostingManagementSettings.CancelAutoMaintenanceMode (2503)
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When this setting is True, if a VDA has been automatically placed 
+#					 into maintenance mode following multiple failed registrations 
+#					 (see MaxFailedRegistrationsAllowed) but later registers successfully, 
+#					 the VDA is automatically removed from maintenance mode.
+#
+#					 When this setting is False, or the VDA was placed into maintenance 
+#					 mode by the admin, then the VDA remains in maintenance mode even if 
+#					 it later registers successfully.
+#
+#		LhcSettings.TrustServiceKeySyncIntervalSecs (2503)
+#			Type: int
+#			Default: 120
+#			Info: Seconds Minimum=60
+#			Summary: The interval at which LHC would check with Trust service for updated service keys.
+#
+#		XmsSettings.PowerStateCacheEntryExpiryTimeSecs (2503)
+#			Type: int
+#			Default: 1800
+#			Info: Seconds Minimum=60
+#			Summary: Time after which a power state cache entry is expired.
+#
+#		XmsSettings.PowerStateCachePollingIntervalSecs (2411)
+#			Type: int
+#			Default: 300
+#			Info: Seconds Minimum=60
+#			Summary: Time after which the power state cache is refreshed from the database.
+#
+#		XmsSettings.UniqueDeviceIdOptions (2411)
+#			Type: int
+#			Default: 0
+#			Info: Minimum=0 Maximum=3
+#			Summary: Specifies options to use when trying to ensure that the client device 
+#					 ID received from WSP/SF is unique. This setting should not be changed 
+#					 from its default value except to workaround specific issues observed 
+#					 in a particular site.
+#
+#					 The value is a bit mask where the bits have the following meanings:
+#
+#					 Bit 0: When set, causes the client device ID to be unconditionally 
+#					 qualified by the client's IP address. This can rectify session 
+#					 reconnection problems caused by non-unique device IDs, but can 
+#					 conversely cause session reconnection problems if network infrastructure 
+#					 such as firewalls or load balancers causes the IP address of a client 
+#					 device to change over time even when actively connected to a VDA.
+#
+#					 Bit 1: When set, if no device ID is received or its value is known to be 
+#					 non-unique, do not try substituting the client name for the device ID, 
+#					 but instead use the client IP address. This may avoid problems caused 
+#					 where multiple devices are reporting the same non-unique client name.
+#
 #Version 1.28.002 30-Jul-2025 - Thanks to Ferroque Systems, Michael Shuster, Lina FLorez, and Richard Faulkner for the help in gathering data for this update. 
 #	In Function GetRolePermissions:
 #		Added new permissions
