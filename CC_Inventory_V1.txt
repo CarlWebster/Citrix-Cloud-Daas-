@@ -38,7 +38,7 @@
 	instructions in the Authentication section of the ReadMe file to create a profile named 
 	Default.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 	
 	By default, the script only gives summary information for:
 		Administrators
@@ -107,7 +107,7 @@
 	You must follow the Process in either the ReadMe file or your own Process to capture 
 	the Client ID and Client Secret and save them to a CSV credential profile.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 
 	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, create a profile 
 	named Default.
@@ -517,7 +517,7 @@
 	Note: Review the instructions in the Authentication section of the ReadMe file for the 
 	details on creating a profile named Default.
 	
-	ReadMe file: https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 	
 	PowerShell.exe -NoLogo -File "C:\PSScript\CC_Inventory_V1.ps1 -MaxDetails 
 	-SiteName MyCCSite' -AddDateTime"	
@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.003
+	VERSION: 1.28.004
 	AUTHOR: Carl Webster
-	LASTEDIT: August 1, 2025
+	LASTEDIT: October 2, 2025
 #>
 
 #endregion
@@ -1527,6 +1527,52 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.004 2-Oct-2025 (Thanks to Prateek Anand and Ferroque Systems for their help)
+#	Added Computer policy
+#		ICA\FIDO2 allowed processes (2503)
+#		ICA\Multimedia\Screen recording for UC SDK optimized applications (2503)
+#		ICA\End User Monitoring\Endpoint location data collection (2411)
+#		ICA\End User Monitoring\Endpoint network latency measurement interval (2411)
+#		uberAgent\Enable uberAgent data collection (2503)
+#		uberAgent\uberAgent configuration archive path (2503)
+#		uberAgent\uberAgent license path (2503)
+#		VDA Data Collection\Multimedia\Multimedia apps data collection for session performance monitoring (2503)
+#		VDA Data Collection\uberAgent\uberAgent data collection for Application monitoring (2411)
+#		Virtual Delivery Agent Settings\Monitoring\Send end user experience data to Monitor service (2507)
+#
+#	Added User policy
+#		ICA\Graphics\Optimized Content Sharing for Teams and other platforms (2411)
+#
+#	In Function GetRolePermissions, 
+#		Updated descriptions for
+#			AppV_DeleteServer
+#			Configuration_Restricted_ServiceRead
+#			Configuration_Restricted_ServiceWrite
+#			Trust_MultiTenantAccessList
+#			Trust_VdaEnrollment
+#		Removed
+#			SkylightBroker
+#
+#	In Function ProcessScriptSetup, remove getting and checking the product version
+#		That is not accurate in Citrix DaaS
+#
+#		Check that the Get-BrokerSite property, CloudValidLicenses is not null.
+#			If it is null, abort the script. We are not in a valid DaaS environment.
+#
+#	In Function ProcessCitrixPolicies, remove version checking, as that is not accurate in Citrix DaaS
+#
+#	In Function ProcessScriptEnd
+#		Remove the product version lines
+#		Add Product Code, Product Edition, and License Model
+#			Handle multiple licenses in the site
+#
+#	In Function ShowScriptOptions
+#		Remove the product version lines
+#		Add Product Code, Product Edition, and License Model
+#			Handle multiple licenses in the site
+#
+#	Updated all references of ShareFile to Dropbox
+#
 #Version 1.28.003 1-Aug-2025 (Thanks to CG from Citrix who privded this information)
 #	Added more settings configurable by Set-BrokerServiceConfigurationData
 #		Core.MaxOpEventsToPurge (2411)
@@ -1657,7 +1703,7 @@ Param(
 #			https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
 #                                                                                           
 #		Please see the ReadMe file:                                                                
-#			https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                      
+#			https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 #		*******************************************************************************************
 #
 #	Reformatted the tables for policies to reduce word wrapping.
@@ -3015,7 +3061,7 @@ Param(
 #	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
 #	Updated the help text
 #	Updated the expired link for the ReadMe file 
-#		https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+#		https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 #	Updated the ReadMe file
 #
 #Version 1.14 29-Jul-2021
@@ -3237,7 +3283,7 @@ Param(
 #			Delete UPM Broker Machine Configuration
 #	Added a ValidateSet to the Sections parameter. You can use -Section, press tab, and tab through all the section options. (Credit to Guy Leech)
 #	Added a -ProfileName parameter for use by Get-XDAuthentication 
-#		For more information, see the Authentication section in the ReadMe file https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+#		For more information, see the Authentication section in the ReadMe file https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 #		Thanks to David Prows and Devan Tilly for documenting this Process for me to use
 #	Added testing to see if the computer running the script is in a Domain or Workgroup
 #		If not in a domain, and VDARegistryKeys is set, set it to $False
@@ -3378,9 +3424,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = "'1.28 Webster's For Real Final Update"
+$script:MyVersion   = "'1.28.004 Webster's For Real Final Update"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "10/15/2024"
+$tmpdate            = [datetime] "10/02/2025"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -3708,7 +3754,7 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
@@ -3747,7 +3793,7 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
@@ -3772,7 +3818,7 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799
+https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
@@ -6579,8 +6625,14 @@ Function ShowScriptOptions
 	Write-Verbose "$(Get-Date -Format G): Username           : $($UserName)"
 	Write-Verbose "$(Get-Date -Format G): VDA Registry Keys  : $($VDARegistryKeys)"
 	Write-Verbose "$(Get-Date -Format G): "
-	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version1 : $($Script:CCSiteVersion)"
-	Write-Verbose "$(Get-Date -Format G): Ctx Cloud Version2 : $($Script:CCSiteVersionReal)"
+	[array]$CloudValidLicenses = $Script:CCSite1.CloudValidLicenses.Split(",")
+	ForEach($License in $CloudValidLicenses)
+	{
+		$LicenseArray = $License.Split(":")
+		Write-Verbose "$(Get-Date -Format G): Product Code       : $($LicenseArray[0])"
+		Write-Verbose "$(Get-Date -Format G): Product Edition    : $($LicenseArray[1])"
+		Write-Verbose "$(Get-Date -Format G): License Model      : $($LicenseArray[2])"
+	}
 	Write-Verbose "$(Get-Date -Format G): "
 	Write-Verbose "$(Get-Date -Format G): OS Detected        : $($Script:RunningOS)"
 	Write-Verbose "$(Get-Date -Format G): PoSH version       : $($Host.Version)"
@@ -18762,6 +18814,90 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.RemoteCredentialGuard.State 
 						}
 					}
+					If((validStateProp $Setting AllowedFidoProcesses State ) -and ($Setting.AllowedFidoProcesses.State -ne "NotConfigured"))
+					{
+						#added in 2503
+						$txt = "ICA\FIDO2 allowed processes"
+						If(validStateProp $Setting AllowedFidoProcesses Values )
+						{
+							$tmpArray = $Setting.AllowedFidoProcesses.Values
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $TmpArray)
+							{
+								If($Null -eq $Thing)
+								{
+									$Thing = ''
+								}
+								$cnt++
+								$tmp = "$($Thing) "
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = $txt;
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$SettingsWordTable += @{
+										Text = "";
+										Value = $tmp;
+										}
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t  " $tmp
+									}
+								}
+								$txt = ""
+							}
+							$TmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No FIDO2 allowed processes were found"
+							If($MSWord -or $PDF)
+							{
+								$SettingsWordTable += @{
+								Text = $txt;
+								Value = $tmp;
+								}
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
 					If((validStateProp $Setting AllowFidoRedirection State ) -and ($Setting.AllowFidoRedirection.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\FIDO2 Redirection"
@@ -19380,14 +19516,7 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting UsageDataCollectionThroughClient State ) -and ($Setting.UsageDataCollectionThroughClient.State -ne "NotConfigured"))
 					{
 						#added in 2402 and renamed in 2407
-						If($CCSiteVersion.Major -eq 7 -and $CCSiteVersion.Minor -eq 41) #cvad 2402
-						{
-							$txt = "ICA\Usage data collection through client"	#2402 text
-						}
-						Else
-						{
-							$txt = "ICA\Session metrics collection"	#renamed in 2407
-						}
+						$txt = "ICA\Session metrics collection"	#renamed in 2407
 						If($MSWord -or $PDF)
 						{
 							$SettingsWordTable += @{
@@ -20764,6 +20893,50 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.EndpointMetricsCheckPeriod.Value 
 						}	
 					}
+					If((validStateProp $Setting EndpointLocationCheckEnabled State ) -and ($Setting.EndpointLocationCheckEnabled.State -ne "NotConfigured"))
+					{
+						#added in CVAD2411
+						$txt = "ICA\End User Monitoring\Endpoint location data collection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EndpointLocationCheckEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EndpointLocationCheckEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EndpointLocationCheckEnabled.State 
+						}
+					}
+					If((validStateProp $Setting EndpointNetworkLatencyMeasurePeriod State ) -and ($Setting.EndpointNetworkLatencyMeasurePeriod.State -ne "NotConfigured"))
+					{
+						#added in CVAD2411
+						$txt = "ICA\End User Monitoring\Endpoint network latency measurement interval (seconds)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EndpointNetworkLatencyMeasurePeriod.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EndpointNetworkLatencyMeasurePeriod.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EndpointNetworkLatencyMeasurePeriod.Value 
+						}	
+					}
 					If((validStateProp $Setting IcaRoundTripCalculation State ) -and ($Setting.IcaRoundTripCalculation.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\End User Monitoring\ICA round trip calculation"
@@ -20852,28 +21025,25 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\File Redirection"
-					If($Script:CCSiteVersion.Minor -lt 37)
+					If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
 					{
-						If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
+						$txt = "ICA\File Redirection\Allow file transfer between desktop and client"
+						If($MSWord -or $PDF)
 						{
-							$txt = "ICA\File Redirection\Allow file transfer between desktop and client"
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.AllowFileTransfer.State;
-								}
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowFileTransfer.State;
 							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.AllowFileTransfer.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.AllowFileTransfer.State 
-							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowFileTransfer.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowFileTransfer.State 
 						}
 					}
 					If((validStateProp $Setting AutoConnectDrives State ) -and ($Setting.AutoConnectDrives.State -ne "NotConfigured"))
@@ -21023,52 +21193,46 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ClientRemoveableDrives.State 
 						}
 					}
-					If($Script:CCSiteVersion.Minor -lt 37)
+					If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
 					{
-						If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
+						$txt = "ICA\File Redirection\Download file from desktop"
+						If($MSWord -or $PDF)
 						{
-							$txt = "ICA\File Redirection\Download file from desktop"
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.AllowFileDownload.State;
-								}
-							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.AllowFileDownload.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.AllowFileDownload.State 
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowFileDownload.State;
 							}
 						}
-					}
-					If($Script:CCSiteVersion.Minor -ge 37)
-					{
-						If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
+						If($HTML)
 						{
-							$txt = "ICA\File Redirection\Download file for Citrix Workspace app for Chrome OS/HTML5"
-							If($MSWord -or $PDF)
-							{
-								$SettingsWordTable += @{
-								Text = $txt;
-								Value = $Setting.AllowFileDownload.State;
-								}
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowFileDownload.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowFileDownload.State 
+						}
+					}
+					If((validStateProp $Setting AllowFileDownload State ) -and ($Setting.AllowFileDownload.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\File Redirection\Download file for Citrix Workspace app for Chrome OS/HTML5"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowFileDownload.State;
 							}
-							If($HTML)
-							{
-								$rowdata += @(,(
-								$txt,$htmlbold,
-								$Setting.AllowFileDownload.State,$htmlwhite))
-							}
-							If($Text)
-							{
-								OutputPolicySetting $txt $Setting.AllowFileDownload.State 
-							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowFileDownload.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowFileDownload.State 
 						}
 						If((validStateProp $Setting AllowFileTransfer State ) -and ($Setting.AllowFileTransfer.State -ne "NotConfigured"))
 						{
@@ -21376,6 +21540,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.OptimizeFor3dWorkload.State 
+						}
+					}
+					If((validStateProp $Setting AppAndDesktopSharing State ) -and ($Setting.AppAndDesktopSharing.State -ne "NotConfigured"))
+					{
+						#added in CVAD2411
+						$txt = "ICA\Graphics\Optimized Content Sharing for Teams and other platforms"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AppAndDesktopSharing.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AppAndDesktopSharing.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AppAndDesktopSharing.State 
 						}
 					}
 					If((validStateProp $Setting ScreenSharing State ) -and ($Setting.ScreenSharing.State -ne "NotConfigured"))
@@ -22289,6 +22475,39 @@ Function ProcessCitrixPolicies
 						{
 							OutputPolicySetting $txt $Setting.MultimediaOptimization.State 
 						}
+					}
+					If((validStateProp $Setting ScreenRecording State ) -and ($Setting.ScreenRecording.State -ne "NotConfigured"))
+					{
+						#addedin 2503
+						$txt = "ICA\Multimedia\Screen recording for UC SDK optimized applications"
+						$tmp = ""
+						Switch ($Setting.ScreenRecording.Value)
+						{
+							"Disabled"				{$tmp = "Disabled"; Break}
+							"BothDisabled"			{$tmp = "None"; Break}
+							"AllowHideRedBorder"	{$tmp = "Add a red border during screen recording"; Break}
+							"AllowUserNotification"	{$tmp = "Notify users that screen recording is in progress"; Break}
+							"BothEnabled"			{$tmp = "Add a red border and notify users that screen recording is in progress"; Break}
+							Default					{$tmp = "Screen recording for UC SDK optimized applications could not be determined: $($Setting.ScreenRecording.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
 					}
 					If((validStateProp $Setting UseGPUForMultimediaOptimization State ) -and ($Setting.UseGPUForMultimediaOptimization.State -ne "NotConfigured"))
 					{
@@ -32293,6 +32512,78 @@ Function ProcessCitrixPolicies
 						}
 					}
 
+					#added in 1.28.004
+					Write-Verbose "$(Get-Date -Format G): `t`t`tuberAgent"
+					If((validStateProp $Setting uberAgentEnabled State ) -and ($Setting.uberAgentEnabled.State -ne "NotConfigured"))
+					{
+						#added in 2503
+						$txt = "uberAgent\Enable uberAgent data collection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.uberAgentEnabled.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.uberAgentEnabled.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.uberAgentEnabled.State
+						}
+					}
+					If((validStateProp $Setting uberAgentConfigArchivePath State ) -and ($Setting.uberAgentConfigArchivePath.State -ne "NotConfigured"))
+					{
+						#added in 2503
+						$txt = "uberAgent\uberAgent configuration archive path"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.uberAgentConfigArchivePath.Value;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.uberAgentConfigArchivePath.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.uberAgentConfigArchivePath.Value 
+						}
+					}
+					If((validStateProp $Setting uberAgentLicensePath State ) -and ($Setting.uberAgentLicensePath.State -ne "NotConfigured"))
+					{
+						#added in 2503
+						$txt = "uberAgent\uberAgent license path"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.uberAgentLicensePath.Value;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.uberAgentLicensePath.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.uberAgentLicensePath.Value 
+						}
+					}
+					#end added in 1.28.004
+					
 					Write-Verbose "$(Get-Date -Format G): `t`t`tUser Personalization Layer"
 					If((validStateProp $Setting UplCustomizedUserLayerSizeInGb State ) -and ($Setting.UplCustomizedUserLayerSizeInGb.State -ne "NotConfigured"))
 					{
@@ -32586,6 +32877,32 @@ Function ProcessCitrixPolicies
 						}
 					}
 
+					#added in 1.28.004
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\Multimedia"
+					If((validStateProp $Setting EnableMultimediaDataCollection State ) -and ($Setting.EnableMultimediaDataCollection.State -ne "NotConfigured"))
+					{
+						$txt = "VDA Data Collection\Multimedia\Multimedia apps data collection for session performance monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableMultimediaDataCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableMultimediaDataCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableMultimediaDataCollection.State
+						}
+					}
+					#end added in 1.28.004
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\Performance"
 					If((validStateProp $Setting EnableVdaDiagnosticsCollection State ) -and ($Setting.EnableVdaDiagnosticsCollection.State -ne "NotConfigured"))
 					{
@@ -32635,6 +32952,33 @@ Function ProcessCitrixPolicies
 						}
 					}
 					#end added in 1.26
+
+					#added in 1.28.004
+					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\uberAgent"
+					If((validStateProp $Setting EnableuberAgentDataCollection State ) -and ($Setting.EnableuberAgentDataCollection.State -ne "NotConfigured"))
+					{
+						#added in CVAD2411
+						$txt = "VDA Data Collection\uberAgent\uberAgent data collection for Application monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableuberAgentDataCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableuberAgentDataCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableuberAgentDataCollection.State
+						}
+					}
+					#end added in 1.28.004
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tVirtual Delivery Agent Settings"
 					If((validStateProp $Setting ControllerRegistrationIPv6Netmask State ) -and ($Setting.ControllerRegistrationIPv6Netmask.State -ne "NotConfigured"))
@@ -32749,6 +33093,52 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.EnableAutoUpdateOfControllers.State 
+						}
+					}
+					If((validStateProp $Setting OnlyUseIPv6ControllerRegistration State ) -and ($Setting.OnlyUseIPv6ControllerRegistration.State -ne "NotConfigured"))
+					{
+						#AD specific setting
+						$txt = "Virtual Delivery Agent Settings\Only use IPv6 Controller registration"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.OnlyUseIPv6ControllerRegistration.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.OnlyUseIPv6ControllerRegistration.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.OnlyUseIPv6ControllerRegistration.State 
+						}
+					}
+					If((validStateProp $Setting SiteGUID State ) -and ($Setting.SiteGUID.State -ne "NotConfigured"))
+					{
+						#AD specific setting
+						$txt = "Virtual Delivery Agent Settings\Site GUID"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.SiteGUID.Value;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.SiteGUID.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.SiteGUID.Value 
 						}
 					}
 					
@@ -32955,15 +33345,15 @@ Function ProcessCitrixPolicies
 							}
 						}
 					}	
-					If((validStateProp $Setting OnlyUseIPv6ControllerRegistration State ) -and ($Setting.OnlyUseIPv6ControllerRegistration.State -ne "NotConfigured"))
+					If((validStateProp $Setting EnableEuemEventSinkToMonitor State ) -and ($Setting.EnableEuemEventSinkToMonitor.State -ne "NotConfigured"))
 					{
-						#AD specific setting
-						$txt = "Virtual Delivery Agent Settings\Only use IPv6 Controller registration"
+						#added in 2507
+						$txt = "Virtual Delivery Agent Settings\Monitoring\Send end user experience data to Monitor service"
 						If($MSWord -or $PDF)
 						{
 							$WordTableRowHash = @{
 							Text = $txt;
-							Value = $Setting.OnlyUseIPv6ControllerRegistration.State;
+							Value = $Setting.EnableEuemEventSinkToMonitor.State;
 							}
 							$SettingsWordTable += $WordTableRowHash;
 						}
@@ -32971,34 +33361,11 @@ Function ProcessCitrixPolicies
 						{
 							$rowdata += @(,(
 							$txt,$htmlbold,
-							$Setting.OnlyUseIPv6ControllerRegistration.State,$htmlwhite))
+							$Setting.EnableEuemEventSinkToMonitor.State,$htmlwhite))
 						}
 						If($Text)
 						{
-							OutputPolicySetting $txt $Setting.OnlyUseIPv6ControllerRegistration.State 
-						}
-					}
-					If((validStateProp $Setting SiteGUID State ) -and ($Setting.SiteGUID.State -ne "NotConfigured"))
-					{
-						#AD specific setting
-						$txt = "Virtual Delivery Agent Settings\Site GUID"
-						If($MSWord -or $PDF)
-						{
-							$WordTableRowHash = @{
-							Text = $txt;
-							Value = $Setting.SiteGUID.Value;
-							}
-							$SettingsWordTable += $WordTableRowHash;
-						}
-						If($HTML)
-						{
-							$rowdata += @(,(
-							$txt,$htmlbold,
-							$Setting.SiteGUID.Value,$htmlwhite))
-						}
-						If($Text)
-						{
-							OutputPolicySetting $txt $Setting.SiteGUID.Value 
+							OutputPolicySetting $txt $Setting.EnableEuemEventSinkToMonitor.State 
 						}
 					}
 					
@@ -35364,7 +35731,7 @@ Function GetRolePermissions
 			"AppLib_RemoveAppVServer"									{$Results.Add("Remove App-V Server and associated packages", "Application Packages")}
 			"AppLib_RemovePackage"										{$Results.Add("Remove App-V Application Libraries and Packages", "Application Packages")}
 			"AppV_AddServer"											{$Results.Add("Add App-V publishing server", "Application Packages")}
-			"AppV_DeleteServer"											{$Results.Add("Delete App-V publishing server", "Application Packages")}
+			"AppV_DeleteServer"											{$Results.Add("Remove App-V Server and associated Packages", "Application Packages")} #description updated in 1.28.004
 			"AppV_Read"													{$Results.Add("Read App-V servers", "Application Packages")}
 			
 			"EA_Acct"													{$Results.Add("Catalog Service Identity operations", "Citrix Catalog Service")}
@@ -35551,8 +35918,8 @@ Function GetRolePermissions
 			"AutoTagRule_Edit"											{$Results.Add("Edit AutoTagRule", "Other permissions")}
 			"AutoTagRule_Read"											{$Results.Add("Read AutoTagRule", "Other permissions")}
 			"Configuration_Read"										{$Results.Add("Read Site Configuration (Configuration_Read)", "Other permissions")}
-			"Configuration_Restricted_ServiceRead"						{$Results.Add("", "Other permissions")} #added in 1.28.002
-			"Configuration_Restricted_ServiceWrite"						{$Results.Add(" (1) ", "Other permissions")} #added in 1.28.002
+			"Configuration_Restricted_ServiceRead"						{$Results.Add("Get Config data for the service", "Other permissions")} #added in 1.28.002 #description updated in 1.28.004
+			"Configuration_Restricted_ServiceWrite"						{$Results.Add("Set or Remove Config data for the service", "Other permissions")} #added in 1.28.002 #description updated in 1.28.004
 			"Configuration_Restricted_Write"							{$Results.Add("Customer Update Site Configuration", "Other permissions")}
 			"Configuration_Unrestricted_Write"							{$Results.Add("Update Site Configuration", "Other permissions")}
 			"Database_Read"												{$Results.Add("Read database status information", "Other permissions")}
@@ -35567,14 +35934,14 @@ Function GetRolePermissions
 			"Paladin_Admin"												{$Results.Add("Paladin service permission", "Other permissions")} #added in 1.28.002
 			"PerformUpgrade"											{$Results.Add("Perform upgrade", "Other permissions")}
 			"PVS_Admin"													{$Results.Add("PVS console admin permission", "Other permissions")} #added in 1.28.002
-			"SkylightBroker"											{$Results.Add(" (4) ", "Other permissions")} #added in 1.28.002
+			#"SkylightBroker"											{$Results.Add(" (4) ", "Other permissions")} #added in 1.28.002
 			"Tag_Create"												{$Results.Add("Create tags", "Other permissions")}
 			"Tag_Delete"												{$Results.Add("Delete tags", "Other permissions")}
 			"Tag_Edit"													{$Results.Add("Edit tags", "Other permissions")}
 			"Tag_Read"													{$Results.Add("Read tags", "Other permissions")}
-			"Trust_MultiTenantAccessList"								{$Results.Add(" (3) ", "Other permissions")} #added in 1.28.002
+			"Trust_MultiTenantAccessList"								{$Results.Add("Grants an administrator privileges to create and manage multi-tenant service access list permissions", "Other permissions")} #added in 1.28.002 #description updated in 1.28.004
 			"Trust_ServiceKeys"											{$Results.Add("Manage Trust Service Keys", "Other permissions")}
-			"Trust_VdaEnrollment"										{$Results.Add(" (2) ", "Other permissions")}
+			"Trust_VdaEnrollment"										{$Results.Add("Grants an administrator privileges to create and manage VDA enrollment tokens", "Other permissions")} #description updated in 1.28.004
 			"VdaUpgrade_CatalogManage"									{$Results.Add("Manage VDA Upgrade Catalog Schedules", "Other permissions")}
 			"VdaUpgrade_MachineManage"									{$Results.Add("Manage VDA Upgrade Machine Schedules", "Other permissions")}
 
@@ -38735,18 +39102,18 @@ Script cannot continue
 
 				Write-Host "" -ForegroundColor White
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
-				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off." -ForegroundColor Red
-				Write-Host "                                                                                           " -ForegroundColor Red
-				Write-Host "Are the two Visual C++ Runtimes installed?                                                 " -ForegroundColor Red
-				Write-Host "                                                                                           " -ForegroundColor Red
-				Write-Host "Verify that the Visual C++ Runtimes are installed.                                         " -ForegroundColor Red
-				Write-Host "                                                                                           " -ForegroundColor Red
-				Write-Host "Install from the Microsoft download page                                                   " -ForegroundColor Red
-				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                         " -ForegroundColor Red
-				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                         " -ForegroundColor Red
-				Write-Host "                                                                                           " -ForegroundColor Red
-				Write-Host "Please see the ReadMe file:                                                                " -ForegroundColor Red
-				Write-Host "	https://carlwebster.sharefile.com/d-s1ef10b6883eb473fa2f4eef00be83799                  " -ForegroundColor Red
+				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.                             " -ForegroundColor Red
+				Write-Host "                                                                                                                        " -ForegroundColor Red
+				Write-Host "Are the two Visual C++ Runtimes installed?                                                                              " -ForegroundColor Red
+				Write-Host "                                                                                                                        " -ForegroundColor Red
+				Write-Host "Verify that the Visual C++ Runtimes are installed.                                                                      " -ForegroundColor Red
+				Write-Host "                                                                                                                        " -ForegroundColor Red
+				Write-Host "Install from the Microsoft download page                                                                                " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                                                      " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                                                      " -ForegroundColor Red
+				Write-Host "                                                                                                                        " -ForegroundColor Red
+				Write-Host "Please see the ReadMe file:                                                                                             " -ForegroundColor Red
+				Write-Host "	https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0" -ForegroundColor Red
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
 				Write-Host "" -ForegroundColor White
 				Break
@@ -38856,6 +39223,19 @@ cmdlet failed: $($error[ 0 ].ToString())
 		AbortScript
 	}
 
+	If($Null -eq $Script:CCSite1.CloudValidLicenses)
+	{
+		#this is not a DaaS Site, script cannot proceed
+		Write-Error "
+	`n`n
+This script is designed for Citrix DaaS, and CloudValidLicenses is NULL.
+	`n`n
+Script cannot continue
+	`n`n
+		"
+		AbortScript
+	}
+	
 	$Script:CCSite2 = Get-ConfigSite -EA 0
 
 	If( !($?) -or $Null -eq $Script:CCSite2)
@@ -38869,86 +39249,6 @@ cmdlet failed $($error[ 0 ].ToString())
 		"
 		AbortScript
 	}
-
-	[version]$Script:CCSiteVersion = $Script:CCSite2.ProductVersion
-
-	If($Script:CCSiteVersion.Major -eq 7)
-	{
-		#this is a CVAD 7.x Site, now test to see if it is less than 7.26 (CVAD 2006)
-		If($Script:CCSiteVersion.Minor -lt 26)
-		{
-			Write-Warning "You are running version $Script:CCSiteVersion"
-			Write-Warning "Are the PowerShell Snapins/Modules or Studio installed?"
-			Write-Error "
-	`n`n
-This script is designed for CVADS.
-	`n`n
-Script cannot continue
-	`n`n
-			"
-			AbortScript
-		}
-	}
-	ElseIf($Script:CCSiteVersion.Major -eq 0 -and $Script:CCSiteVersion.Minor -eq 0)
-	{
-		#something is wrong, we shouldn't be here
-		Write-Error "
-	`n`n
-Something bad happened. We shouldn't be here. Could not find the version information.
-	`n`n
-Script cannot continue
-	`n`n
-		"
-		AbortScript
-	}
-	Else
-	{
-		#this is not a CVADS Site, script cannot proceed
-		Write-Warning "You are running version $Script:CCSiteVersion"
-		Write-Warning "Are the PowerShell Snapins/Modules or Studio installed?"
-		Write-Error "
-	`n`n
-This script is designed for CVADS.
-	`n`n
-Script cannot continue
-	`n`n
-		"
-		AbortScript
-	}
-	
-	$tmp = $Script:CCSiteVersion
-	Switch ($tmp)
-	{
-		"7.45"	{$Script:CCSiteVersionReal = "2507"; Break}
-		"7.44"	{$Script:CCSiteVersionReal = "2503"; Break}
-		"7.43"	{$Script:CCSiteVersionReal = "2411"; Break}
-		"7.42"	{$Script:CCSiteVersionReal = "2407"; Break}
-		"7.41"	{$Script:CCSiteVersionReal = "2402"; Break}
-		"7.40"	{$Script:CCSiteVersionReal = "2311"; Break}
-		"7.39"	{$Script:CCSiteVersionReal = "2308"; Break}
-		"7.38"	{$Script:CCSiteVersionReal = "2305"; Break}
-		"7.37"	{$Script:CCSiteVersionReal = "2303"; Break}
-		"7.36"	{$Script:CCSiteVersionReal = "2212"; Break}
-		"7.35"	{$Script:CCSiteVersionReal = "2209"; Break}
-		"7.34"	{$Script:CCSiteVersionReal = "2206"; Break}
-		"7.33"	{$Script:CCSiteVersionReal = "2203"; Break}
-		"7.32"	{$Script:CCSiteVersionReal = "2112"; Break}
-		"7.31"	{$Script:CCSiteVersionReal = "2109"; Break}
-		"7.30"	{$Script:CCSiteVersionReal = "2106"; Break}
-		"7.29"	{$Script:CCSiteVersionReal = "2103"; Break}
-		"7.28"	{$Script:CCSiteVersionReal = "2012"; Break}
-		"7.27"	{$Script:CCSiteVersionReal = "2009"; Break}
-		"7.26"	{$Script:CCSiteVersionReal = "2006"; Break}
-		"7.25"	{$Script:CCSiteVersionReal = "2003"; Break}
-		"7.24"	{$Script:CCSiteVersionReal = "1912"; Break}
-		"7.23"	{$Script:CCSiteVersionReal = "1909"; Break}
-		"7.22"	{$Script:CCSiteVersionReal = "1906"; Break}
-		"7.21"	{$Script:CCSiteVersionReal = "1903"; Break}
-		"7.20"	{$Script:CCSiteVersionReal = "1811"; Break}
-		"7.19"	{$Script:CCSiteVersionReal = "1808"; Break}
-		Default	{$Script:CCSiteVersionReal = $tmp; Break}
-	}
-	Write-Verbose "$(Get-Date -Format G): You are running version $Script:CCSiteVersionReal"
 
 	If($SiteName -ne "")
 	{
@@ -39114,8 +39414,14 @@ Function ProcessScriptEnd
 		}
 		Out-File -FilePath $SIFile -Append -InputObject "VDA Registry Keys  : $($VDARegistryKeys)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version1 : $($Script:CCSiteVersion)" 4>$Null
-		Out-File -FilePath $SIFile -Append -InputObject "Ctx Cloud Version2 : $($Script:CCSiteVersionReal)" 4>$Null
+		[array]$CloudValidLicenses = $Script:CCSite1.CloudValidLicenses.Split(",")
+		ForEach($License in $CloudValidLicenses)
+		{
+			$LicenseArray = $License.Split(":")
+			Out-File -FilePath $SIFile -Append -InputObject "Product Code       : $($LicenseArray[0])" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "Product Edition    : $($LicenseArray[1])" 4>$Null
+			Out-File -FilePath $SIFile -Append -InputObject "License Model      : $($LicenseArray[2])" 4>$Null
+		}
 		Out-File -FilePath $SIFile -Append -InputObject "" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "OS Detected        : $($Script:RunningOS)" 4>$Null
 		Out-File -FilePath $SIFile -Append -InputObject "PoSH version       : $($Host.Version)" 4>$Null
@@ -39488,8 +39794,10 @@ If($VDARegistryKeys)
 Write-Verbose "$(Get-Date -Format G): Finishing up document"
 #end of document Processing
 
-$AbstractTitle = "Citrix Cloud $($Script:CCSiteVersion) Inventory"
-$SubjectTitle = "Citrix Cloud $($Script:CCSiteVersion) Site Inventory"
+#$AbstractTitle = "Citrix Cloud $($Script:CCSiteVersion) Inventory"
+#$SubjectTitle = "Citrix Cloud $($Script:CCSiteVersion) Site Inventory"
+$AbstractTitle = "Citrix DaaS Inventory"
+$SubjectTitle = "Citrix DaaS Site Inventory"
 UpdateDocumentProperties $AbstractTitle $SubjectTitle
 
 If($ReportFooter)
