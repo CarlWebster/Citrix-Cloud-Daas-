@@ -6,6 +6,52 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.004 2-Oct-2025 (Thanks to Prateek Anand and Ferroque Systems for their help)
+#	Added Computer policy
+#		ICA\FIDO2 allowed processes (2503)
+#		ICA\Multimedia\Screen recording for UC SDK optimized applications (2503)
+#		ICA\End User Monitoring\Endpoint location data collection (2411)
+#		ICA\End User Monitoring\Endpoint network latency measurement interval (2411)
+#		uberAgent\Enable uberAgent data collection (2503)
+#		uberAgent\uberAgent configuration archive path (2503)
+#		uberAgent\uberAgent license path (2503)
+#		VDA Data Collection\Multimedia\Multimedia apps data collection for session performance monitoring (2503)
+#		VDA Data Collection\uberAgent\uberAgent data collection for Application monitoring (2411)
+#		Virtual Delivery Agent Settings\Monitoring\Send end user experience data to Monitor service (2507)
+#
+#	Added User policy
+#		ICA\Graphics\Optimized Content Sharing for Teams and other platforms (2411)
+#
+#	In Function GetRolePermissions, 
+#		Updated descriptions for
+#			AppV_DeleteServer
+#			Configuration_Restricted_ServiceRead
+#			Configuration_Restricted_ServiceWrite
+#			Trust_MultiTenantAccessList
+#			Trust_VdaEnrollment
+#		Removed
+#			SkylightBroker
+#
+#	In Function ProcessScriptSetup, remove getting and checking the product version
+#		That is not accurate in Citrix DaaS
+#
+#		Check that the Get-BrokerSite property, CloudValidLicenses is not null.
+#			If it is null, abort the script. We are not in a valid DaaS environment.
+#
+#	In Function ProcessCitrixPolicies, remove version checking, as that is not accurate in Citrix DaaS
+#
+#	In Function ProcessScriptEnd
+#		Remove the product version lines
+#		Add Product Code, Product Edition, and License Model
+#			Handle multiple licenses in the site
+#
+#	In Function ShowScriptOptions
+#		Remove the product version lines
+#		Add Product Code, Product Edition, and License Model
+#			Handle multiple licenses in the site
+#
+#	Updated all references of ShareFile to Dropbox#
+
 #Version 1.28.003 1-Aug-2025 (Thanks to CG from Citrix who provided this information)
 #	Added more settings configurable by Set-BrokerServiceConfigurationData
 #		Core.MaxOpEventsToPurge (2411)
