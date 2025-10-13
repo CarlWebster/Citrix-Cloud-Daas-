@@ -26,13 +26,13 @@
 	This script supports only Citrix Cloud (now DaaS), not the on-premises CVAD products.
 	
 	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 
 	If you are running XA/XD 7.8 through CVAD 2006, please use:
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 
 	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
 
 	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, follow the 
 	instructions in the Authentication section of the ReadMe file to create a profile named 
@@ -290,8 +290,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2025, at 6PM is 2025-06-01_1800.
-	The output filename will be ReportName_2025-06-01_1800.docx (or.pdf).
+	June 1, 2026, at 6PM is 2026-06-01_1800.
+	The output filename will be ReportName_2026-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -724,11 +724,11 @@
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
 	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
-	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2025 -EndDate 
-	09/30/2025	
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2026 -EndDate 
+	09/30/2026	
 	
-	Creates an HTML report with Configuration Logging details for the dates 09/01/2025 
-	through 09/30/2025.
+	Creates an HTML report with Configuration Logging details for the dates 09/01/2026 
+	through 09/30/2026.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -736,11 +736,11 @@
     If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
-	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2025 10:00:00" 
-	-EndDate "09/01/2025 14:00:00" -MSWord
+	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2026 10:00:00" 
+	-EndDate "09/01/2026 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2025 10:00:00AM through 09/01/2025 02:00:00PM.
+	09/01/2026 10:00:00AM through 09/01/2026 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
@@ -909,8 +909,8 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2025, at 6PM is 2025-06-01_1800.
-	The output filename will be CCSiteName_2025-06-01_1800.docx
+	June 1, 2026, at 6PM is 2026-06-01_1800.
+	The output filename will be CCSiteName_2026-06-01_1800.docx
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -933,8 +933,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2025, at 6PM is 2025-06-01_1800.
-	The output filename will be CCSiteName_2025-06-01_1800.pdf
+	June 1, 2026, at 6PM is 2026-06-01_1800.
+	The output filename will be CCSiteName_2026-06-01_1800.pdf
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.004
+	VERSION: 1.28.005
 	AUTHOR: Carl Webster
-	LASTEDIT: October 2, 2025
+	LASTEDIT: October 13, 2025
 #>
 
 #endregion
@@ -1527,6 +1527,45 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.005 13-Oct-2025
+#	Thanks to Citrix, Ferroque Systems, Guy Leech, Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for their help
+#
+#	In Function OutputSiteSettings
+#		Alphabetize the output
+#		Add data for Always on Tracing (AOT)
+#		Bring the output up-to-date with the CVAD documentation script
+#			Always Bypass Authentication for Cached Resources
+#			Always on Tracing (AOT) Enabled
+#				Log server name
+#				Log server port
+#			Connection Leasing Enabled
+#			Preferred Account Name
+#			Require XML Service Key for NFuse
+#			Require XML Service Key for STA
+#			Use AD Lookup Enabled
+#
+#	Update Function OutputHosting with the latest hosting connection types and plugin types
+#		Thanks to Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for getting this info for me
+#		For CVAD 2507 and DaaS, the values are:
+#	
+#		ConnectionType	DisplayName											PluginFactoryName
+#		AWS				Amazon EC2											AWSMachineManagerFactory
+#		SCVMM			Microsoft® System Center Virtual Machine Manager	MicrosoftPSFactory
+#		VCenter			VMware vSphere®										VmwareFactory
+#		XenServer		XenServer™											XenFactory
+#		Custom			Nutanix AHV											AcropolisFactory
+#		Custom			Nutanix AHV Prism Central							AcropolisHypervisorPCFactory
+#		Custom			Amazon WorkSpaces Core								AmazonWorkSpacesCoreMachineManagerFactory
+#		Custom			Microsoft® Azure™ Arc								AzureArcFactory
+#		Custom			Microsoft® Azure™									AzureRmFactory
+#		Custom			Google Cloud Platform								GcpPluginFactory
+#		Custom			HPE Moonshot										HPMoonshotFactory
+#		Custom			Red Hat OpenShift									OpenShiftPluginFactory
+#		Custom			Remote PC Wake on LAN								VdaWOLMachineManagerFactory
+#		Custom			Windows 365 Cloud PC								W365CloudPCFactory
+#
+#	Updated the help text
+#
 #Version 1.28.004 2-Oct-2025 (Thanks to Prateek Anand and Ferroque Systems for their help)
 #	Added Computer policy
 #		ICA\FIDO2 allowed processes (2503)
@@ -3424,9 +3463,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = "'1.28.004 Webster's For Real Final Update"
+$script:MyVersion   = "'1.28.005"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "10/02/2025"
+$tmpdate            = [datetime] "10/13/2025"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -34263,6 +34302,33 @@ Function OutputSiteSettings
 		Default {$xVDAVersion = "Unable to determine VDA version: $($Script:CCSite1.DefaultMinimumFunctionalLevel)"; Break}
 	}
 
+	If(validObject $Script:CCSite1 PreferredAccountName)
+	{
+		#SamNameFallbackToUpn, SamName, Upn
+		Switch ($Script:CCSite1.PreferredAccountName)
+		{
+			"SamNameFallbackToUpn"	{$PreferredAccountName = "SAM with fallback to UPN"; Break}
+			"SamName"				{$PreferredAccountName = "SAM"; Break}
+			"Upn"					{$PreferredAccountName = "UPN"; Break}
+			Default					{$PreferredAccountName = "Unable to determine Preferred Account Name: $($Script:CCSite1.PreferredAccountName)"; Break}
+		}
+	}
+
+	If(validObject $Script:CCSite1 RequireXmlServiceKeyForNFuse)
+	{
+		$RequireXmlServiceKeyForNFuse = $Script:CCSite1.RequireXmlServiceKeyForNFuse.ToString()
+	}
+
+	If(validObject $Script:CCSite1 RequireXmlServiceKeyForSta)
+	{
+		$RequireXmlServiceKeyForSta = $Script:CCSite1.RequireXmlServiceKeyForSta.ToString()
+	}
+
+	If(validObject $Script:CCSite1 UseADLookupEnabled)
+	{
+		$UseADLookupEnabled = $Script:CCSite1.UseADLookupEnabled.ToString()
+	}
+
 	$Scaling = ""
 	If($Script:CCSite1.UseVerticalScalingForRdsLaunches)
 	{
@@ -34293,6 +34359,32 @@ Function OutputSiteSettings
 		$BaseOU = $Script:CCSite1.BaseOU
 	}
 	
+	#new for 1.28.005
+	If(validObject $Script:CCSite2 LogServerEnabled)
+	{
+		If($Script:CVADSite2.LogServerEnabled)
+		{
+			$AOTEnabled       = $True
+			$LogServerEnabled = $Script:CVADSite2.LogServerEnabled.ToString()
+			$LogServerName    = $Script:CVADSite2.LogServerName
+			$LogServerPort    = $Script:CVADSite2.LogServerPort.ToString()
+		}
+		Else
+		{
+			$AOTEnabled       = $False
+			$LogServerEnabled = $Script:CVADSite2.LogServerEnabled.ToString()
+			$LogServerName    = ""
+			$LogServerPort    = ""
+		}
+	}
+	Else
+	{
+		$AOTEnabled       = $False
+		$LogServerEnabled = ""
+		$LogServerName    = ""
+		$LogServerPort    = ""
+	}
+
 	Write-Verbose "$(Get-Date -Format G): `tOutput Site Settings"
 	If($MSWord -or $PDF)
 	{
@@ -34301,11 +34393,23 @@ Function OutputSiteSettings
 		WriteWordLine 2 0 "Site Settings"
 		$ScriptInformation = New-Object System.Collections.ArrayList
 		$ScriptInformation.Add(@{Data = "Site name"; Value = $CCSiteName; }) > $Null
+		$ScriptInformation.Add(@{Data = "Always Bypass Authentication for Cached Resources"; Value = $Script:CCSite1.AlwaysBypassAuthForCachedResources.ToString(); }) > $Null #new in 3.42
+		If($AOTEnabled) #new in 1.28.005
+		{
+			$ScriptInformation.Add(@{Data = "Always on Tracing (AOT) Enabled"; Value = $LogServerEnabled; }) > $Null
+			$ScriptInformation.Add(@{Data = "     Log server name"; Value = $LogServerName; }) > $Null
+			$ScriptInformation.Add(@{Data = "     Log server port"; Value = $LogServerPort; }) > $Null
+		}
+		Else
+		{
+			$ScriptInformation.Add(@{Data = "Always on Tracing (AOT) Enabled"; Value = $LogServerEnabled; }) > $Null
+		}
 		$ScriptInformation.Add(@{Data = "Base OU"; Value = $BaseOU; }) > $Null
 		$ScriptInformation.Add(@{Data = "Bypass Authentication for Cached Resources"; Value = $Script:CCSite1.BypassAuthForCachedResources.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Cloud Site License"; Value = $Script:CCSite1.CloudSiteLicense; }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Cloud Valid Licenses"; Value = $Script:CCSite1.CloudValidLicenses; }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Color Depth"; Value = $xColorDepth; }) > $Null
+		$ScriptInformation.Add(@{Data = "Connection Leasing Enabled"; Value = $Script:CCSite1.ConnectionLeasingEnabled.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Credential Forwarding to Cloud Allowed"; Value = $Script:CCSite1.CredentialForwardingToCloudAllowed.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Default Minimum Functional Level"; Value = $xVDAVersion; }) > $Null
 		$ScriptInformation.Add(@{Data = "Default Reuse Machines Without Shutdown In Outage"; Value = $Script:CCSite1.DefaultReuseMachinesWithoutShutdownInOutage.ToString(); }) > $Null #new in 1.15
@@ -34314,6 +34418,9 @@ Function OutputSiteSettings
 		$ScriptInformation.Add(@{Data = "Enable automatic assignment of multiple users for Remote PC Access"; Value = $AllowMultipleRemotePCAssignments; }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Load Balance Multi-Session Catalogs"; Value = $Scaling; }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Local Host Cache Enabled"; Value = $Script:CCSite1.LocalHostCacheEnabled.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Preferred Account Name"; Value = $PreferredAccountName; }) > $Null 
+		$ScriptInformation.Add(@{Data = "Require XML Service Key for NFuse"; Value = $RequireXmlServiceKeyForNFuse; }) > $Null 
+		$ScriptInformation.Add(@{Data = "Require XML Service Key for STA"; Value = $RequireXmlServiceKeyForSta; }) > $Null 
 		$ScriptInformation.Add(@{Data = "Resource Lease Validity Period in Days"; Value = $Script:CCSite1.ResourceLeaseValidityPeriodInDays.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Resource Leasing Enabled"; Value = $Script:CCSite1.ResourceLeasingEnabled.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Reuse Machines Without Shutdown in Outage Allowed"; Value = $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString(); }) > $Null
@@ -34323,6 +34430,7 @@ Function OutputSiteSettings
 		$ScriptInformation.Add(@{Data = "Telemetry Launch Shadow Delay in Minutes"; Value = $Script:CCSite1.TelemetryLaunchShadowDelayMins.ToString(); }) > $Null #new in 1.15
 		$ScriptInformation.Add(@{Data = "Trust Managed Anonymous XML Service Requests"; Value = $Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString(); }) > $Null
 		$ScriptInformation.Add(@{Data = "Trust Requests Sent to the XML Service Port"; Value = $Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString(); }) > $Null
+		$ScriptInformation.Add(@{Data = "Use AD Lookup Enabled"; Value = $UseADLookupEnabled; }) > $Null 
 		$Table = AddWordTable -Hashtable $ScriptInformation `
 		-Columns Data,Value `
 		-List `
@@ -34344,11 +34452,23 @@ Function OutputSiteSettings
 		Line 0 "Site Settings"
 		Line 0 ""
 		Line 1 "Site name`t`t`t`t`t`t`t`t: " $CCSiteName
+		Line 1 "Always Bypass Authentication for Cached Resources`t: " $Script:CCSite1.AlwaysBypassAuthForCachedResources.ToString() #new in 3.42
+		If($AOTEnabled) #new in 1.28.005
+		{
+			Line 1 "Always on Tracing (AOT) Enabled`t`t`t`t: " $LogServerEnabled
+			Line 2 "Log server name: " $LogServerName
+			Line 2 "Log server port: " $LogServerPort
+		}
+		Else
+		{
+			Line 1 "Always on Tracing (AOT) Enabled`t`t`t`t: " $LogServerEnabled
+		}
 		Line 1 "Base OU`t`t`t`t`t`t`t`t`t: " $BaseOU
 		Line 1 "Bypass Authentication for Cached Resources`t`t`t`t: " $Script:CCSite1.BypassAuthForCachedResources.ToString() #new in 1.15
 		Line 1 "Cloud Site License`t`t`t`t`t`t`t: " $Script:CCSite1.CloudSiteLicense #new in 1.15
 		Line 1 "Cloud Valid Licenses`t`t`t`t`t`t`t: " $Script:CCSite1.CloudValidLicenses #new in 1.15
 		Line 1 "Color Depth`t`t`t`t`t`t`t`t: " $xColorDepth
+		Line 1 "Connection Leasing Enabled`t`t`t`t: " $Script:CCSite1.ConnectionLeasingEnabled.ToString() #new in 3.42
 		Line 1 "Credential Forwarding to Cloud Allowed`t`t`t`t`t: " $Script:CCSite1.CredentialForwardingToCloudAllowed.ToString() #new in 1.15
 		Line 1 "Default Minimum Functional Level`t`t`t`t`t: " $xVDAVersion
 		Line 1 "Default Reuse Machines Without Shutdown In Outage`t`t`t: " $Script:CCSite1.DefaultReuseMachinesWithoutShutdownInOutage.ToString() #new in 1.15
@@ -34357,6 +34477,9 @@ Function OutputSiteSettings
 		Line 1 "Enable automatic assignment of multiple users for Remote PC Access`t: " $AllowMultipleRemotePCAssignments #new in 1.15
 		Line 1 "Load Balance Multi-Session Catalogs`t`t`t`t`t: " $Scaling #new in 1.15
 		Line 1 "Local Host Cache Enabled`t`t`t`t`t`t: " $Script:CCSite1.LocalHostCacheEnabled.ToString()
+		Line 1 "Preferred Account Name`t`t`t`t`t: " $PreferredAccountName 
+		Line 1 "Require XML Service Key for NFuse`t`t`t: " $RequireXmlServiceKeyForNFuse 
+		Line 1 "Require XML Service Key for STA`t`t`t`t: " $RequireXmlServiceKeyForSta 
 		Line 1 "Resource Lease Validity Period in Days`t`t`t`t`t: " $Script:CCSite1.ResourceLeaseValidityPeriodInDays.ToString() #new in 1.15
 		Line 1 "Resource Leasing Enabled`t`t`t`t`t`t: "  $Script:CCSite1.ResourceLeasingEnabled.ToString() #new in 1.15
 		Line 1 "Reuse Machines Without Shutdown in Outage Allowed`t`t`t: " $Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString()
@@ -34366,6 +34489,7 @@ Function OutputSiteSettings
 		Line 1 "Telemetry Launch Shadow Delay in Minutes`t`t`t`t: " $Script:CCSite1.TelemetryLaunchShadowDelayMins.ToString() #new in 1.15
 		Line 1 "Trust Managed Anonymous XML Service Requests`t`t`t`t: " $Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString()
 		Line 1 "Trust Requests Sent to the XML Service Port`t`t`t`t: " $Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString()
+		Line 1 "Use AD Lookup Enabled`t`t`t`t`t: " $UseADLookupEnabled
 		Line 0 ""
 	}
 	If($HTML)
@@ -34374,11 +34498,23 @@ Function OutputSiteSettings
 		WriteHTMLLine 2 0 "Site Settings"
 		$rowdata = @()
 		$columnHeaders = @("Site name",($global:htmlsb),$CCSiteName,$htmlwhite)
+		$rowdata += @(,("Always Bypass Authentication for Cached Resources",($global:htmlsb),$Script:CCSite1.AlwaysBypassAuthForCachedResources.ToString(),$htmlwhite)) #new in 3.42
+		If($AOTEnabled) #new in 1.28.005
+		{
+			$rowdata += @(,("Always on Tracing (AOT) Enabled",($global:htmlsb),$LogServerEnabled,$htmlwhite))
+			$rowdata += @(,("     Log server name",($global:htmlsb),$LogServerName,$htmlwhite))
+			$rowdata += @(,("     Log server port",($global:htmlsb),$LogServerPort,$htmlwhite))
+		}
+		Else
+		{
+			$rowdata += @(,("Always on Tracing (AOT) Enabled",($global:htmlsb),$LogServerEnabled,$htmlwhite))
+		}
 		$rowdata += @(,("Base OU",($global:htmlsb),$BaseOU,$htmlwhite))
 		$rowdata += @(,("Bypass Authentication for Cached Resources",($global:htmlsb),$Script:CCSite1.BypassAuthForCachedResources.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Cloud Site License",($global:htmlsb),$Script:CCSite1.CloudSiteLicense,$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Cloud Valid Licenses",($global:htmlsb),$Script:CCSite1.CloudValidLicenses,$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Color Depth",($global:htmlsb),$xColorDepth,$htmlwhite))
+		$rowdata += @(,("Connection Leasing Enabled",($global:htmlsb),$Script:CCSite1.ConnectionLeasingEnabled.ToString(),$htmlwhite)) #new in 3.42
 		$rowdata += @(,("Credential Forwarding to Cloud Allowed",($global:htmlsb),$Script:CCSite1.CredentialForwardingToCloudAllowed.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Default Minimum Functional Level",($global:htmlsb),$xVDAVersion,$htmlwhite))
 		$rowdata += @(,("Default Reuse Machines Without Shutdown In Outage",($global:htmlsb),$Script:CCSite1.DefaultReuseMachinesWithoutShutdownInOutage.ToString(),$htmlwhite)) #new in 1.15
@@ -34387,6 +34523,9 @@ Function OutputSiteSettings
 		$rowdata += @(,("Enable automatic assignment of multiple users for Remote PC Access",($global:htmlsb),$AllowMultipleRemotePCAssignments,$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Load Balance Multi-Session Catalogs",($global:htmlsb),$Scaling,$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Local Host Cache Enabled",($global:htmlsb),$Script:CCSite1.LocalHostCacheEnabled.ToString(),$htmlwhite))
+		$rowdata += @(,("Preferred Account Name",($global:htmlsb),$PreferredAccountName,$htmlwhite)) 
+		$rowdata += @(,("Require XML Service Key for NFuse",($global:htmlsb),$RequireXmlServiceKeyForNFuse,$htmlwhite)) 
+		$rowdata += @(,("Require XML Service Key for STA",($global:htmlsb),$RequireXmlServiceKeyForSta,$htmlwhite)) 
 		$rowdata += @(,("Resource Lease Validity Period in Days",($global:htmlsb),$Script:CCSite1.ResourceLeaseValidityPeriodInDays.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Resource Leasing Enabled",($global:htmlsb),$Script:CCSite1.ResourceLeasingEnabled.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Reuse Machines Without Shutdown in Outage Allowed",($global:htmlsb),$Script:CCSite1.ReuseMachinesWithoutShutdownInOutageAllowed.ToString(),$htmlwhite))
@@ -34396,6 +34535,7 @@ Function OutputSiteSettings
 		$rowdata += @(,("Telemetry Launch Shadow Delay in Minutes",($global:htmlsb),$Script:CCSite1.TelemetryLaunchShadowDelayMins.ToString(),$htmlwhite)) #new in 1.15
 		$rowdata += @(,("Trust Managed Anonymous XML Service Requests",($global:htmlsb),$Script:CCSite1.TrustManagedAnonymousXmlServiceRequests.ToString(),$htmlwhite))
 		$rowdata += @(,("Trust Requests Sent to the XML Service Port",($global:htmlsb),$Script:CCSite1.TrustRequestsSentToTheXmlServicePort.ToString(),$htmlwhite))
+		$rowdata += @(,("Use AD Lookup Enabled",($global:htmlsb),$UseADLookupEnabled,$htmlwhite)) #new in 3.43
 		
 		$msg = ""
 		FormatHTMLTable $msg "auto" -rowArray $rowdata -columnArray $columnHeaders
@@ -36535,36 +36675,47 @@ Function OutputHosting
 	}
 	
 	#to get all the Connection Types and PluginIDs, use Get-HypHypervisorPlugin | ft
-	#Thanks to fellow CTPs Neil Spellings, Kees Baggerman, and Trond Eirik Haavarstein for getting this info for me
-	#For CVAD 2012, the values are:
+	#Thanks to Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for getting this info for me
+	#For CVAD 2507 and DaaS, the values are:
 	<#
-		CitrixVerified ConnectionType DisplayName                                      PluginFactoryName                 UsesCloudInfrastructure
-		-------------- -------------- -----------                                      -----------------                 -----------------------
-								  AWS Amazon EC2                                       AWSMachineManagerFactory                             True
-								SCVMM Microsoft® System Center Virtual Machine Manager MicrosoftPSFactory                                  False
-							  VCenter VMware vSphere®                                  VmwareFactory                                       False
-							WakeOnLAN Microsoft® Configuration Manager Wake on LAN     ConfigMgrWOLMachineManagerFactory                   False
-							XenServer Citrix Hypervisor®                               XenFactory                                          False
-							   Custom Google Cloud Platform                            GcpPluginFactory                                    False
-							   Custom Microsoft® Azure™                                AzureRmFactory                                      False
-							   Custom Remote PC Wake on LAN                            VdaWOLMachineManagerFactory                         False	
+		Available	ConnectionType	DisplayName											PluginFactoryName
+		TRUE		AWS				Amazon EC2											AWSMachineManagerFactory
+		TRUE		SCVMM			Microsoft® System Center Virtual Machine Manager	MicrosoftPSFactory
+		TRUE		VCenter			VMware vSphere®										VmwareFactory
+		TRUE		XenServer		XenServer™											XenFactory
+		TRUE		Custom			Nutanix AHV											AcropolisFactory
+		TRUE		Custom			Nutanix AHV Prism Central							AcropolisHypervisorPCFactory
+		TRUE		Custom			Amazon WorkSpaces Core								AmazonWorkSpacesCoreMachineManagerFactory
+		TRUE		Custom			Microsoft® Azure™ Arc								AzureArcFactory
+		TRUE		Custom			Microsoft® Azure™									AzureRmFactory
+		TRUE		Custom			Google Cloud Platform								GcpPluginFactory
+		TRUE		Custom			HPE Moonshot										HPMoonshotFactory
+		TRUE		Custom			Red Hat OpenShift									OpenShiftPluginFactory
+		TRUE		Custom			Remote PC Wake on LAN								VdaWOLMachineManagerFactory
+		TRUE		Custom			Windows 365 Cloud PC								W365CloudPCFactory
 	#>
 	$xxConnectionType = ""
 	Switch ($xConnectionType)
 	{
 		"AWS"		{$xxConnectionType = "Amazon EC2"; Break}
-		"SCVMM"     {$xxConnectionType = "Microsoft System Center Virtual Machine Manager"; Break}
-		"vCenter"   {$xxConnectionType = "VMware vSphere"; Break}
+		"SCVMM"		{$xxConnectionType = "Microsoft System Center Virtual Machine Manager"; Break}
+		"VCenter"	{$xxConnectionType = "VMware vSphere"; Break}
 		"WakeOnLAN"	{$xxConnectionType = "Microsoft Configuration Manager Wake on LAN"; Break}
-		"XenServer" {$xxConnectionType = "Citrix Hypervisor"; Break}
-		"Custom"    {
+		"XenServer"	{$xxConnectionType = "XenServer"; Break}
+		"Custom"	{
 						Switch ($xConnectionPluginID)
 						{
-							"AcropolisFactory"				{$xxConnectionType = "Nutanix AHV"; Break}
-							"GcpPluginFactory"				{$xxConnectionType = "Google Cloud Platform"; Break}
-							"AzureRmFactory"				{$xxConnectionType = "Microsoft Azure"; Break}
-							"VdaWOLMachineManagerFactory"	{$xxConnectionType = "Remote PC Wake on LAN"; Break}
-							Default     					{$xxConnectionType = "Custom Hypervisor Type PluginID could not be determined: $($xConnectionPluginID)"; Break}
+							"AcropolisFactory"							{$xxConnectionType = "Nutanix AHV"; Break}
+							"AcropolisHypervisorPCFactory"				{$xxConnectionType = "Nutanix AHV Prism Central"; Break}
+							"AmazonWorkSpacesCoreMachineManagerFactory"	{$xxConnectionType = "Amazon WorkSpaces Core"; Break}
+							"AzureArcFactory"							{$xxConnectionType = "Microsoft® Azure™ Arc"; Break}
+							"AzureRmFactory"							{$xxConnectionType = "Microsoft Azure"; Break}
+							"GcpPluginFactory"							{$xxConnectionType = "Google Cloud Platform"; Break}
+							"HPMoonshotFactory"							{$xxConnectionType = "HPE Moonshot"; Break}
+							"OpenShiftPluginFactory"					{$xxConnectionType = "Red Hat OpenShift"; Break}
+							"VdaWOLMachineManagerFactory"				{$xxConnectionType = "Remote PC Wake on LAN"; Break}
+							"W365CloudPCFactory"						{$xxConnectionType = "Windows 365 Cloud PC"; Break}
+							Default										{$xxConnectionType = "Custom Hypervisor Type PluginID could not be determined: $($xConnectionPluginID)"; Break}
 						}
 						Break
 					}

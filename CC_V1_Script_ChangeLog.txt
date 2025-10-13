@@ -6,6 +6,45 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.28.005 13-Oct-2025
+#	Thanks to Citrix, Ferroque Systems, Guy Leech, Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for their help
+#
+#	In Function OutputSiteSettings
+#		Alphabetize the output
+#		Add data for Always on Tracing (AOT)
+#		Bring the output up-to-date with the CVAD documentation script
+#			Always Bypass Authentication for Cached Resources
+#			Always on Tracing (AOT) Enabled
+#				Log server name
+#				Log server port
+#			Connection Leasing Enabled
+#			Preferred Account Name
+#			Require XML Service Key for NFuse
+#			Require XML Service Key for STA
+#			Use AD Lookup Enabled
+#
+#	Update Function OutputHosting with the latest hosting connection types and plugin types
+#		Thanks to Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for getting this info for me
+#		For CVAD 2507 and DaaS, the values are:
+#	
+#		ConnectionType	DisplayName						PluginFactoryName
+#		AWS		Amazon EC2						AWSMachineManagerFactory
+#		SCVMM		Microsoft® System Center Virtual Machine Manager	MicrosoftPSFactory
+#		VCenter		VMware vSphere®						VmwareFactory
+#		XenServer	XenServer™						XenFactory
+#		Custom		Nutanix AHV						AcropolisFactory
+#		Custom		Nutanix AHV Prism Central				AcropolisHypervisorPCFactory
+#		Custom		Amazon WorkSpaces Core					AmazonWorkSpacesCoreMachineManagerFactory
+#		Custom		Microsoft® Azure™ Arc					AzureArcFactory
+#		Custom		Microsoft® Azure™					AzureRmFactory
+#		Custom		Google Cloud Platform					GcpPluginFactory
+#		Custom		HPE Moonshot						HPMoonshotFactory
+#		Custom		Red Hat OpenShift					OpenShiftPluginFactory
+#		Custom		Remote PC Wake on LAN					VdaWOLMachineManagerFactory
+#		Custom		Windows 365 Cloud PC					W365CloudPCFactory
+#
+#	Updated the help text
+
 #Version 1.28.004 2-Oct-2025 (Thanks to Prateek Anand and Ferroque Systems for their help)
 #	Added Computer policy
 #		ICA\FIDO2 allowed processes (2503)
