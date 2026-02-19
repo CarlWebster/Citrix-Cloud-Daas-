@@ -6,6 +6,81 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.29
+#
+#	Added support for 2511/7.46
+#
+#	Added Computer policy
+#		Chrome Enterprise Premium\Enroll Chrome Browser
+#		ICA\Graphics\HDX screen sharing ports
+#		ICA\Graphics\Remote assistance ports
+#		ICA\Session Control\Disconnect published app session after closing last app
+#		VDA Data Collection\uberagent\Enhance Director to use uberAgent SessionDetail data for calculating Session Score
+#		VDA Data Collection\uberagent\Enhance Director with uberAgent data for resource utilization
+#		Workspace Environment Management\Agent proxy configuration
+#		Workspace Environment Management\Agent service port
+#		Workspace Environment Management\Cached data synchronization port
+#		Workspace Environment Management\Custom settings for basic deployment
+#		Workspace Environment Management\Discover Citrix Cloud Connectors from CVAD service
+#		Workspace Environment Management\Infrastructure server
+#		Workspace Environment Management\Override Agent Deployment Type
+#
+#	Added User policy
+#		AssistantApp\Enable Assistant App
+#		ICA\Mac Image Capture scanner redirection
+#		ICA\Graphics\HDX screen Sharing timeout (minutes)
+#		ICA\Graphics\Remote Assistance with HDX screen sharing
+#		ICA\Graphics\Remote Assistance timeout (minutes)
+#
+#	In Function GetRolePermissions, (Thanks to Prateek Anand and Ferroque Systems for their help)
+#		AppLib_PackageDiscovery_Read (View Application Package Discovery Sessions)
+#		EntitlementPolicyRule_ChangeTags (Edit Desktop tags)
+#		Director_AotLogs (View Logs page)
+#		Director_DesktopHardwareInformation (Perform Machine Hardware related Broker machine command)
+#		Director_DiskMetrics (Perform Disk metrics related Broker machine command)
+#		Director_DownloadSFOnboardScripts (Perform download of on-premises StoreFront onboarding scripts)
+#		Director_EndpointMetrics (Perform Endpoint Metrics related Broker machine command)
+#		Director_GetVDARegistryKeyValues (Get VDA registry key values)
+#		Director_GetVDARegistryKeyValues_Edit (Edit VDA registry keys retrieval related machine command properties)
+#		Director_GPOData (Perform GPO Data related Broker machine command)
+#		Director_GpuMetrics (Perform Gpu metrics related Broker machine command)
+#		Director_HDXInformation (Perform HDX related Broker machine command)
+#		Director_HDXProtocol (Perform HDX Protocol related Broker machine command)
+#		Director_LatencyInformation (Perform Latency related Broker machine command)
+#		Director_MachineMetricValues (Perform Machine metric related Broker machine command)
+#		Director_MTOPInformation (Perform MTOP related Broker machine command)
+#		Director_PerformBuildInScriptedTask (Perform Build-In Scripted Task on Machines/Sessions)
+#		Director_PerformCustomScriptedTask (Perform Custom Scripted Task on Machines/Sessions)
+#		Director_PersonalizationInformation (Perform Personalization related Broker machine command)
+#		Director_PoliciesInformation (Perform Policies related Broker machine command)
+#		Director_ProfileLoadData (erform Profile Load Data related Broker machine command)
+#		Director_RDSLicenseCheck (RDS License Check)
+#		Director_RoundTripInformation (Perform Roundtrip Time related Broker machine command)
+#		Director_StartupMetrics (Perform Startup Metrics Data related Broker machine command)
+#		Director_TaskManagerInformation (Perform TaskManager related Broker machine command)
+#		Director_UCaaS_Connections_Manage (Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1))
+#		Director_UploadCustomScript (Upload Custom Script)
+#		Image_AddScope (Add Image to Scope)
+#		Image_RemoveScope (Remove Image from Scope)
+#		Merge Groups added in 2511
+#			MergeGroup_Create (Create Merge Groups)
+#			MergeGroup_Delete (Delete Merge Groups)     
+#			MergeGroup_EditProperties (Edit Merge Groups)
+#			MergeGroup_Read (View Merge Groups)
+#		Machine_VdaAotTracing_Configuration (Create, view, modify, and delete machine configurations for VDA Always on Tracing.)
+#		Monitor_Log_Server_Configuration_Manage (Manage Monitor log server configurations)
+#		Monitor_UCaaS_Connections_Manage (Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring))
+#		Monitor_UCaaS_Connections_Read (View Connections to communication apps (Real-time communications Monitoring))
+#		Trust_MultiTenantAccessList_Read (Read multi-tenant service access list permissions.)
+#		Trust_VdaEnrollmentToken_Read (Read VDA enrollment tokens.)
+#		Resource Filter added in 2511
+#			ResourceAccessPolicyRule_Create (Creates Resource Filter)
+#			ResourceAccessPolicyRule_Delete (Delete Resource Filter)
+#			ResourceAccessPolicyRule_EditProperties (Edit Resource Filter)
+#			ResourceAccessPolicyRule_Read (Reads Resource Filter)
+#		Zone_AddScope (Add Zone to Scope)
+#		Zone_RemoveScope (Remove Zone from Scope)
+
 #Version 1.28.005 13-Oct-2025
 #	Thanks to Citrix, Ferroque Systems, Guy Leech, Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for their help
 #
