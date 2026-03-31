@@ -6,6 +6,222 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.29 31-Mar-2026
+#	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
+#
+#	Thanks to Arnaud Pain for help in getting download links
+#
+#	Added support for 2511/7.46
+#
+#	Added more settings configurable by Set-BrokerServiceConfigurationData (Thanks to CG at Citrix for providing this information):
+#		Core.AzureSSOnDataRefreshIntervalMins
+#			Type: int
+#			Default: 1440
+#			Info: Minutes, Minimum=1, Maximum=1440
+#			Summary: Interval for polling Azure Entra Id SSO data from datastore. 
+#					 This call happens within FeatureChecksSiteServics.cs
+#
+#		Core.FeatureChecksSiteServiceIdleIntervalTimeSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data when the site is idle.
+#
+#		Core.FeatureChecksSiteServiceIntervalTimeSecs
+#			Type: int
+#			Default: 30
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data.
+#
+#		Core.ReRegisterNowBatchDelayMs
+#			Type: int
+#			Default: 1000
+#			Info: 
+#			Summary: The delay between batches when performing a re-register now operation such that 
+#					 whole operation is completed within 2 minutes. 
+#					 A sample size is (MaxWorkers / ReRegisterNowBatchSize) * ReRegisterNowBatchDelayMs, 
+#					 ie, (11000 / 100) * 1000ms = 110,000 ms = 1.83 minutes.
+#
+#		Core.ReRegisterNowBatchSize
+#			Type: int
+#			Default: 100
+#			Info: 
+#			Summary: The number of machines to be processed in a single batch when performing a re-register now operation.
+#
+#		Core.SdkWriteDisablesReadReplicaUseForSecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds, Minimum=1
+#			Summary: The number of seconds after any 'write' operation from a given SDK snapin after which it's considered 
+#					 safe to route subsequent 'read' operations from the same snapin to an available read replica database.
+#
+#		DBConnectionSettings.SqlLogin (missed from an earlier script update)
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL login for use with SQL authenticated connections to the database.
+#
+#		DBConnectionSettings.SqlPassword (missed from an earlier script update)
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL password for use with SQL authenticated connections to the database.
+#
+#		HostingManagementSettings.CancelAutoMaintenanceMode
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When this setting is True, if a VDA has been automatically placed into maintenance mode 
+#					 following multiple failed registrations (see MaxFailedRegistrationsAllowed) but later registers 
+#					 successfully, the VDA is automatically removed from maintenance mode.
+#
+#					 When this setting is False, or the VDA was placed into maintenance mode by the admin, then the 
+#					 VDA remains in maintenance mode even if it later registers successfully.
+#
+#		HostingManagementSettings.MaxMinutesForPowerManagementExclusion
+#			Type: int
+#			Default: 43200
+#			Info: Minutes, Minimum=0, Maximum=43200
+#			Summary: The maximum minutes an Admin can set ExcludeFromAutomaticPowerManagementUntil for a private desktop.
+#
+#		NameCacheSettings.LookupFailureCountBeforeClearingNamesInCache
+#			Type: int
+#			Default: 5
+#			Info: Number of times a lookup has failed. Minimum=5, Maximum=7
+#			Summary: Number of lookup failures after which the cached AD user/group account name, or machine name, 
+#					 details are cleared from the cache. The SAM name will be replaced with the SID and other name 
+#					 details will be cleared out. The amount of time before a name is cleared from the cache depends 
+#					 on the NameRefreshExponentialBackoffMaximumMins and NameRefreshPeriodAfterErrorMins settings.
+#
+#		XmsSettings.PowerStateCacheEntryExpiryTimeSecs
+#			Type: int
+#			Default: 1800
+#			Info: Seconds, Minimum=60
+#			Summary: Time after which a power state cache entry is expired.
+#
+#		XmsSettings.PowerStateCachePollingIntervalSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds, Minimum=60
+#			Summary: Time after which the power state cache is refreshed from the database.
+#
+#		XmsSettings.UniqueDeviceIdOptions
+#			Type: int
+#			Default: 0
+#			Info: Minimum=0, Maximum=3
+#			Summary: Specifies options to use when trying to ensure that the client device ID received from WSP/SF is unique. 
+#					 This setting should not be changed from its default value except to workaround specific issues observed 
+#					 in a particular site.
+#
+#					 The value is a bit mask where the bits have the following meanings:
+#
+#					 Bit 0: When set, causes the client device ID to be unconditionally qualified by the client's IP address. 
+#					 This can rectify session reconnection problems caused by non-unique device IDs, but can conversely cause 
+#					 session reconnection problems if network infrastructure such as firewalls or load balancers causes the 
+#					 IP address of a client device to change over time even when actively connected to a VDA.
+#
+#					 Bit 1: When set, if no device ID is received or its value is known to be non-unique, do not try substituting 
+#					 the client name for the device ID, but instead use the client IP address. This may avoid problems caused 
+#					 where multiple devices are reporting the same non-unique client name.
+#
+#	Added Computer policy
+#		Chrome Enterprise Premium\Enroll Chrome Browser
+#		ICA\Graphics\HDX screen sharing ports
+#		ICA\Graphics\Remote assistance ports
+#		ICA\Session Control\Disconnect published app session after closing last app
+#		VDA Data Collection\uberagent\Enhance Director to use uberAgent SessionDetail data for calculating Session Score
+#		VDA Data Collection\uberagent\Enhance Director with uberAgent data for resource utilization
+#		Workspace Environment Management\Agent proxy configuration
+#		Workspace Environment Management\Agent service port
+#		Workspace Environment Management\Cached data synchronization port
+#		Workspace Environment Management\Custom settings for basic deployment
+#		Workspace Environment Management\Discover Citrix Cloud Connectors from CVAD service
+#		Workspace Environment Management\Infrastructure server
+#		Workspace Environment Management\Override Agent Deployment Type
+#
+#	Added User policy
+#		AssistantApp\Enable Assistant App
+#		ICA\Mac Image Capture scanner redirection
+#		ICA\Graphics\HDX screen Sharing timeout (minutes)
+#		ICA\Graphics\Remote Assistance with HDX screen sharing
+#		ICA\Graphics\Remote Assistance timeout (minutes)
+#
+#	In Function GetRolePermissions, (Thanks to Prateek Anand and Ferroque Systems for their help)
+#		AppLib_PackageDiscovery_Read (View Application Package Discovery Sessions)
+#		EntitlementPolicyRule_ChangeTags (Edit Desktop tags)
+#		Director_AotLogs (View Logs page)
+#		Director_DesktopHardwareInformation (Perform Machine Hardware related Broker machine command)
+#		Director_DiskMetrics (Perform Disk metrics related Broker machine command)
+#		Director_DownloadSFOnboardScripts (Perform download of on-premises StoreFront onboarding scripts)
+#		Director_EndpointMetrics (Perform Endpoint Metrics related Broker machine command)
+#		Director_GetVDARegistryKeyValues (Get VDA registry key values)
+#		Director_GetVDARegistryKeyValues_Edit (Edit VDA registry keys retrieval related machine command properties)
+#		Director_GPOData (Perform GPO Data related Broker machine command)
+#		Director_GpuMetrics (Perform Gpu metrics related Broker machine command)
+#		Director_HDXInformation (Perform HDX related Broker machine command)
+#		Director_HDXProtocol (Perform HDX Protocol related Broker machine command)
+#		Director_LatencyInformation (Perform Latency related Broker machine command)
+#		Director_MachineMetricValues (Perform Machine metric related Broker machine command)
+#		Director_MTOPInformation (Perform MTOP related Broker machine command)
+#		Director_PerformBuildInScriptedTask (Perform Build-In Scripted Task on Machines/Sessions)
+#		Director_PerformCustomScriptedTask (Perform Custom Scripted Task on Machines/Sessions)
+#		Director_PersonalizationInformation (Perform Personalization related Broker machine command)
+#		Director_PoliciesInformation (Perform Policies related Broker machine command)
+#		Director_ProfileLoadData (erform Profile Load Data related Broker machine command)
+#		Director_RDSLicenseCheck (RDS License Check)
+#		Director_RoundTripInformation (Perform Roundtrip Time related Broker machine command)
+#		Director_StartupMetrics (Perform Startup Metrics Data related Broker machine command)
+#		Director_TaskManagerInformation (Perform TaskManager related Broker machine command)
+#		Director_UCaaS_Connections_Manage (Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1))
+#		Director_UploadCustomScript (Upload Custom Script)
+#		Image_AddScope (Add Image to Scope)
+#		Image_RemoveScope (Remove Image from Scope)
+#		Merge Groups added in 2511
+#			MergeGroup_Create (Create Merge Groups)
+#			MergeGroup_Delete (Delete Merge Groups)     
+#			MergeGroup_EditProperties (Edit Merge Groups)
+#			MergeGroup_Read (View Merge Groups)
+#		Machine_VdaAotTracing_Configuration (Create, view, modify, and delete machine configurations for VDA Always on Tracing.)
+#		Monitor_Log_Server_Configuration_Manage (Manage Monitor log server configurations)
+#		Monitor_UCaaS_Connections_Manage (Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring))
+#		Monitor_UCaaS_Connections_Read (View Connections to communication apps (Real-time communications Monitoring))
+#		Trust_MultiTenantAccessList_Read (Read multi-tenant service access list permissions.)
+#		Trust_VdaEnrollmentToken_Read (Read VDA enrollment tokens.)
+#		Resource Filter added in 2511
+#			ResourceAccessPolicyRule_Create (Creates Resource Filter)
+#			ResourceAccessPolicyRule_Delete (Delete Resource Filter)
+#			ResourceAccessPolicyRule_EditProperties (Edit Resource Filter)
+#			ResourceAccessPolicyRule_Read (Reads Resource Filter)
+#		Zone_AddScope (Add Zone to Scope)
+#		Zone_RemoveScope (Remove Zone from Scope)
+#
+#	In Function OutputMachines, add the following Machine custom properties:
+#		Custom Properties For Aws
+#			WBCDiskStorageType
+#			PersistWBC
+#			PersistOSDisk
+#			PreformatWriteBackCache
+#			BackupVmConfiguration
+#
+#		In the column headings for the Machine Catalogs:
+#			Rename "No. of Machines" to "Machine Count"
+#			Rename "Allocated Machines" to "Allocated Count"
+#			Add column for Folder
+#
+#		For the Machine Catalog summary table, change from a horizontal to a vertical table to fit the added Folder column
+#
+#	In Function OutputRoles
+#		Expand the Description column to accommodate longer descriptions
+#
+#	In Function OutputRoleDefinitions, 
+#		Expand the output column widths to accommodate the new folder and permission names
+#
+#	Tested with Citrix DaaS Remote PowerShell SDK 7.47.26953.8868
+#
+#	Tested with Citrix Group Policy Management Console 7.46.100.105
+#
+#	Updated the Help text and ReadMe files
+
 #Version 1.28.005 13-Oct-2025
 #	Thanks to Citrix, Ferroque Systems, Guy Leech, Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for their help
 #

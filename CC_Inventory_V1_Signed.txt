@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.28.005
+	VERSION: 1.29
 	AUTHOR: Carl Webster
-	LASTEDIT: October 13, 2025
+	LASTEDIT: March 31, 2026
 #>
 
 #endregion
@@ -1527,6 +1527,222 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.29 31-Mar-2026
+#	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
+#
+#	Thanks to Arnaud Pain for help in getting download links
+#
+#	Added support for 2511/7.46
+#
+#	Added more settings configurable by Set-BrokerServiceConfigurationData (Thanks to CG at Citrix for providing this information):
+#		Core.AzureSSOnDataRefreshIntervalMins
+#			Type: int
+#			Default: 1440
+#			Info: Minutes, Minimum=1, Maximum=1440
+#			Summary: Interval for polling Azure Entra Id SSO data from datastore. 
+#					 This call happens within FeatureChecksSiteServics.cs
+#
+#		Core.FeatureChecksSiteServiceIdleIntervalTimeSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data when the site is idle.
+#
+#		Core.FeatureChecksSiteServiceIntervalTimeSecs
+#			Type: int
+#			Default: 30
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data.
+#
+#		Core.ReRegisterNowBatchDelayMs
+#			Type: int
+#			Default: 1000
+#			Info: 
+#			Summary: The delay between batches when performing a re-register now operation such that 
+#					 whole operation is completed within 2 minutes. 
+#					 A sample size is (MaxWorkers / ReRegisterNowBatchSize) * ReRegisterNowBatchDelayMs, 
+#					 ie, (11000 / 100) * 1000ms = 110,000 ms = 1.83 minutes.
+#
+#		Core.ReRegisterNowBatchSize
+#			Type: int
+#			Default: 100
+#			Info: 
+#			Summary: The number of machines to be processed in a single batch when performing a re-register now operation.
+#
+#		Core.SdkWriteDisablesReadReplicaUseForSecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds, Minimum=1
+#			Summary: The number of seconds after any 'write' operation from a given SDK snapin after which it's considered 
+#					 safe to route subsequent 'read' operations from the same snapin to an available read replica database.
+#
+#		DBConnectionSettings.SqlLogin (missed from an earlier script update)
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL login for use with SQL authenticated connections to the database.
+#
+#		DBConnectionSettings.SqlPassword (missed from an earlier script update)
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL password for use with SQL authenticated connections to the database.
+#
+#		HostingManagementSettings.CancelAutoMaintenanceMode
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When this setting is True, if a VDA has been automatically placed into maintenance mode 
+#					 following multiple failed registrations (see MaxFailedRegistrationsAllowed) but later registers 
+#					 successfully, the VDA is automatically removed from maintenance mode.
+#
+#					 When this setting is False, or the VDA was placed into maintenance mode by the admin, then the 
+#					 VDA remains in maintenance mode even if it later registers successfully.
+#
+#		HostingManagementSettings.MaxMinutesForPowerManagementExclusion
+#			Type: int
+#			Default: 43200
+#			Info: Minutes, Minimum=0, Maximum=43200
+#			Summary: The maximum minutes an Admin can set ExcludeFromAutomaticPowerManagementUntil for a private desktop.
+#
+#		NameCacheSettings.LookupFailureCountBeforeClearingNamesInCache
+#			Type: int
+#			Default: 5
+#			Info: Number of times a lookup has failed. Minimum=5, Maximum=7
+#			Summary: Number of lookup failures after which the cached AD user/group account name, or machine name, 
+#					 details are cleared from the cache. The SAM name will be replaced with the SID and other name 
+#					 details will be cleared out. The amount of time before a name is cleared from the cache depends 
+#					 on the NameRefreshExponentialBackoffMaximumMins and NameRefreshPeriodAfterErrorMins settings.
+#
+#		XmsSettings.PowerStateCacheEntryExpiryTimeSecs
+#			Type: int
+#			Default: 1800
+#			Info: Seconds, Minimum=60
+#			Summary: Time after which a power state cache entry is expired.
+#
+#		XmsSettings.PowerStateCachePollingIntervalSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds, Minimum=60
+#			Summary: Time after which the power state cache is refreshed from the database.
+#
+#		XmsSettings.UniqueDeviceIdOptions
+#			Type: int
+#			Default: 0
+#			Info: Minimum=0, Maximum=3
+#			Summary: Specifies options to use when trying to ensure that the client device ID received from WSP/SF is unique. 
+#					 This setting should not be changed from its default value except to workaround specific issues observed 
+#					 in a particular site.
+#
+#					 The value is a bit mask where the bits have the following meanings:
+#
+#					 Bit 0: When set, causes the client device ID to be unconditionally qualified by the client's IP address. 
+#					 This can rectify session reconnection problems caused by non-unique device IDs, but can conversely cause 
+#					 session reconnection problems if network infrastructure such as firewalls or load balancers causes the 
+#					 IP address of a client device to change over time even when actively connected to a VDA.
+#
+#					 Bit 1: When set, if no device ID is received or its value is known to be non-unique, do not try substituting 
+#					 the client name for the device ID, but instead use the client IP address. This may avoid problems caused 
+#					 where multiple devices are reporting the same non-unique client name.
+#
+#	Added Computer policy
+#		Chrome Enterprise Premium\Enroll Chrome Browser
+#		ICA\Graphics\HDX screen sharing ports
+#		ICA\Graphics\Remote assistance ports
+#		ICA\Session Control\Disconnect published app session after closing last app
+#		VDA Data Collection\uberagent\Enhance Director to use uberAgent SessionDetail data for calculating Session Score
+#		VDA Data Collection\uberagent\Enhance Director with uberAgent data for resource utilization
+#		Workspace Environment Management\Agent proxy configuration
+#		Workspace Environment Management\Agent service port
+#		Workspace Environment Management\Cached data synchronization port
+#		Workspace Environment Management\Custom settings for basic deployment
+#		Workspace Environment Management\Discover Citrix Cloud Connectors from CVAD service
+#		Workspace Environment Management\Infrastructure server
+#		Workspace Environment Management\Override Agent Deployment Type
+#
+#	Added User policy
+#		AssistantApp\Enable Assistant App
+#		ICA\Mac Image Capture scanner redirection
+#		ICA\Graphics\HDX screen Sharing timeout (minutes)
+#		ICA\Graphics\Remote Assistance with HDX screen sharing
+#		ICA\Graphics\Remote Assistance timeout (minutes)
+#
+#	In Function GetRolePermissions, (Thanks to Prateek Anand and Ferroque Systems for their help)
+#		AppLib_PackageDiscovery_Read (View Application Package Discovery Sessions)
+#		EntitlementPolicyRule_ChangeTags (Edit Desktop tags)
+#		Director_AotLogs (View Logs page)
+#		Director_DesktopHardwareInformation (Perform Machine Hardware related Broker machine command)
+#		Director_DiskMetrics (Perform Disk metrics related Broker machine command)
+#		Director_DownloadSFOnboardScripts (Perform download of on-premises StoreFront onboarding scripts)
+#		Director_EndpointMetrics (Perform Endpoint Metrics related Broker machine command)
+#		Director_GetVDARegistryKeyValues (Get VDA registry key values)
+#		Director_GetVDARegistryKeyValues_Edit (Edit VDA registry keys retrieval related machine command properties)
+#		Director_GPOData (Perform GPO Data related Broker machine command)
+#		Director_GpuMetrics (Perform Gpu metrics related Broker machine command)
+#		Director_HDXInformation (Perform HDX related Broker machine command)
+#		Director_HDXProtocol (Perform HDX Protocol related Broker machine command)
+#		Director_LatencyInformation (Perform Latency related Broker machine command)
+#		Director_MachineMetricValues (Perform Machine metric related Broker machine command)
+#		Director_MTOPInformation (Perform MTOP related Broker machine command)
+#		Director_PerformBuildInScriptedTask (Perform Build-In Scripted Task on Machines/Sessions)
+#		Director_PerformCustomScriptedTask (Perform Custom Scripted Task on Machines/Sessions)
+#		Director_PersonalizationInformation (Perform Personalization related Broker machine command)
+#		Director_PoliciesInformation (Perform Policies related Broker machine command)
+#		Director_ProfileLoadData (erform Profile Load Data related Broker machine command)
+#		Director_RDSLicenseCheck (RDS License Check)
+#		Director_RoundTripInformation (Perform Roundtrip Time related Broker machine command)
+#		Director_StartupMetrics (Perform Startup Metrics Data related Broker machine command)
+#		Director_TaskManagerInformation (Perform TaskManager related Broker machine command)
+#		Director_UCaaS_Connections_Manage (Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1))
+#		Director_UploadCustomScript (Upload Custom Script)
+#		Image_AddScope (Add Image to Scope)
+#		Image_RemoveScope (Remove Image from Scope)
+#		Merge Groups added in 2511
+#			MergeGroup_Create (Create Merge Groups)
+#			MergeGroup_Delete (Delete Merge Groups)     
+#			MergeGroup_EditProperties (Edit Merge Groups)
+#			MergeGroup_Read (View Merge Groups)
+#		Machine_VdaAotTracing_Configuration (Create, view, modify, and delete machine configurations for VDA Always on Tracing.)
+#		Monitor_Log_Server_Configuration_Manage (Manage Monitor log server configurations)
+#		Monitor_UCaaS_Connections_Manage (Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring))
+#		Monitor_UCaaS_Connections_Read (View Connections to communication apps (Real-time communications Monitoring))
+#		Trust_MultiTenantAccessList_Read (Read multi-tenant service access list permissions.)
+#		Trust_VdaEnrollmentToken_Read (Read VDA enrollment tokens.)
+#		Resource Filter added in 2511
+#			ResourceAccessPolicyRule_Create (Creates Resource Filter)
+#			ResourceAccessPolicyRule_Delete (Delete Resource Filter)
+#			ResourceAccessPolicyRule_EditProperties (Edit Resource Filter)
+#			ResourceAccessPolicyRule_Read (Reads Resource Filter)
+#		Zone_AddScope (Add Zone to Scope)
+#		Zone_RemoveScope (Remove Zone from Scope)
+#
+#	In Function OutputMachines, add the following Machine custom properties:
+#		Custom Properties For Aws
+#			WBCDiskStorageType
+#			PersistWBC
+#			PersistOSDisk
+#			PreformatWriteBackCache
+#			BackupVmConfiguration
+#
+#		In the column headings for the Machine Catalogs:
+#			Rename "No. of Machines" to "Machine Count"
+#			Rename "Allocated Machines" to "Allocated Count"
+#			Add column for Folder
+#
+#		For the Machine Catalog summary table, change from a horizontal to a vertical table to fit the added Folder column
+#
+#	In Function OutputRoles
+#		Expand the Description column to accommodate longer descriptions
+#
+#	In Function OutputRoleDefinitions, 
+#		Expand the output column widths to accommodate the new folder and permission names
+#
+#	Tested with Citrix DaaS Remote PowerShell SDK 7.47.26953.8868
+#
+#	Tested with Citrix Group Policy Management Console 7.46.100.105
+#
+#	Updated the Help text and ReadMe files
+#
 #Version 1.28.005 13-Oct-2025
 #	Thanks to Citrix, Ferroque Systems, Guy Leech, Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for their help
 #
@@ -3463,9 +3679,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = "'1.28.005"
+$script:MyVersion   = "'1.29 Beta 1"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "10/13/2025"
+$tmpdate            = [datetime] "02/19/2026"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -7207,22 +7423,7 @@ Function OutputMachines
 	
 	Write-Verbose "$(Get-Date -Format G): `tProcessing Machine Catalogs"
 	
-	If($MSWord -or $PDF)
-	{
-		[System.Collections.Hashtable[]] $WordTable = @();
-	}
-	If($Text)
-	{
-		Line 0 "                                                                                                             No. of   Allocated Allocation                                        "
-		Line 0 "Folder Name                Machine Catalog                              Machine Type                         Machines Machines  Type       User Data     Provisioning Method      "
-		Line 0 "=================================================================================================================================================================================="
-		#       12345678901234567890123456S12345678901234567890123456789012345678901234S123456789012345678901234567890123456S12345678S123456789S1234567890S1234567890123S1234567890123456789012345
-		#       This is a long folder nameXXXXXX-Azure-XXXXXXXXXEast-Dedicated-Win10MS Single-session OS (Remote PC Access)                               On local Disk Machine creation services
-	}
-	If($HTML)
-	{
-		$rowdata = @()
-	}
+	#updated 27-Feb-2026, summary table of catalogs to match what is shown in Web Studio
 
 	ForEach($Catalog in $Catalogs)
 	{
@@ -7287,6 +7488,16 @@ Function OutputMachines
 			Default					{$MDMEnrollment = "MDM Enrollment method could not be determined: $($Catalog.MdmEnrollment)"; Break}
 		}
 
+		#folder name added in 1.29
+		If($Catalog.AdminFolderName -eq "")
+		{
+			$FolderName = "Machine Catalogs\"
+		}
+		Else
+		{
+			$FolderName = "Machine Catalogs\$Catalog.AdminFolderName"
+		}
+		
 		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
 		#Citrix broke this cmdlet when they added folder names
 		#change to use the catalog's UID
@@ -7298,104 +7509,64 @@ Function OutputMachines
 		
 		If($MSWord -or $PDF)
 		{
-			$WordTable += @{
-				AdminFolderName    = $Catalog.AdminFolderName; 
-				MachineCatalogName = $Catalog.CatalogName; 
-				MachineType        = $xCatalogType; 
-				NoOfMachines       = $NumberOfMachines;
-				AllocatedMachines  = $Catalog.UsedCount.ToString(); 
-				AllocationType     = $xAllocationType;
-				UserData           = $xPersistType;
-				ProvisioningMethod = $xProvisioningType;
-			}
+			[System.Collections.Hashtable[]] $CatalogInformation = @()
+			$CatalogInformation += @{Data = "Machine Catalog"; Value = $Catalog.Name; }
+			$CatalogInformation += @{Data = "Machine Type"; Value = $xCatalogType; }
+			$CatalogInformation += @{Data = "Machine Count"; Value = $NumberOfMachines.ToString(); }
+			$CatalogInformation += @{Data = "Allocated Count"; Value = $Catalog.UsedCount.ToString(); }
+			$CatalogInformation += @{Data = "Folder"; Value = $FolderName; }
+			$CatalogInformation += @{Data = "Allocation Type"; Value = $xAllocationType; }
+			$CatalogInformation += @{Data = "User data"; Value = $xPersistType; }
+			$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
+
+			$Table = AddWordTable -Hashtable $CatalogInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 250;
+			$Table.Columns.Item(2).Width = 250;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
 		}
 		If($Text)
 		{
-			Line 0 ( "{0, -26} {1,-44} {2,-36} {3,8} {4,9} {5,-10} {6,-13} {7,-25}" -f `
-			$Catalog.AdminFolderName, 
-			$Catalog.CatalogName, 
-			$xCatalogType, 
-			$NumberOfMachines, 
-			$Catalog.UsedCount.ToString(), 
-			$xAllocationType, 
-			$xPersistType, 
-			$xProvisioningType)
+			Line 1 "Machine Catalog`t`t: " $Catalog.Name
+			Line 1 "Machine Type`t`t: " $xCatalogType
+			Line 1 "Machine Count`t`t: " $NumberOfMachines.ToString()
+			Line 1 "Allocated Count`t`t: " $Catalog.UsedCount.ToString()
+			Line 1 "Folder`t`t`t: " $FolderName
+			Line 1 "Allocation Type`t`t: " $xAllocationType
+			Line 1 "User data`t`t: " $xPersistType
+			Line 1 "Provisioning method`t: " $xProvisioningType
+			Line 0 ""
 		}
 		If($HTML)
 		{
-			$rowdata += @(,(
-				$Catalog.AdminFolderName,$htmlwhite,
-				$Catalog.CatalogName,$htmlwhite,
-				$xCatalogType,$htmlwhite,
-				$NumberOfMachines,$htmlwhite,
-				$Catalog.UsedCount.ToString(),$htmlwhite,
-				$xAllocationType,$htmlwhite,
-				$xPersistType,$htmlwhite,
-				$xProvisioningType,$htmlwhite)
-			)
+			$rowdata = @()
+			$columnHeaders = @("Machine Catalog",($global:htmlsb),$Catalog.Name,$htmlwhite)
+			$rowdata += @(,("Machine Type",($global:htmlsb),$xCatalogType,$htmlwhite))
+			$rowdata += @(,("Machine Count",($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
+			$rowdata += @(,("Allocated Count",($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
+			$rowdata += @(,("Folder",($global:htmlsb),$FolderName,$htmlwhite))
+			$rowdata += @(,("Allocation Type",($global:htmlsb),$xAllocationType,$htmlwhite))
+			$rowdata += @(,("User data",($global:htmlsb),$xPersistType,$htmlwhite))
+			$rowdata += @(,("Provisioning method",($global:htmlsb),$xProvisioningType,$htmlwhite))
+
+			$msg = ""
+			$columnWidths = @("250","250")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+			WriteHTMLLine 0 0 ""
 		}
 	}
 
-	If($MSWord -or $PDF)
-	{
-		If($WordTable.Count -eq 0)
-		{
-			$WordTable += @{
-				AdminFolderName    = ""; 
-				MachineCatalogName = "None found"; 
-				MachineType        = ""; 
-				NoOfMachines       = "";
-				AllocatedMachines  = ""; 
-				AllocationType     = "";
-				UserData           = "";
-				ProvisioningMethod = "";
-			}
-		}
-		
-		$Table = AddWordTable -Hashtable $WordTable `
-		-Columns  AdminFolderName, MachineCatalogName, MachineType, NoOfMachines, AllocatedMachines, AllocationType, UserData, ProvisioningMethod `
-		-Headers  "Folder Name", "Machine Catalog", "Machine type", "No. of machines", "Allocated machines", "Allocation Type", "User data", "Provisioning method" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitContent;
-
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-		#$Table.Columns.Item(1).Width = 105;
-		#$Table.Columns.Item(2).Width = 100;
-		#$Table.Columns.Item(3).Width = 75;
-		#$Table.Columns.Item(4).Width = 50;
-		#$Table.Columns.Item(5).Width = 55;
-		#$Table.Columns.Item(6).Width = 50;
-		#$Table.Columns.Item(7).Width = 65;
-
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-		FindWordDocumentEnd
-		$Table = $Null
-	}
-	If($Text)
-	{
-		Line 0 ""
-	}
-	If($HTML)
-	{
-		$columnHeaders = @(
-			'Folder Name',($global:htmlsb),
-			'Machine Catalog',($global:htmlsb),
-			'Machine type',($global:htmlsb),
-			'No. of machines',($global:htmlsb),
-			'Allocated machines',($global:htmlsb),
-			'Allocation Type',($global:htmlsb),
-			'User data',($global:htmlsb),
-			'Provisioning method',($global:htmlsb)
-		)
-
-		$columnWidths = @("55","125","175","75","50","55","75","145")
-		$msg = ""
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "755"
-	}
-	
 	ForEach($Catalog in $Catalogs)
 	{
 		Write-Verbose "$(Get-Date -Format G): `t`tAdding Catalog $($Catalog.CatalogName)"
@@ -8433,6 +8604,11 @@ Function OutputMachines
 				Custom Properties For Aws
 					AwsCaptureInstanceProperties
 					AwsOperationalResourcesTagging
+					WBCDiskStorageType #new in 1.29
+					PersistWBC #new in 1.29
+					PersistOSDisk #new in 1.29
+					PreformatWriteBackCache #new in 1.29
+					BackupVmConfiguration #new in 1.29
 
 				Custom Properties For Gcp
 					CatalogZones
@@ -8451,7 +8627,6 @@ Function OutputMachines
 					AzureArcResourceGroup
 					AzureArcSubscriptionId
 					EnableAzureArcOnboarding
-					
 			#>
 			
 			$ProvScheme = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeID @CCParams2
@@ -18241,6 +18416,54 @@ Function ProcessCitrixPolicies
 					$First = $False
 					
 					Write-Verbose "$(Get-Date -Format G): `t`tPolicy settings"
+					Write-Verbose "$(Get-Date -Format G): `t`t`tAssistantApp"
+					If((validStateProp $Setting EnableAssistantApp State ) -and ($Setting.EnableAssistantApp.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "AssistantApp\Enable Assistant App"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableAssistantApp.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableAssistantApp.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableAssistantApp.State
+						}
+					}
+
+					Write-Verbose "$(Get-Date -Format G): `t`t`tChrome Enterprise Premium"
+					If((validStateProp $Setting EnrollChromeBrowser State ) -and ($Setting.EnrollChromeBrowser.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "Chrome Enterprise Premium\Enroll Chrome Browser"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnrollChromeBrowser.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnrollChromeBrowser.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnrollChromeBrowser.Value
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tConnector for Configuration Manager 2012"
 					If((validStateProp $Setting AdvanceWarningFrequency State ) -and ($Setting.AdvanceWarningFrequency.State -ne "NotConfigured"))
 					{
@@ -19262,6 +19485,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.LossTolerantModeAvailable.State
+						}
+					}
+					If((validStateProp $Setting AllowScannerMacImageCaptureRedirection State ) -and ($Setting.AllowScannerMacImageCaptureRedirection.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Mac Image Capture scanner redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowScannerMacImageCaptureRedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowScannerMacImageCaptureRedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowScannerMacImageCaptureRedirection.State 
 						}
 					}
 					If((validStateProp $Setting PrimarySelectionUpdateMode State ) -and ($Setting.PrimarySelectionUpdateMode.State -ne "NotConfigured"))
@@ -21528,6 +21773,50 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DisplayLosslessIndicator.State 
 						}	
 					}
+					If((validStateProp $Setting ScreenSharingPortRange State ) -and ($Setting.ScreenSharingPortRange.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Graphics\HDX screen sharing ports"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ScreenSharingPortRange.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ScreenSharingPortRange.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ScreenSharingPortRange.Value 
+						}	
+					}
+					If((validStateProp $Setting ScreenSharingConnectTimeout State ) -and ($Setting.ScreenSharingConnectTimeout.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Graphics\HDX screen Sharing timeout (minutes)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ScreenSharingConnectTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ScreenSharingConnectTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ScreenSharingConnectTimeout.Value 
+						}	
+					}
 					If((validStateProp $Setting MaximumColorDepth State ) -and ($Setting.MaximumColorDepth.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Maximum allowed color depth"
@@ -21601,6 +21890,72 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.AppAndDesktopSharing.State 
+						}
+					}
+					If((validStateProp $Setting RemoteAssistancePortRange State ) -and ($Setting.RemoteAssistancePortRange.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Graphics\Remote assistance ports"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteAssistancePortRange.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteAssistancePortRange.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteAssistancePortRange.Value 
+						}	
+					}
+					If((validStateProp $Setting RemoteAssistance State ) -and ($Setting.RemoteAssistance.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Graphics\Remote Assistance with HDX screen sharing"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteAssistance.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteAssistance.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteAssistance.State 
+						}
+					}
+					If((validStateProp $Setting RemoteAssistanceConnectTimeout State ) -and ($Setting.RemoteAssistanceConnectTimeout.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Graphics\Remote Assistance timeout (minutes)"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.RemoteAssistanceConnectTimeout.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.RemoteAssistanceConnectTimeout.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.RemoteAssistanceConnectTimeout.Value
 						}
 					}
 					If((validStateProp $Setting ScreenSharing State ) -and ($Setting.ScreenSharing.State -ne "NotConfigured"))
@@ -24882,6 +25237,30 @@ Function ProcessCitrixPolicies
 						}
 					}
 					
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Session Control"
+					If((validStateProp $Setting EnableAutoDisconnectedSession State ) -and ($Setting.EnableAutoDisconnectedSession.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "ICA\Session Control\Disconnect published app session after closing last app"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableAutoDisconnectedSession.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableAutoDisconnectedSession.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableAutoDisconnectedSession.State 
+						}
+					}
+
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Session Interactivity"
 					If((validStateProp $Setting LossTolerantThresholds State ) -and ($Setting.LossTolerantThresholds.State -ne "NotConfigured"))
 					{
@@ -32994,6 +33373,52 @@ Function ProcessCitrixPolicies
 
 					#added in 1.28.004
 					Write-Verbose "$(Get-Date -Format G): `t`t`tVDA Data Collection\uberAgent"
+					If((validStateProp $Setting EnableuberAgentSessionDetailCollection State ) -and ($Setting.EnableuberAgentSessionDetailCollection.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "VDA Data Collection\uberAgent\uberAgent data collection for Application monitoring"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableuberAgentSessionDetailCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableuberAgentSessionDetailCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableuberAgentSessionDetailCollection.State
+						}
+					}
+					If((validStateProp $Setting EnableuberAgentDataCollectio State ) -and ($Setting.EnableuberAgentDataCollectio.State -ne "NotConfigured"))
+					{
+						#added in 2511
+						$txt = "VDA Data Collection\uberAgent\Enhance Director to use uberAgent SessionDetail data for calculating Session Score"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableuberAgentDataCollectio.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableuberAgentDataCollectio.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableuberAgentDataCollectio.State
+						}
+					}
 					If((validStateProp $Setting EnableuberAgentDataCollection State ) -and ($Setting.EnableuberAgentDataCollection.State -ne "NotConfigured"))
 					{
 						#added in CVAD2411
@@ -33520,6 +33945,75 @@ Function ProcessCitrixPolicies
 				}
 
 				Write-Verbose "$(Get-Date -Format G): `t`t`tWorkspace Environment Management"
+				If((validStateProp $Setting WemProxyAddress State ) -and ($Setting.WemProxyAddress.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					$txt = "Workspace Environment Management\Agent proxy configuration"
+					If($MSWord -or $PDF)
+					{
+						$WordTableRowHash = @{
+						Text = $txt;
+						Value = $Setting.WemProxyAddress.Value;
+						}
+						$SettingsWordTable += $WordTableRowHash;
+					}
+					If($HTML)
+					{
+						$rowdata += @(,(
+						$txt,$htmlbold,
+						$Setting.WemProxyAddress.Value,$htmlwhite))
+					}
+					If($Text)
+					{
+						OutputPolicySetting $txt $Setting.WemProxyAddress.Value 
+					}
+				}
+				If((validStateProp $Setting WemBrokerSvcPort State ) -and ($Setting.WemBrokerSvcPort.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					$txt = "Workspace Environment Management\Agent service port"
+					If($MSWord -or $PDF)
+					{
+						$WordTableRowHash = @{
+						Text = $txt;
+						Value = $Setting.WemBrokerSvcPort.Value;
+						}
+						$SettingsWordTable += $WordTableRowHash;
+					}
+					If($HTML)
+					{
+						$rowdata += @(,(
+						$txt,$htmlbold,
+						$Setting.WemBrokerSvcPort.Value,$htmlwhite))
+					}
+					If($Text)
+					{
+						OutputPolicySetting $txt $Setting.WemBrokerSvcPort.Value 
+					}
+				}
+				If((validStateProp $Setting WemCachedDataSyncPort State ) -and ($Setting.WemCachedDataSyncPort.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					$txt = "Workspace Environment Management\Cached data synchronization port"
+					If($MSWord -or $PDF)
+					{
+						$WordTableRowHash = @{
+						Text = $txt;
+						Value = $Setting.WemCachedDataSyncPort.Value;
+						}
+						$SettingsWordTable += $WordTableRowHash;
+					}
+					If($HTML)
+					{
+						$rowdata += @(,(
+						$txt,$htmlbold,
+						$Setting.WemCachedDataSyncPort.Value,$htmlwhite))
+					}
+					If($Text)
+					{
+						OutputPolicySetting $txt $Setting.WemCachedDataSyncPort.Value 
+					}
+				}
 				If((validStateProp $Setting WemCloudConnectorList State ) -and ($Setting.WemCloudConnectorList.State -ne "NotConfigured"))
 				{
 					$txt = "Workspace Environment Management\Citrix Cloud Connectors" #added in 2103
@@ -33623,6 +34117,191 @@ Function ProcessCitrixPolicies
 						{
 							OutputPolicySetting $txt $Setting.WemCloudConnectorList.State 
 						}
+					}
+				}
+				If((validStateProp $Setting WemCustomBasicSettings State ) -and ($Setting.WemCustomBasicSettings.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					$txt = "Workspace Environment Management\Custom settings for basic deployment"
+					If($Setting.WemCustomBasicSettings.State -eq "Enabled")
+					{
+						If(validStateProp $Setting WemCustomBasicSettings Values )
+						{
+							$tmpArray = $Setting.WemCustomBasicSettings.Values.Split(",")
+							$tmp = ""
+							$cnt = 0
+							ForEach($Thing in $tmpArray)
+							{
+								$cnt++
+								$tmp = "$($Thing)"
+								If($cnt -eq 1)
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = $txt;
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										$txt,$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting $txt $tmp
+									}
+								}
+								Else
+								{
+									If($MSWord -or $PDF)
+									{
+										$WordTableRowHash = @{
+										Text = "";
+										Value = $tmp;
+										}
+										$SettingsWordTable += $WordTableRowHash;
+									}
+									If($HTML)
+									{
+										$rowdata += @(,(
+										"",$htmlbold,
+										$tmp,$htmlwhite))
+									}
+									If($Text)
+									{
+										OutputPolicySetting "`t`t`t`t`t`t`t" $tmp
+									}
+								}
+							}
+							$tmpArray = $Null
+							$tmp = $Null
+						}
+						Else
+						{
+							$tmp = "No Custom settings for basic deployment were found"
+							If($MSWord -or $PDF)
+							{
+								$WordTableRowHash = @{
+								Text = $txt;
+								Value = $tmp;
+								}
+								$SettingsWordTable += $WordTableRowHash;
+							}
+							If($HTML)
+							{
+								$rowdata += @(,(
+								$txt,$htmlbold,
+								$tmp,$htmlwhite))
+							}
+							If($Text)
+							{
+								OutputPolicySetting $txt $tmp
+							}
+						}
+					}
+					Else
+					{
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.WemCustomBasicSettings.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.WemCustomBasicSettings.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.WemCustomBasicSettings.State 
+						}
+					}
+				}
+				If((validStateProp $Setting WemAllowWEMUseCvadConnectors State ) -and ($Setting.WemAllowWEMUseCvadConnectors.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					$txt = "Workspace Environment Management\Discover Citrix Cloud Connectors from CVAD service"
+					If($MSWord -or $PDF)
+					{
+						$WordTableRowHash = @{
+						Text = $txt;
+						Value = $Setting.WemAllowWEMUseCvadConnectors.State;
+						}
+						$SettingsWordTable += $WordTableRowHash;
+					}
+					If($HTML)
+					{
+						$rowdata += @(,(
+						$txt,$htmlbold,
+						$Setting.WemAllowWEMUseCvadConnectors.State,$htmlwhite))
+					}
+					If($Text)
+					{
+						OutputPolicySetting $txt $Setting.WemAllowWEMUseCvadConnectors.State 
+					}
+				}
+				If((validStateProp $Setting WemBrokerSvcName State ) -and ($Setting.WemBrokerSvcName.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					$txt = "Workspace Environment Management\Infrastructure server"
+					If($MSWord -or $PDF)
+					{
+						$WordTableRowHash = @{
+						Text = $txt;
+						Value = $Setting.WemBrokerSvcName.Value;
+						}
+						$SettingsWordTable += $WordTableRowHash;
+					}
+					If($HTML)
+					{
+						$rowdata += @(,(
+						$txt,$htmlbold,
+						$Setting.WemBrokerSvcName.Value,$htmlwhite))
+					}
+					If($Text)
+					{
+						OutputPolicySetting $txt $Setting.WemBrokerSvcName.Value 
+					}
+				}
+				If((validStateProp $Setting WemOverrideAgentDeployment State ) -and ($Setting.WemOverrideAgentDeployment.State -ne "NotConfigured"))
+				{
+					#added in 2511
+					
+					Switch($Setting.WemOverrideAgentDeployment.Value)
+					{
+						"CloudService"	{$Tmp = "Cloud service"; Break}
+						"OnPremises"	{$Tmp = "On-premises"; Break}
+						"Basic"			{$Tmp = "Basic"; Break}
+						"Disabled"		{$Tmp = "Disabled"; Break}
+						Default			{$Tmp = "Unable to determine Override Agent Deployment Type: $($Setting.WemOverrideAgentDeployment.Value)"; Break}
+					}
+					
+					$txt = "Workspace Environment Management\Override Agent Deployment Type"
+					If($MSWord -or $PDF)
+					{
+						$WordTableRowHash = @{
+						Text = $txt;
+						Value = $Tmp;
+						}
+						$SettingsWordTable += $WordTableRowHash;
+					}
+					If($HTML)
+					{
+						$rowdata += @(,(
+						$txt,$htmlbold,
+						$Tmp,$htmlwhite))
+					}
+					If($Text)
+					{
+						OutputPolicySetting $txt $Tmp 
 					}
 				}
 
@@ -35644,8 +36323,8 @@ Function OutputRoles
 		)
 
 		$msg = ""
-		$columnWidths = @("200","450","50")
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+		$columnWidths = @("200","550","50")
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "800"
 	}
 }
 
@@ -35787,8 +36466,8 @@ Function OutputRoleDefinitions
 			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 150;
-			$Table.Columns.Item(2).Width = 350;
+			$Table.Columns.Item(1).Width = 200;
+			$Table.Columns.Item(2).Width = 300;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -35808,8 +36487,8 @@ Function OutputRoleDefinitions
 			)
 
 			$msg = ""
-			$ColumnWidths = @("100","500")
-			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders	-fixedWidth $columnWidths -tablewidth "600"
+			$ColumnWidths = @("175","575")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders	-fixedWidth $columnWidths -tablewidth "750"
 		}
 	}
 }
@@ -35863,7 +36542,8 @@ Function GetRolePermissions
 			"AppLib_AddPackage"											{$Results.Add("Add App-V Application Libraries and Packages", "Application Packages")}
 			"AppLib_IsolationGroup_Create"								{$Results.Add("Create App-V Isolation Group", "Application Packages")}
 			"AppLib_IsolationGroup_Remove"								{$Results.Add("Remove App-V Isolation Groups", "Application Packages")}
-			"AppLib_PackageDiscovery_Create"							{$Results.Add("PackageDiscovery_Create", "Application Packages")}
+			"AppLib_PackageDiscovery_Create"							{$Results.Add("Create Application Package Discovery Sessions", "Application Packages")}
+			"AppLib_PackageDiscovery_Read"								{$Results.Add("View Application Package Discovery Sessions", "Application Packages")} #added in 2511
 			"AppLib_PackageDiscoveryProfile_Create"						{$Results.Add("PackageDiscoveryProfile_Create", "Application Packages")}
 			"AppLib_PackageDiscoveryProfile_Remove"						{$Results.Add("PackageDiscoveryProfile_Remove", "Application Packages")}
 			"AppLib_Read"												{$Results.Add("Read App-V Application Libraries and Packages", "Application Packages")}
@@ -35930,6 +36610,7 @@ Function GetRolePermissions
 			"DesktopGroup_RemoveFolder"									{$Results.Add("Remove Delivery Group Folder", "Delivery Groups")} #new in 2212
 			"DesktopGroup_RemoveScope"									{$Results.Add("Remove Delivery Group from Scope", "Delivery Groups")}
 			"DesktopGroup_SessionManagement"							{$Results.Add("Perform session management on machines via Delivery Group membership", "Delivery Groups")}
+			"EntitlementPolicyRule_ChangeTags"							{$Results.Add("Edit Desktop tags", "Delivery Groups")} #added in 1.29
 			"Machine_ChangeTagsBase"									{$Results.Add("Edit machine tags", "Delivery Groups")}
 			
 			"Director_AlertPolicy_Edit"									{$Results.Add("Create\Edit\Delete Alert Policies", "Director")}
@@ -35937,6 +36618,7 @@ Function GetRolePermissions
 			"Director_Alerts_Read"										{$Results.Add("View Alerts", "Director")}
 			"Director_AlertWebhookProfile_Edit"							{$Results.Add("Create\Edit\Remove\View Webhook Profile Configurations", "Director")} #added in 1.27, updated in 1.28.002
 			"Director_Analytics"										{$Results.Add("View Analytics page", "Director")} #added in 1.28.002
+			"Director_AotLogs"											{$Results.Add("View Logs page", "Director")} #added in 1.29
 			"Director_ApplicationDashboard"								{$Results.Add("View Applications page", "Director")}
 			"Director_BulkActions_Edit"									{$Results.Add("Perform bulk actions for machine and session management", "Director")} #added in 1.28.002
 			"Director_ClientDetails_Read"								{$Results.Add("View Client Details page", "Director")}
@@ -35945,18 +36627,28 @@ Function GetRolePermissions
 			"Director_Configuration"									{$Results.Add("View Configurations page", "Director")}
 			"Director_CostSavings"										{$Results.Add("View Cost Optimization page", "Director")} #added in 1.28.002
 			"Director_Dashboard_Read"									{$Results.Add("View Dashboard page", "Director")}
+			"Director_DesktopHardwareInformation"						{$Results.Add("Perform Machine Hardware related Broker machine command", "Director")} #added in 1.29
 			"Director_DesktopHardwareInformation_Edit"					{$Results.Add("Edit Machine Hardware related Broker machine command properties", "Director")}
+			"Director_DiskMetrics"										{$Results.Add("Perform Disk metrics related Broker machine command", "Director")}
 			"Director_DiskMetrics_Edit"									{$Results.Add("Edit Disk metrics related Broker machine command properties", "Director")}
 			"Director_DismissAlerts"									{$Results.Add("Dismiss Alerts", "Director")}
+			"Director_DownloadSFOnboardScripts"							{$Results.Add("Perform download of on-premises StoreFront onboarding scripts", "Director")} #added in 1.29
 			"Director_EmailserverConfiguration_Edit"					{$Results.Add("Create\Edit\Remove Alert Email Server Configuration", "Director")}
+			"Director_EndpointMetrics"									{$Results.Add("Perform Endpoint Metrics related Broker machine command", "Director")} #added in 1.29
 			"Director_EndpointMetrics_Edit"								{$Results.Add("Edit Endpoint Metrics related Broker machine command properties", "Director")} #added in 1.27
 			"Director_Filters_ApplicationInstances"						{$Results.Add("View Filters page Application Instances only", "Director")}
 			"Director_Filters_Connections"								{$Results.Add("View Filters page Connections only", "Director")}
 			"Director_Filters_Machines"									{$Results.Add("View Filters page Machines only", "Director")}
 			"Director_Filters_Sessions"									{$Results.Add("View Filters page Sessions only", "Director")}
+			"Director_GetVDARegistryKeyValues"							{$Results.Add("Get VDA registry key values", "Director")} #added in 1.29
+			"Director_GetVDARegistryKeyValues_Edit"						{$Results.Add("Edit VDA registry keys retrieval related machine command properties", "Director")} #added in 1.29
+			"Director_GPOData"											{$Results.Add("Perform GPO Data related Broker machine command", "Director")} #added in 1.29
 			"Director_GPOData_Edit"										{$Results.Add("Edit GPO Data related Broker machine command properties", "Director")}
+			"Director_GpuMetrics"										{$Results.Add("Perform Gpu metrics related Broker machine command", "Director")} #added in 1.29
 			"Director_GpuMetrics_Edit"									{$Results.Add("Edit Gpu metrics related Broker machine command properties", "Director")}
+			"Director_HDXInformation"									{$Results.Add("Perform HDX related Broker machine command", "Director")} #added in 1.29
 			"Director_HDXInformation_Edit"								{$Results.Add("Edit HDX related Broker machine command properties", "Director")}
+			"Director_HDXProtocol"										{$Results.Add("Perform HDX Protocol related Broker machine command", "Director")} #added in 1.29
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
 			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
@@ -35966,17 +36658,27 @@ Function GetRolePermissions
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
 			"Director_KillProcess"										{$Results.Add("Perform Kill Process running on a machine", "Director")}
 			"Director_KillProcess_Edit"									{$Results.Add("Edit Kill Process related Broker machine command properties", "Director")}
+			"Director_LatencyInformation"								{$Results.Add("Perform Latency related Broker machine command", "Director")} #added in 1.29
 			"Director_LatencyInformation_Edit"							{$Results.Add("Edit Latency related Broker machine command properties", "Director")}
 			"Director_MachineDetails_Read"								{$Results.Add("View Machine Details page", "Director")}
+			"Director_MachineMetricValues"								{$Results.Add("Perform Machine metric related Broker machine command", "Director")} #added in 1.29
 			"Director_MachineMetricValues_Edit"							{$Results.Add("Edit Machine metric related Broker machine command properties", "Director")}
+			"Director_MTOPInformation"									{$Results.Add("Perform MTOP related Broker machine command", "Director")} #added in 1.29
 			"Director_MTOPInformation_Edit"								{$Results.Add("Edit MTOP related Broker machine command properties", "Director")} #added in 1.28.001
+			"Director_PerformBuildInScriptedTask"						{$Results.Add("Perform Build-In Scripted Task on Machines/Sessions", "Director")} #added in 1.29
+			"Director_PerformCustomScriptedTask"						{$Results.Add("Perform Custom Scripted Task on Machines/Sessions", "Director")} #added in 1.29
+			"Director_PersonalizationInformation"						{$Results.Add("Perform Personalization related Broker machine command", "Director")} #added in 1.29
 			"Director_PersonalizationInformation_Edit"					{$Results.Add("Edit Personalization related Broker machine command properties", "Director")}
+			"Director_PoliciesInformation"								{$Results.Add("Perform Policies related Broker machine command", "Director")} #added in 1.29
 			"Director_PoliciesInformation_Edit"							{$Results.Add("Edit Policies related Broker machine command properties", "Director")}
 			"Director_ProbeConfigurationActions"						{$Results.Add("Create\Edit\Remove Probe Configurations", "Director")}
 			"Director_ProbeSummaryView"									{$Results.Add("View Probe Summary page", "Director")} #added in 1.28.002
+			"Director_ProfileLoadData"									{$Results.Add("Perform Profile Load Data related Broker machine command", "Director")} #added in 1.29
 			"Director_ProfileLoadData_Edit"								{$Results.Add("Edit Profile Load Data related Broker machine command properties", "Director")}
+			"Director_RDSLicenseCheck"									{$Results.Add("RDS License Check", "Director")} #added in 1.29
 			"Director_ResetVDisk"										{$Results.Add("Perform Reset VDisk operation", "Director")}
 			"Director_ResetVDisk_Edit"									{$Results.Add("Edit Reset VDisk related Broker machine command properties", "Director")}
+			"Director_RoundTripInformation"								{$Results.Add("Perform Roundtrip Time related Broker machine command", "Director")} #added in 1.29
 			"Director_RoundTripInformation_Edit"						{$Results.Add("Edit Roundtrip Time related Broker machine command properties", "Director")}
 			"Director_SCOM_Read"										{$Results.Add("View SCOM Notifications", "Director")}
 			"Director_Search_Cond_Auth_Transaction"						{$Results.Add("View Conditional Authentication Transaction Data", "Director")} #added in 1.28.002
@@ -35988,9 +36690,13 @@ Function GetRolePermissions
 			"Director_ShadowSessionViaHDXSS"							{$Results.Add("Perform Remote Assistance on a machine via HDX Screen Sharing", "Director")} #added in 1.28.002
 			"Director_ShadowSessionViaHDXSS_Edit"						{$Results.Add("Edit HDX Screen Sharing related machine command properties", "Director")} #added in 1.28.002
 			"Director_SliceAndDice_Read"								{$Results.Add("View Filters page", "Director")}
+			"Director_StartupMetrics"									{$Results.Add("Perform Startup Metrics Data related Broker machine command", "Director")} #added in 1.29
 			"Director_StartupMetrics_Edit"								{$Results.Add("Edit Startup related Broker machine command properties", "Director")}
+			"Director_TaskManagerInformation"							{$Results.Add("Perform TaskManager related Broker machine command", "Director")} #added in 1.29
 			"Director_TaskManagerInformation_Edit"						{$Results.Add("Edit Task Manager related Broker machine command properties", "Director")}
 			"Director_Trends_Read"										{$Results.Add("View Trends page", "Director")}
+			"Director_UCaaS_Connections_Manage"							{$Results.Add("Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1)", "Director")} #added in 1.29
+			"Director_UploadCustomScript"								{$Results.Add("Upload Custom Script", "Director")} #added in 1.29
 			"Director_UserDetails_Read"									{$Results.Add("View User Details page", "Director")}
 			"Director_WindowsSessionId_Edit"							{$Results.Add("Edit Windows Sessionid related Broker machine command properties", "Director")}
 			"UPM_Reset_Profiles"										{$Results.Add("Reset user profiles", "Director")}
@@ -36014,10 +36720,12 @@ Function GetRolePermissions
 			"Hosts_Read"												{$Results.Add("View Host Connections and Resources", "Hosts")}
 			"Hosts_RemoveScope"											{$Results.Add("Remove Host Connection from Scope", "Hosts")}
 
+			"Image_AddScope"											{$Results.Add("Add Image to Scope", "Images")} #added in 1.29
 			"Image_Create"												{$Results.Add("Create Images", "Images")} #new in 2303
 			"Image_Delete"												{$Results.Add("Delete Images", "Images")} #new in 2303
 			"Image_EditProperties"										{$Results.Add("Edit Images", "Images")} #new in 2303
 			"Image_Read"												{$Results.Add("Read Images", "Images")} #new in 2303
+			"Image_RemoveScope"											{$Results.Add("Remove Image from Scope", "Images")} #added in 1.29
 
 			"Licensing_ChangeLicenseServer"								{$Results.Add("Change licensing server", "Licensing")}
 			"Licensing_EditLicensingProperties"							{$Results.Add("Edit product edition", "Licensing")}
@@ -36053,6 +36761,12 @@ Function GetRolePermissions
 			"Catalog_SessionManagement"									{$Results.Add("Perform session management on machines via Machine Catalog membership", "Machine Catalogs")}
 			"Catalog_UpdateMasterImage"									{$Results.Add("Perform Machine update", "Machine Catalogs")}
 
+			#merge groups added in 2511, script version 1.29
+			"MergeGroup_Create"											{$Results.Add("Create Merge Groups", "Merge Groups")} #added in 1.29
+			"MergeGroup_Delete"											{$Results.Add("Delete Merge Groups", "Merge Groups")} #added in 1.29
+			"MergeGroup_EditProperties"									{$Results.Add("Edit Merge Groups", "Merge Groups")} #added in 1.29
+			"MergeGroup_Read"											{$Results.Add("View Merge Groups", "Merge Groups")} #added in 1.29
+
 			"AutoTagRule_Create"										{$Results.Add("Create AutoTagRule", "Other permissions")}
 			"AutoTagRule_Delete"										{$Results.Add("Delete AutoTagRule", "Other permissions")}
 			"AutoTagRule_Edit"											{$Results.Add("Edit AutoTagRule", "Other permissions")}
@@ -36070,18 +36784,23 @@ Function GetRolePermissions
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
 			"Global_Write"												{$Results.Add("Update Site Configuration (Global_Write)", "Other permissions")}
+			"Machine_VdaAotTracing_Configuration"						{$Results.Add("Create, view, modify, and delete machine configurations for VDA Always on Tracing.", "Other permissions")} #added in 1.29
+			"Monitor_Log_Server_Configuration_Manage"					{$Results.Add("Manage Monitor log server configurations", "Other permissions")} #added in 1.29
+			"Monitor_UCaaS_Connections_Manage"							{$Results.Add("Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring)", "Other permissions")} #added in 1.29
+			"Monitor_UCaaS_Connections_Read"							{$Results.Add("View Connections to communication apps (Real-time communications Monitoring)", "Other permissions")} #added in 1.29
 			"Orchestration_RestApi"										{$Results.Add("Manage Orchestration Service REST API", "Other permissions")}
 			"Paladin_Admin"												{$Results.Add("Paladin service permission", "Other permissions")} #added in 1.28.002
 			"PerformUpgrade"											{$Results.Add("Perform upgrade", "Other permissions")}
 			"PVS_Admin"													{$Results.Add("PVS console admin permission", "Other permissions")} #added in 1.28.002
-			#"SkylightBroker"											{$Results.Add(" (4) ", "Other permissions")} #added in 1.28.002
 			"Tag_Create"												{$Results.Add("Create tags", "Other permissions")}
 			"Tag_Delete"												{$Results.Add("Delete tags", "Other permissions")}
 			"Tag_Edit"													{$Results.Add("Edit tags", "Other permissions")}
 			"Tag_Read"													{$Results.Add("Read tags", "Other permissions")}
 			"Trust_MultiTenantAccessList"								{$Results.Add("Grants an administrator privileges to create and manage multi-tenant service access list permissions", "Other permissions")} #added in 1.28.002 #description updated in 1.28.004
+			"Trust_MultiTenantAccessList_Read"							{$Results.Add("Read multi-tenant service access list permissions.", "Other permissions")} #added in 1.29
 			"Trust_ServiceKeys"											{$Results.Add("Manage Trust Service Keys", "Other permissions")}
 			"Trust_VdaEnrollment"										{$Results.Add("Grants an administrator privileges to create and manage VDA enrollment tokens", "Other permissions")} #description updated in 1.28.004
+			"Trust_VdaEnrollmentToken_Read"								{$Results.Add("Read VDA enrollment tokens.", "Other permissions")} #added in 1.29
 			"VdaUpgrade_CatalogManage"									{$Results.Add("Manage VDA Upgrade Catalog Schedules", "Other permissions")}
 			"VdaUpgrade_MachineManage"									{$Results.Add("Manage VDA Upgrade Machine Schedules", "Other permissions")}
 
@@ -36092,6 +36811,12 @@ Function GetRolePermissions
 			"PolicySets_Read"											{$Results.Add("View Policy Sets", "Policy Sets")} #new in 2212
 			"PolicySets_RemoveScope"									{$Results.Add("Remove Policy Set from Scope", "Policy Sets")} #new in 2212
 
+			#Resource Filter added in 2511, script version 1.29
+			"ResourceAccessPolicyRule_Create"							{$Results.Add("Creates Resource Filter", "Resource Filter")} #added in 1.29
+			"ResourceAccessPolicyRule_Delete"							{$Results.Add("Delete Resource Filter", "Resource Filter")} #added in 1.29
+			"ResourceAccessPolicyRule_EditProperties"					{$Results.Add("Edit Resource Filter", "Resource Filter")} #added in 1.29
+			"ResourceAccessPolicyRule_Read"								{$Results.Add("Reads Resource Filter", "Resource Filter")} #added in 1.29
+			
 			"SecureBrowser_NewConfiguration"							{$Results.Add("Add SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
 			"SecureBrowser_Read"										{$Results.Add("Read SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
 			"SecureBrowser_RemoveConfiguration"							{$Results.Add("Delete SecureBrowser Broker Machine Configuration", "SecureBrowser")} #new in 2303
@@ -36118,10 +36843,12 @@ Function GetRolePermissions
 
 			"EdgeServer_Manage"											{$Results.Add("Manage Citrix Cloud Connector", "Zones")}
 			"EdgeServer_Read"											{$Results.Add("View Citrix Cloud Connector", "Zones")}
+			"Zone_AddScope"												{$Results.Add("Add Zone to Scope", "Zones")} #added in 1.29
 			"Zone_Create"												{$Results.Add("Create Zone", "Zones")}
 			"Zone_Delete"												{$Results.Add("Delete Zone", "Zones")}
 			"Zone_EditProperties"										{$Results.Add("Edit Zone", "Zones")}
 			"Zone_Read"													{$Results.Add("View Zones", "Zones")}
+			"Zone_RemoveScope"											{$Results.Add("Remove Zone from Scope", "Zones")} #added in 1.29
 		}
 	}
 
@@ -39963,8 +40690,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIIthQYJKoZIhvcNAQcCoIItdjCCLXICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUYgOtPjQK/6szkIcHvQKhg4Hj
-# XImggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUT2D1tTSi1umcSyeNgqfBJM4m
+# ecCggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -40175,33 +40902,33 @@ ProcessScriptEnd
 # UzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRy
 # dXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExAhAL
 # bN+2Z4EOKufLWhG6HUlwMAkGBSsOAwIaBQCgQDAZBgkqhkiG9w0BCQMxDAYKKwYB
-# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUmPfzLCEuRHkSKoWyoiuhNFjWOmQwDQYJ
-# KoZIhvcNAQEBBQAEggIASYHWqWYonr13YAIB16MCG8HYEjQTAx0yh3dcGQNc6Pld
-# OHzsZPwB+2X8B3/ZlyYOMW/2c9iggAH++18COY+fY7X8LGgbzRXyDaHzSICWR5rl
-# DNEUrfWsi20L5IlV7+ZD46H1GjvXukAHgfc696lVWEUX6l0SqpwT/ECdXJaKw63l
-# UG/jmeWNxFkNu5qr+/o9YMFBa+oQRUpKhj+xXoz25mc3LbAnsX66hoGrCCAKTJpM
-# nZKVwRUr+gRjQy1EhaV93iWfM7yjzVUkWCjXiMsiyi4lnyIkNP9xT5HjALSQDCjM
-# uLz0DbTzNiJHmiGxZwgxfDzDfUQdtfNo4Qbh80CI8eKEA7PZ/IXELn0V3Hdj+EV+
-# ZmBSQGSHJoGqVvoW6EZOBx4MC9QP7zQb7LlDiMbLa80E8V6plHbAwN+TVi4l2J+8
-# n8z+T04AwVL9z4gmKUrlfDWKOM85lHjp1Hurk9cZFjLjGIwgA3nkjmn8Eo4wNqUs
-# DJMflBt5Zigxgst3d0VMx5nVeBRqSSoiNy5vcZcAnG8PsfPLPCOyQWYzJ8sTenWm
-# ulILNvy8wo3eiXLRBKC1/RmJ/PuBPBPFbVz822K0YGnzogF0oUNJVoVI7mH3DhVD
-# ZXGgSFcyhUPdxZEvtTQn5P2pnSVwC7j3hZ3pmgxk+hGsIkqHpubLbxpNh43PZ3Ch
+# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUtZWmptEgJVlMstiPAXT8YaGWKpEwDQYJ
+# KoZIhvcNAQEBBQAEggIALBeDQYOgG7XGqDB9aNZ/Zpq2oTHlWXqbkrW/pCgWn8cm
+# 6HKTretglnZzGftI503OYN2yv9aK+9de7Nq8y0Vvnk7tDNA7d15YZ/Lc9JjZKFWw
+# 9KzP3bX82lX2Dvs9CpTZo5QzPEK48ec+8PVMkaNc7gbcdChXP1F5t3RLEjKPF+Ir
+# OoksRvgTTJOWQce9yT+3GmXh3QcAxJPPl2v8e8+kcpQGgQ1FqQ9/JRbKKeG1G5Lz
+# gNzKnDb84KZ7BswQK+6dAZejqClDRAbyIbfS0Q7tc67+xtoRjHfSpX8GIF8eNuAi
+# MMgK7ix9GCRSf83X2yDCdJg6USQGKmFMLiJaa0XSJnhl3WNv71AAOmRjV5kngDh0
+# XvUcDNuvTbLJ3NVN576XVU3hLqEhtOh8EuAdHSN12QAcq0VkvomMKwDQXV90Ry9x
+# 644J1ZUHmpyaNskasGGFfEQ3mKARX3/P4T9ZkNOs3a2IjMsgNBz/Pnr/IBJYgwAi
+# Q7H4L1w2NMFEv4EvF0U1jsPvdcZoQhzDBo31rQCQ0w6kstSPtFS7h/EAN1N/HZNe
+# Tfi1C44dw7kkx7Ju3lWt7FHbnrFiCjjucikmeLbYFHLTxWD0kFr/8ot0JhEAgNFp
+# Yfm0quXgcbJ+zbXp01O7HJzjMiDsg3h2qY/pqwePrX2jy5u5bFczVUE4Y+w79qCh
 # ggMmMIIDIgYJKoZIhvcNAQkGMYIDEzCCAw8CAQEwfTBpMQswCQYDVQQGEwJVUzEX
 # MBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRydXN0
 # ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hBMjU2IDIwMjUgQ0ExAhAKgO8Y
 # S43xBYLRxHanlXRoMA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqG
-# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjUxMDEzMTUzNjI2WjAvBgkqhkiG9w0B
-# CQQxIgQgu6ZC6kFMs10xPE9Ej3/y090vwIQI9QAfmbm4Hs2OIeowDQYJKoZIhvcN
-# AQEBBQAEggIAvQg8j9Iwopw7wpgLv/uAIINPxY9K3e0FGacCH+Ix1x9qvFT2rb37
-# f6UxaPiqf625UlWvy8xTyqsJ7Xa7qEh6/yVu22GUF19tyGyZHQn2+3DAoBzh9pSb
-# Jvdy2E0xx+oT3B6Lzaz+JVJQAv5S0cEpFIf91wKDu6UQcJUBFtcFhWoadioW8tg5
-# FHe4zdb4ytGaLzmz5pe24Y0NntPvksb62+5vHvEv02tuPnALxqANgmZgX0WzjZgn
-# EZkhzJviBRasl5tJSMsvtdCg+eaPM3uqm5xTQ5hLcIBZY9Ah1TZnG6Drm/mEufY5
-# H0jqEUCA+B0NdY398wQdqwDIZY6LgX99yzoWd0BDi/78GbejtpWg6rNJXqk5/yGq
-# d5Zm2n5BYKGLPERvosgCiJ7elR5nE9AwKHbl1xwcvLJR3j+e0HojwnBZ5DRG6iyE
-# XdhroOnuD13GY9dDJc9zaG8b2sBVr6qS/KE0/0/kG81RabrYEgkH2etr9odr22Zm
-# +YzO+GNa0hn+bqqENXx624WDD2dT48+l2fiE9fWW6QqXqq0anmeBBoyG6n0gQwI4
-# MaX916kSfb4yAdzz5bNtA0pyXgzFGXPUgTMjxeIH1LlPQYB3nhdcSvPq5WCheLRj
-# /7lq5DRhM2tItyC38U48MRKSbCP7B7VVnBitNAUICyhfqjsr5goi3d4=
+# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjYwMzMxMTYxOTQ5WjAvBgkqhkiG9w0B
+# CQQxIgQgWGfW0Sp2OKpREynyiuwMCx7kIGkhEaBaeamyNgAvJ5QwDQYJKoZIhvcN
+# AQEBBQAEggIApOQA0xxlmwqlF9HyRmHps068F17tMmGJQyHTg8sCSn+f669DBq59
+# h4mbVpjbJWLJS7E5+iG/e956a2PaFCAGZntf6gLrdOjS2Oe9+K6krRUhOck23+ii
+# Uk/S9Y1TGFedyFxeT4IkSHQ0kKlkqY2Wnm9y2PC6pspOunh76l/xFLIGdACaR5qp
+# 5TSlssudFWXjo93yF9cGFiRHWlJQkxIz/Krnl0wZYgQVkmKzPl233F/LZGNGXiQZ
+# /zitsjVdE0BF55f5IfoLXAURFUHvpRWZ9R1yBl1ylESIYoY0KNlTAzRbUo3wG6q+
+# lDggNpgGVomgq9v0W2jrhjRKdMkYYp1jXo095D8ddwzeOuC+pRSBU87u2s4jY98K
+# Klldw1syl6WBlliNG7gDsRed6sMO9Evi0i473sRIYiXdBKabf+FwPtiaQdl5Z+p3
+# ziO2xL5PINvYBaJV4OnWZ8k+Km5B3oOkSixptLxeQGndYKLHFg+nHgt/2GbBL5zE
+# o2ubaS54MSI21b9k1nkcCaPAiqrfZevHTUgoVvGXNH8sFz0uqXrxhGGi3gNjKmSK
+# QUypFwngOt4xZXH9qDGn21zWbgsghv++tzTuhYJHYFv4/TaDXc6HE9OIPBRdrLYk
+# vSahS8HKfvLQtuyE8PZbw8GwJkZLXj/SBxcRa2XEzf7fJW5Yue11948=
 # SIG # End signature block
