@@ -1341,9 +1341,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.29 Beta 1
+	VERSION: 1.29
 	AUTHOR: Carl Webster
-	LASTEDIT: February 19, 2026
+	LASTEDIT: March 31, 2026
 #>
 
 #endregion
@@ -1527,9 +1527,123 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
-#Version 1.29
+#Version 1.29 31-Mar-2026
+#	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
+#
+#	Thanks to Arnaud Pain for help in getting download links
 #
 #	Added support for 2511/7.46
+#
+#	Added more settings configurable by Set-BrokerServiceConfigurationData (Thanks to CG at Citrix for providing this information):
+#		Core.AzureSSOnDataRefreshIntervalMins
+#			Type: int
+#			Default: 1440
+#			Info: Minutes, Minimum=1, Maximum=1440
+#			Summary: Interval for polling Azure Entra Id SSO data from datastore. 
+#					 This call happens within FeatureChecksSiteServics.cs
+#
+#		Core.FeatureChecksSiteServiceIdleIntervalTimeSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data when the site is idle.
+#
+#		Core.FeatureChecksSiteServiceIntervalTimeSecs
+#			Type: int
+#			Default: 30
+#			Info: Seconds, Minimum=30
+#			Summary: The period in seconds for polling for updates to the site data.
+#
+#		Core.ReRegisterNowBatchDelayMs
+#			Type: int
+#			Default: 1000
+#			Info: 
+#			Summary: The delay between batches when performing a re-register now operation such that 
+#					 whole operation is completed within 2 minutes. 
+#					 A sample size is (MaxWorkers / ReRegisterNowBatchSize) * ReRegisterNowBatchDelayMs, 
+#					 ie, (11000 / 100) * 1000ms = 110,000 ms = 1.83 minutes.
+#
+#		Core.ReRegisterNowBatchSize
+#			Type: int
+#			Default: 100
+#			Info: 
+#			Summary: The number of machines to be processed in a single batch when performing a re-register now operation.
+#
+#		Core.SdkWriteDisablesReadReplicaUseForSecs
+#			Type: int
+#			Default: 15
+#			Info: Seconds, Minimum=1
+#			Summary: The number of seconds after any 'write' operation from a given SDK snapin after which it's considered 
+#					 safe to route subsequent 'read' operations from the same snapin to an available read replica database.
+#
+#		DBConnectionSettings.SqlLogin (missed from an earlier script update)
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL login for use with SQL authenticated connections to the database.
+#
+#		DBConnectionSettings.SqlPassword (missed from an earlier script update)
+#			Type: string
+#			Default: 
+#			Info: 
+#			Summary: The SQL password for use with SQL authenticated connections to the database.
+#
+#		HostingManagementSettings.CancelAutoMaintenanceMode
+#			Type: bool
+#			Default: false
+#			Info: 
+#			Summary: When this setting is True, if a VDA has been automatically placed into maintenance mode 
+#					 following multiple failed registrations (see MaxFailedRegistrationsAllowed) but later registers 
+#					 successfully, the VDA is automatically removed from maintenance mode.
+#
+#					 When this setting is False, or the VDA was placed into maintenance mode by the admin, then the 
+#					 VDA remains in maintenance mode even if it later registers successfully.
+#
+#		HostingManagementSettings.MaxMinutesForPowerManagementExclusion
+#			Type: int
+#			Default: 43200
+#			Info: Minutes, Minimum=0, Maximum=43200
+#			Summary: The maximum minutes an Admin can set ExcludeFromAutomaticPowerManagementUntil for a private desktop.
+#
+#		NameCacheSettings.LookupFailureCountBeforeClearingNamesInCache
+#			Type: int
+#			Default: 5
+#			Info: Number of times a lookup has failed. Minimum=5, Maximum=7
+#			Summary: Number of lookup failures after which the cached AD user/group account name, or machine name, 
+#					 details are cleared from the cache. The SAM name will be replaced with the SID and other name 
+#					 details will be cleared out. The amount of time before a name is cleared from the cache depends 
+#					 on the NameRefreshExponentialBackoffMaximumMins and NameRefreshPeriodAfterErrorMins settings.
+#
+#		XmsSettings.PowerStateCacheEntryExpiryTimeSecs
+#			Type: int
+#			Default: 1800
+#			Info: Seconds, Minimum=60
+#			Summary: Time after which a power state cache entry is expired.
+#
+#		XmsSettings.PowerStateCachePollingIntervalSecs
+#			Type: int
+#			Default: 120
+#			Info: Seconds, Minimum=60
+#			Summary: Time after which the power state cache is refreshed from the database.
+#
+#		XmsSettings.UniqueDeviceIdOptions
+#			Type: int
+#			Default: 0
+#			Info: Minimum=0, Maximum=3
+#			Summary: Specifies options to use when trying to ensure that the client device ID received from WSP/SF is unique. 
+#					 This setting should not be changed from its default value except to workaround specific issues observed 
+#					 in a particular site.
+#
+#					 The value is a bit mask where the bits have the following meanings:
+#
+#					 Bit 0: When set, causes the client device ID to be unconditionally qualified by the client's IP address. 
+#					 This can rectify session reconnection problems caused by non-unique device IDs, but can conversely cause 
+#					 session reconnection problems if network infrastructure such as firewalls or load balancers causes the 
+#					 IP address of a client device to change over time even when actively connected to a VDA.
+#
+#					 Bit 1: When set, if no device ID is received or its value is known to be non-unique, do not try substituting 
+#					 the client name for the device ID, but instead use the client IP address. This may avoid problems caused 
+#					 where multiple devices are reporting the same non-unique client name.
 #
 #	Added Computer policy
 #		Chrome Enterprise Premium\Enroll Chrome Browser
@@ -1601,6 +1715,33 @@ Param(
 #			ResourceAccessPolicyRule_Read (Reads Resource Filter)
 #		Zone_AddScope (Add Zone to Scope)
 #		Zone_RemoveScope (Remove Zone from Scope)
+#
+#	In Function OutputMachines, add the following Machine custom properties:
+#		Custom Properties For Aws
+#			WBCDiskStorageType
+#			PersistWBC
+#			PersistOSDisk
+#			PreformatWriteBackCache
+#			BackupVmConfiguration
+#
+#		In the column headings for the Machine Catalogs:
+#			Rename "No. of Machines" to "Machine Count"
+#			Rename "Allocated Machines" to "Allocated Count"
+#			Add column for Folder
+#
+#		For the Machine Catalog summary table, change from a horizontal to a vertical table to fit the added Folder column
+#
+#	In Function OutputRoles
+#		Expand the Description column to accommodate longer descriptions
+#
+#	In Function OutputRoleDefinitions, 
+#		Expand the output column widths to accommodate the new folder and permission names
+#
+#	Tested with Citrix DaaS Remote PowerShell SDK 7.47.26953.8868
+#
+#	Tested with Citrix Group Policy Management Console 7.46.100.105
+#
+#	Updated the Help text and ReadMe files
 #
 #Version 1.28.005 13-Oct-2025
 #	Thanks to Citrix, Ferroque Systems, Guy Leech, Nicholas Cookendorfer, Arnaud Pain, and Prateek Anaud for their help
@@ -7282,22 +7423,7 @@ Function OutputMachines
 	
 	Write-Verbose "$(Get-Date -Format G): `tProcessing Machine Catalogs"
 	
-	If($MSWord -or $PDF)
-	{
-		[System.Collections.Hashtable[]] $WordTable = @();
-	}
-	If($Text)
-	{
-		Line 0 "                                                                                                             No. of   Allocated Allocation                                        "
-		Line 0 "Folder Name                Machine Catalog                              Machine Type                         Machines Machines  Type       User Data     Provisioning Method      "
-		Line 0 "=================================================================================================================================================================================="
-		#       12345678901234567890123456S12345678901234567890123456789012345678901234S123456789012345678901234567890123456S12345678S123456789S1234567890S1234567890123S1234567890123456789012345
-		#       This is a long folder nameXXXXXX-Azure-XXXXXXXXXEast-Dedicated-Win10MS Single-session OS (Remote PC Access)                               On local Disk Machine creation services
-	}
-	If($HTML)
-	{
-		$rowdata = @()
-	}
+	#updated 27-Feb-2026, summary table of catalogs to match what is shown in Web Studio
 
 	ForEach($Catalog in $Catalogs)
 	{
@@ -7362,6 +7488,16 @@ Function OutputMachines
 			Default					{$MDMEnrollment = "MDM Enrollment method could not be determined: $($Catalog.MdmEnrollment)"; Break}
 		}
 
+		#folder name added in 1.29
+		If($Catalog.AdminFolderName -eq "")
+		{
+			$FolderName = "Machine Catalogs\"
+		}
+		Else
+		{
+			$FolderName = "Machine Catalogs\$Catalog.AdminFolderName"
+		}
+		
 		#$Machines = @(Get-BrokerMachine @CCParams2 -CatalogName $Catalog.Name -SortBy DNSName)
 		#Citrix broke this cmdlet when they added folder names
 		#change to use the catalog's UID
@@ -7373,104 +7509,64 @@ Function OutputMachines
 		
 		If($MSWord -or $PDF)
 		{
-			$WordTable += @{
-				AdminFolderName    = $Catalog.AdminFolderName; 
-				MachineCatalogName = $Catalog.CatalogName; 
-				MachineType        = $xCatalogType; 
-				NoOfMachines       = $NumberOfMachines;
-				AllocatedMachines  = $Catalog.UsedCount.ToString(); 
-				AllocationType     = $xAllocationType;
-				UserData           = $xPersistType;
-				ProvisioningMethod = $xProvisioningType;
-			}
+			[System.Collections.Hashtable[]] $CatalogInformation = @()
+			$CatalogInformation += @{Data = "Machine Catalog"; Value = $Catalog.Name; }
+			$CatalogInformation += @{Data = "Machine Type"; Value = $xCatalogType; }
+			$CatalogInformation += @{Data = "Machine Count"; Value = $NumberOfMachines.ToString(); }
+			$CatalogInformation += @{Data = "Allocated Count"; Value = $Catalog.UsedCount.ToString(); }
+			$CatalogInformation += @{Data = "Folder"; Value = $FolderName; }
+			$CatalogInformation += @{Data = "Allocation Type"; Value = $xAllocationType; }
+			$CatalogInformation += @{Data = "User data"; Value = $xPersistType; }
+			$CatalogInformation += @{Data = "Provisioning method"; Value = $xProvisioningType; }
+
+			$Table = AddWordTable -Hashtable $CatalogInformation `
+			-Columns Data,Value `
+			-List `
+			-Format $wdTableGrid `
+			-AutoFit $wdAutoFitFixed;
+
+			SetWordCellFormat -Collection $Table.Columns.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
+
+			$Table.Columns.Item(1).Width = 250;
+			$Table.Columns.Item(2).Width = 250;
+
+			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
+
+			FindWordDocumentEnd
+			$Table = $Null
+			WriteWordLine 0 0 ""
 		}
 		If($Text)
 		{
-			Line 0 ( "{0, -26} {1,-44} {2,-36} {3,8} {4,9} {5,-10} {6,-13} {7,-25}" -f `
-			$Catalog.AdminFolderName, 
-			$Catalog.CatalogName, 
-			$xCatalogType, 
-			$NumberOfMachines, 
-			$Catalog.UsedCount.ToString(), 
-			$xAllocationType, 
-			$xPersistType, 
-			$xProvisioningType)
+			Line 1 "Machine Catalog`t`t: " $Catalog.Name
+			Line 1 "Machine Type`t`t: " $xCatalogType
+			Line 1 "Machine Count`t`t: " $NumberOfMachines.ToString()
+			Line 1 "Allocated Count`t`t: " $Catalog.UsedCount.ToString()
+			Line 1 "Folder`t`t`t: " $FolderName
+			Line 1 "Allocation Type`t`t: " $xAllocationType
+			Line 1 "User data`t`t: " $xPersistType
+			Line 1 "Provisioning method`t: " $xProvisioningType
+			Line 0 ""
 		}
 		If($HTML)
 		{
-			$rowdata += @(,(
-				$Catalog.AdminFolderName,$htmlwhite,
-				$Catalog.CatalogName,$htmlwhite,
-				$xCatalogType,$htmlwhite,
-				$NumberOfMachines,$htmlwhite,
-				$Catalog.UsedCount.ToString(),$htmlwhite,
-				$xAllocationType,$htmlwhite,
-				$xPersistType,$htmlwhite,
-				$xProvisioningType,$htmlwhite)
-			)
+			$rowdata = @()
+			$columnHeaders = @("Machine Catalog",($global:htmlsb),$Catalog.Name,$htmlwhite)
+			$rowdata += @(,("Machine Type",($global:htmlsb),$xCatalogType,$htmlwhite))
+			$rowdata += @(,("Machine Count",($global:htmlsb),$NumberOfMachines.ToString(),$htmlwhite))
+			$rowdata += @(,("Allocated Count",($global:htmlsb),$Catalog.UsedCount.ToString(),$htmlwhite))
+			$rowdata += @(,("Folder",($global:htmlsb),$FolderName,$htmlwhite))
+			$rowdata += @(,("Allocation Type",($global:htmlsb),$xAllocationType,$htmlwhite))
+			$rowdata += @(,("User data",($global:htmlsb),$xPersistType,$htmlwhite))
+			$rowdata += @(,("Provisioning method",($global:htmlsb),$xProvisioningType,$htmlwhite))
+
+			$msg = ""
+			$columnWidths = @("250","250")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "500"
+			WriteHTMLLine 0 0 ""
 		}
 	}
 
-	If($MSWord -or $PDF)
-	{
-		If($WordTable.Count -eq 0)
-		{
-			$WordTable += @{
-				AdminFolderName    = ""; 
-				MachineCatalogName = "None found"; 
-				MachineType        = ""; 
-				NoOfMachines       = "";
-				AllocatedMachines  = ""; 
-				AllocationType     = "";
-				UserData           = "";
-				ProvisioningMethod = "";
-			}
-		}
-		
-		$Table = AddWordTable -Hashtable $WordTable `
-		-Columns  AdminFolderName, MachineCatalogName, MachineType, NoOfMachines, AllocatedMachines, AllocationType, UserData, ProvisioningMethod `
-		-Headers  "Folder Name", "Machine Catalog", "Machine type", "No. of machines", "Allocated machines", "Allocation Type", "User data", "Provisioning method" `
-		-Format $wdTableGrid `
-		-AutoFit $wdAutoFitContent;
-
-		SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
-		SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
-
-		#$Table.Columns.Item(1).Width = 105;
-		#$Table.Columns.Item(2).Width = 100;
-		#$Table.Columns.Item(3).Width = 75;
-		#$Table.Columns.Item(4).Width = 50;
-		#$Table.Columns.Item(5).Width = 55;
-		#$Table.Columns.Item(6).Width = 50;
-		#$Table.Columns.Item(7).Width = 65;
-
-		$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
-
-		FindWordDocumentEnd
-		$Table = $Null
-	}
-	If($Text)
-	{
-		Line 0 ""
-	}
-	If($HTML)
-	{
-		$columnHeaders = @(
-			'Folder Name',($global:htmlsb),
-			'Machine Catalog',($global:htmlsb),
-			'Machine type',($global:htmlsb),
-			'No. of machines',($global:htmlsb),
-			'Allocated machines',($global:htmlsb),
-			'Allocation Type',($global:htmlsb),
-			'User data',($global:htmlsb),
-			'Provisioning method',($global:htmlsb)
-		)
-
-		$columnWidths = @("55","125","175","75","50","55","75","145")
-		$msg = ""
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "755"
-	}
-	
 	ForEach($Catalog in $Catalogs)
 	{
 		Write-Verbose "$(Get-Date -Format G): `t`tAdding Catalog $($Catalog.CatalogName)"
@@ -8508,6 +8604,11 @@ Function OutputMachines
 				Custom Properties For Aws
 					AwsCaptureInstanceProperties
 					AwsOperationalResourcesTagging
+					WBCDiskStorageType #new in 1.29
+					PersistWBC #new in 1.29
+					PersistOSDisk #new in 1.29
+					PreformatWriteBackCache #new in 1.29
+					BackupVmConfiguration #new in 1.29
 
 				Custom Properties For Gcp
 					CatalogZones
@@ -8526,7 +8627,6 @@ Function OutputMachines
 					AzureArcResourceGroup
 					AzureArcSubscriptionId
 					EnableAzureArcOnboarding
-					
 			#>
 			
 			$ProvScheme = Get-ProvScheme -ProvisioningSchemeUid $Catalog.ProvisioningSchemeID @CCParams2
@@ -36223,8 +36323,8 @@ Function OutputRoles
 		)
 
 		$msg = ""
-		$columnWidths = @("200","450","50")
-		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "700"
+		$columnWidths = @("200","550","50")
+		FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders -fixedWidth $columnWidths -tablewidth "800"
 	}
 }
 
@@ -36366,8 +36466,8 @@ Function OutputRoleDefinitions
 			SetWordCellFormat -Collection $Table -Size 9 -BackgroundColor $wdColorWhite
 			SetWordCellFormat -Collection $Table.Rows.Item(1).Cells -Bold -BackgroundColor $wdColorGray15;
 
-			$Table.Columns.Item(1).Width = 150;
-			$Table.Columns.Item(2).Width = 350;
+			$Table.Columns.Item(1).Width = 200;
+			$Table.Columns.Item(2).Width = 300;
 
 			$Table.Rows.SetLeftIndent($Indent0TabStops,$wdAdjustProportional)
 
@@ -36387,8 +36487,8 @@ Function OutputRoleDefinitions
 			)
 
 			$msg = ""
-			$ColumnWidths = @("100","500")
-			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders	-fixedWidth $columnWidths -tablewidth "600"
+			$ColumnWidths = @("175","575")
+			FormatHTMLTable $msg -rowArray $rowdata -columnArray $columnHeaders	-fixedWidth $columnWidths -tablewidth "750"
 		}
 	}
 }
@@ -40590,8 +40690,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIIthQYJKoZIhvcNAQcCoIItdjCCLXICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUBGwpn78ytTcGF7WWIXG0uN2U
-# lCuggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUT2D1tTSi1umcSyeNgqfBJM4m
+# ecCggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -40802,33 +40902,33 @@ ProcessScriptEnd
 # UzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRy
 # dXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExAhAL
 # bN+2Z4EOKufLWhG6HUlwMAkGBSsOAwIaBQCgQDAZBgkqhkiG9w0BCQMxDAYKKwYB
-# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUbquD3+MT6I+i5HHBNktZ8ZAICgwwDQYJ
-# KoZIhvcNAQEBBQAEggIAG/C31+XlZttJz5WSvnxIBnbzWq0U+jEdEUnTWt2i0081
-# vFZ8x0wtWMfM5giooyfiS40Ap9yhCCrY0q3mRgSvzJhCjFInjMWuBgikh17Wjpg3
-# s7QxHZEPVPDzDKfd3GbVjVeeH1l6HA6vzaPOQuVudbUorfj6QcaQ8MxmVw6PxuC4
-# /FppnUrKd1srvyVpWGA4rzKFA+MGrpGZ2RZvTF2nGjTMHIcAYMCm3bdOOV8PcnRu
-# VJ7skTh+YR8cuAtTK1BRmx/Z/ev/rf7v++4WKh53cCZu49yqufMwGbyIPGcp12Gl
-# i4gGdagyv1MvTxpiiR8x3bJk4V8ncsIYoXGU7+8Y85a1xgPDjVQmpCzVcxDofuS2
-# tCqGa9cmUSwXFRXMaoyEmdS9H7Xp1QihWWFleETbe7bKls74Wd57vVz4By5zCo7t
-# DsanVx9L5KAsXrEhvsgT5zD4B+4wcWfQxiKMc8YX1ruF89PpTOgAnpQ9IHNaZ60Z
-# /tG/XSMRHfZQRm8wuJn3wDGyN7tp9t6+RKJNZ5l0K2HE0G5lemmaHd6Ji3GsNRAz
-# FYVfVR+NNJ1ohSRZo7Yf/LU/zlAYgLyIq4kyP9//Zt7AnbcxtHjWFuu62eGG22s7
-# nx5w9PaJMGGJDfGAHbo6ZzEeU4vssi53wQK/QXksOq4JEcMrrRMlxxjuykkpw5Kh
+# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUtZWmptEgJVlMstiPAXT8YaGWKpEwDQYJ
+# KoZIhvcNAQEBBQAEggIALBeDQYOgG7XGqDB9aNZ/Zpq2oTHlWXqbkrW/pCgWn8cm
+# 6HKTretglnZzGftI503OYN2yv9aK+9de7Nq8y0Vvnk7tDNA7d15YZ/Lc9JjZKFWw
+# 9KzP3bX82lX2Dvs9CpTZo5QzPEK48ec+8PVMkaNc7gbcdChXP1F5t3RLEjKPF+Ir
+# OoksRvgTTJOWQce9yT+3GmXh3QcAxJPPl2v8e8+kcpQGgQ1FqQ9/JRbKKeG1G5Lz
+# gNzKnDb84KZ7BswQK+6dAZejqClDRAbyIbfS0Q7tc67+xtoRjHfSpX8GIF8eNuAi
+# MMgK7ix9GCRSf83X2yDCdJg6USQGKmFMLiJaa0XSJnhl3WNv71AAOmRjV5kngDh0
+# XvUcDNuvTbLJ3NVN576XVU3hLqEhtOh8EuAdHSN12QAcq0VkvomMKwDQXV90Ry9x
+# 644J1ZUHmpyaNskasGGFfEQ3mKARX3/P4T9ZkNOs3a2IjMsgNBz/Pnr/IBJYgwAi
+# Q7H4L1w2NMFEv4EvF0U1jsPvdcZoQhzDBo31rQCQ0w6kstSPtFS7h/EAN1N/HZNe
+# Tfi1C44dw7kkx7Ju3lWt7FHbnrFiCjjucikmeLbYFHLTxWD0kFr/8ot0JhEAgNFp
+# Yfm0quXgcbJ+zbXp01O7HJzjMiDsg3h2qY/pqwePrX2jy5u5bFczVUE4Y+w79qCh
 # ggMmMIIDIgYJKoZIhvcNAQkGMYIDEzCCAw8CAQEwfTBpMQswCQYDVQQGEwJVUzEX
 # MBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRydXN0
 # ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hBMjU2IDIwMjUgQ0ExAhAKgO8Y
 # S43xBYLRxHanlXRoMA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqG
-# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjYwMjE5MTM0MzQ0WjAvBgkqhkiG9w0B
-# CQQxIgQgKnW98EjQ54jJys97uImEQvJLG88EZOB+P5IkDDp1P1cwDQYJKoZIhvcN
-# AQEBBQAEggIAu3AKEX9NMlDDMeboksEGQH38T/jws+b5a2qLPnVYdDpSbyeJ5LAZ
-# kgmSbJBgqWGWorft2vx2t5TEeOVWwkpM9dSOmKMPL5AKYGWCSoplc6IFpoM4Kcq+
-# xXTPbXD+LHLycTgKCeDY3n1frutnn+VLfzLaD0GNvHwzcpaal51SLk6+OwoLW3We
-# Y2sjZNGJk0HoWMAE6wwvYywGPKRc4D5ASDn+jA6eXE/PtN2oORrd8I5k9ew6NnnN
-# CNSs9i+KhmaFnSwbeuopO+XINopD1rqV0wVgtitEt118JSvSsgst8rx8Quh4c5c/
-# BJcZAVlXmSrYnSfQ+npTgmUfZDQMB55Olc/HsNXvwkpFNxIwLwD1/A3Xo16vHOss
-# ORiZVdTRydoy4JbY5CKwpDHzsLNqGqL769YnVOTi/c6WPAo+tQnumxRzBceTmZu2
-# 7SZbStot982Pa0+7IIsNp0ZZXb9k7iZzlljUx4ON/5BzlO+ptwrLJ8ZdrPAEFNsH
-# +VMOFv3u7vIIX/fI68H8TXUXVPSoKBuvq7jPEOfX2t37yZ6uArmHOAOTKRzc6reJ
-# xuBPfvqXeU+C4A6k0DNNCBNjqjAe5hRs9z680u6uPiXQqFtrmVb+f3blxanc7pgX
-# 2KcVQFnR51lvqrM9VaN11OPmAtgYopan5HLjuEThhqpxGh5u16i17SE=
+# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjYwMzMxMTYxOTQ5WjAvBgkqhkiG9w0B
+# CQQxIgQgWGfW0Sp2OKpREynyiuwMCx7kIGkhEaBaeamyNgAvJ5QwDQYJKoZIhvcN
+# AQEBBQAEggIApOQA0xxlmwqlF9HyRmHps068F17tMmGJQyHTg8sCSn+f669DBq59
+# h4mbVpjbJWLJS7E5+iG/e956a2PaFCAGZntf6gLrdOjS2Oe9+K6krRUhOck23+ii
+# Uk/S9Y1TGFedyFxeT4IkSHQ0kKlkqY2Wnm9y2PC6pspOunh76l/xFLIGdACaR5qp
+# 5TSlssudFWXjo93yF9cGFiRHWlJQkxIz/Krnl0wZYgQVkmKzPl233F/LZGNGXiQZ
+# /zitsjVdE0BF55f5IfoLXAURFUHvpRWZ9R1yBl1ylESIYoY0KNlTAzRbUo3wG6q+
+# lDggNpgGVomgq9v0W2jrhjRKdMkYYp1jXo095D8ddwzeOuC+pRSBU87u2s4jY98K
+# Klldw1syl6WBlliNG7gDsRed6sMO9Evi0i473sRIYiXdBKabf+FwPtiaQdl5Z+p3
+# ziO2xL5PINvYBaJV4OnWZ8k+Km5B3oOkSixptLxeQGndYKLHFg+nHgt/2GbBL5zE
+# o2ubaS54MSI21b9k1nkcCaPAiqrfZevHTUgoVvGXNH8sFz0uqXrxhGGi3gNjKmSK
+# QUypFwngOt4xZXH9qDGn21zWbgsghv++tzTuhYJHYFv4/TaDXc6HE9OIPBRdrLYk
+# vSahS8HKfvLQtuyE8PZbw8GwJkZLXj/SBxcRa2XEzf7fJW5Yue11948=
 # SIG # End signature block
