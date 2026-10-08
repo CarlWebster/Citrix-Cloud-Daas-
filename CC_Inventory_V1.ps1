@@ -31,14 +31,17 @@
 	If you are running XA/XD 7.8 through CVAD 2006, please use:
 	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 
-	If you are running CVAD 2006 and later, please use:
+	If you are running CVAD 2006 through 2511, please use:
 	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+
+	If you are running CVAD 2511 or later, please use:
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 
 	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, follow the 
 	instructions in the Authentication section of the ReadMe file to create a profile named 
 	Default.
 	
-	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+	ReadMe file: https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 	
 	By default, the script only gives summary information for:
 		Administrators
@@ -77,7 +80,7 @@
 	Creates an output file named after the Citrix Cloud (now DaaS) Site (which by default is 
 	cloudxdsite) unless you use the SiteName parameter.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
+	Word and PDF documents include a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
 		Chinese
@@ -107,7 +110,7 @@
 	You must follow the Process in either the ReadMe file or your own Process to capture 
 	the Client ID and Client Secret and save them to a CSV credential profile.
 	
-	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+	ReadMe file: https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 
 	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, create a profile 
 	named Default.
@@ -213,7 +216,7 @@
 	This parameter is disabled by default.
 	This parameter has an alias of NP.
 .PARAMETER NoSessions
-	Excludes Machine Catalog, Application and Hosting session data from the report.
+	Excludes Machine Catalog, Application, and Hosting session data from the report.
 	
 	Using the MaxDetails parameter does not change this setting.
 	
@@ -290,8 +293,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2026, at 6PM is 2026-06-01_1800.
-	The output filename will be ReportName_2026-06-01_1800.docx (or.pdf).
+	June 1, 2027, at 6 PM is 2027-06-01_1800.
+	The output filename will be ReportName_2027-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -517,7 +520,7 @@
 	Note: Review the instructions in the Authentication section of the ReadMe file for the 
 	details on creating a profile named Default.
 	
-	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+	ReadMe file: https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 	
 	PowerShell.exe -NoLogo -File "C:\PSScript\CC_Inventory_V1.ps1 -MaxDetails 
 	-SiteName MyCCSite' -AddDateTime"	
@@ -724,11 +727,11 @@
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
 	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
-	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2026 -EndDate 
-	09/30/2026	
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2027 -EndDate 
+	09/30/2027	
 	
-	Creates an HTML report with Configuration Logging details for the dates 09/01/2026 
-	through 09/30/2026.
+	Creates an HTML report with Configuration Logging details for the dates 09/01/2027 
+	through 09/30/2027.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -736,11 +739,11 @@
     If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
-	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2026 10:00:00" 
-	-EndDate "09/01/2026 14:00:00" -MSWord
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate "09/01/2027 10:00:00" 
+	-EndDate "09/01/2027 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2026 10:00:00AM through 09/01/2026 02:00:00PM.
+	09/01/2027 10:00:00AM through 09/01/2027 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
@@ -909,8 +912,8 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2026, at 6PM is 2026-06-01_1800.
-	The output filename will be CCSiteName_2026-06-01_1800.docx
+	June 1, 2027, at 6 PM is 2027-06-01_1800.
+	The output filename will be CCSiteName_2027-06-01_1800.docx
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -933,8 +936,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2026, at 6PM is 2026-06-01_1800.
-	The output filename will be CCSiteName_2026-06-01_1800.pdf
+	June 1, 2027, at 6 PM is 2027-06-01_1800.
+	The output filename will be CCSiteName_2027-06-01_1800.pdf
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -1103,7 +1106,7 @@
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	For Microsoft Word and PDF, Uses all Default values.
+	For Microsoft Word and PDF, uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -1187,7 +1190,7 @@
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-	For Microsoft Word and PDF, Uses all Default values.
+	For Microsoft Word and PDF, uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -1223,10 +1226,10 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer mail.domain.tld -From 
 	CCAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script Uses the email server mail.domain.tld, sending from CCAdmin@domain.tld and 
+	The script uses the email server mail.domain.tld, sending from CCAdmin@domain.tld and 
 	sending to ITGroup@domain.tld.
 
-	The script Uses the default SMTP port 25 and does not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 
 	If the current user's credentials are not valid to send an email, the script prompts 
 	the user to enter valid credentials.
@@ -1252,13 +1255,13 @@
 
 	The script uses the default SMTP port 25 and does not use SSL.
 	
-	***GMAIL/G SUITE SMTP RELAY***
+	***GMAIL/Google Workspace SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
 	https://support.google.com/a/answer/176600?hl=en
 
-	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	To send an email using a Gmail or Google Workspace account, you may have to turn ON the "Less 
 	secure app access" option on your account.
-	***GMAIL/G SUITE SMTP RELAY***
+	***GMAIL/Google Workspace SMTP RELAY***
 
 	The script will generate an anonymous, secure password for the anonymous@domain.tld 
 	account.
@@ -1317,7 +1320,7 @@
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	To send an email using a Gmail or Google Workspace account, you may have to turn ON the "Less 
 	secure app access" option on your account.
 	*** NOTE ***
 	
@@ -1341,9 +1344,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.29
+	VERSION: 1.30
 	AUTHOR: Carl Webster
-	LASTEDIT: March 31, 2026
+	LASTEDIT: October 8, 2026
 #>
 
 #endregion
@@ -1527,6 +1530,39 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.30 8-Oct-2027
+#	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
+#
+#	Add a PDF copy of the ReadMe file so it can be displayed in GitHub
+#
+#	Added the following policy settings:
+#		AssistantApp\Enable Assistant App Notification Dialog
+#		ICA\Clipboard sharing scope
+#		ICA\MTU Rediscovery
+#		ICA\WIA Redirection
+#		ICA\Authentication\Allow web sign-in
+#		ICA\Authentication\Microsoft Entra single sign-on
+#		ICA\Graphics\HDX graphics super resolution mode
+#		ICA\Graphics\Screenshot Redirected Content
+#		ICA\Keyboard and IME\End user control of language bar
+#		Profile Management\Profile container settings\Enable BindLink redirection
+#		VDA Data Collection\uberAgent\Enhance Director with uberAgent data for application performance
+#
+#	Change all Dropbox and most CarlWebster.com links to GitHub links
+#
+#	In Function GetRolePermissions (Thanks to Michael Wieloch of Ferroque Systems)
+#		Director_Service_Continuity_View		(Director - View Service Continuity page)
+#		Director_UCaaS_RealTimeCommunications	(Director - View Real-time communications page)
+#		ExtendedTracingAOT_Manage				(Other permissions - Manage Always on Tracing Capture Session)
+#		ExtendedTracingAOT_Read					(Other permissions - View Always on Tracing Capture Sessions)
+#
+#	In Functions OutputDesktopOSMachine, OutputMachineDetails, and OutputServerOSMachine,
+#		Fixed bugs to prevent an empty machine name and to prevent processing a SID
+#
+#	Updated the help text
+#
+#	Updated the ReadMe file
+#
 #Version 1.29 31-Mar-2026
 #	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
 #
@@ -1958,7 +1994,7 @@ Param(
 #			https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
 #                                                                                           
 #		Please see the ReadMe file:                                                                
-#			https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+#			https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 #		*******************************************************************************************
 #
 #	Reformatted the tables for policies to reduce word wrapping.
@@ -3316,7 +3352,7 @@ Param(
 #	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
 #	Updated the help text
 #	Updated the expired link for the ReadMe file 
-#		https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+#		https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 #	Updated the ReadMe file
 #
 #Version 1.14 29-Jul-2021
@@ -3538,7 +3574,7 @@ Param(
 #			Delete UPM Broker Machine Configuration
 #	Added a ValidateSet to the Sections parameter. You can use -Section, press tab, and tab through all the section options. (Credit to Guy Leech)
 #	Added a -ProfileName parameter for use by Get-XDAuthentication 
-#		For more information, see the Authentication section in the ReadMe file https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+#		For more information, see the Authentication section in the ReadMe file https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 #		Thanks to David Prows and Devan Tilly for documenting this Process for me to use
 #	Added testing to see if the computer running the script is in a Domain or Workgroup
 #		If not in a domain, and VDARegistryKeys is set, set it to $False
@@ -3679,9 +3715,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = "'1.29 Beta 1"
+$script:MyVersion   = "'1.30"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "02/19/2026"
+$tmpdate            = [datetime] "10/08/2026"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -4009,18 +4045,21 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
 If you are running XA/XD 7.0 through 7.7, please use: 
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 `n`n
 If you are running XA/XD 7.8 through CVAD 2006, please use:
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 `n`n
-If you are running CVAD 2006 and later, please use:
-https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 through 2511, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+`n`n
+If you are running CVAD 2511 or later, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 `n`n
 Script cannot continue.
 `n`n
@@ -4048,18 +4087,21 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
 If you are running XA/XD 7.0 through 7.7, please use: 
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 `n`n
 If you are running XA/XD 7.8 through CVAD 2006, please use:
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 `n`n
-If you are running CVAD 2006 and later, please use:
-https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 through 2511, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+`n`n
+If you are running CVAD 2511 or later, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 `n`n
 Script cannot continue.
 `n`n
@@ -4073,18 +4115,20 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
-`n`n
+https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf`n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
 If you are running XA/XD 7.0 through 7.7, please use: 
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 `n`n
 If you are running XA/XD 7.8 through CVAD 2006, please use:
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 `n`n
-If you are running CVAD 2006 and later, please use:
-https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 through 2511, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+`n`n
+If you are running CVAD 2511 or later, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 `n`n
 Script cannot continue.
 `n`n
@@ -9542,17 +9586,19 @@ Function OutputMachineDetails
 		[string] $xAllocationType
 	)
 	
-	#if HostedMachineName is empty, like for RemotePC and unregistered machines, use the first part of DNSName
-	
-	#updated in V1.15
+	# Regex pattern for a valid Windows SID
+	$SidPattern = "^S-\d-\d+(-\d+)*$"
+
+	#don't use the MachineName property as it is a SID
 	If($Machine.DNSName)	# is there anything in the DNSName property
 	{
 		$tmp = $Machine.DNSName.Split(".")
 		$xMachineName = $tmp[0]
 		$tmp = $Null
 	}
-	ElseIf($Machine.MachineName)	# is there anything in the MachineName property
+	ElseIf($Machine.MachineName -and $Machine.MachineName -notmatch $SidPattern)	
 	{
+		# is there anything in the MachineName property and it is not a SID
 		$tmp = $Machine.MachineName.Split("\")
 		$xMachineName = $tmp[1]
 		$tmp = $Null
@@ -9561,9 +9607,9 @@ Function OutputMachineDetails
 	{
 		$xMachineName = $Machine.HostedMachineName
 	}
-	Else	# error, there is no name for the machine
+	Else	# error, there is no name for the Machine
 	{
-		$xMachineName = "error, there was no name found for the machine"
+		$xMachineName = "error, there was no name found for the Machine"
 	}
 
 	Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tOutput $WhatType $xMachineName"
@@ -18439,6 +18485,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.EnableAssistantApp.State
 						}
 					}
+					If((validStateProp $Setting EnableAssistantAppNotificationDialog State ) -and ($Setting.EnableAssistantAppNotificationDialog.State -ne "NotConfigured"))
+					{
+						#added in 2607
+						$txt = "AssistantApp\Enable Assistant App Notification Dialog"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableAssistantAppNotificationDialogt.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableAssistantAppNotificationDialog.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableAssistantAppNotificationDialog.State
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tChrome Enterprise Premium"
 					If((validStateProp $Setting EnrollChromeBrowser State ) -and ($Setting.EnrollChromeBrowser.State -ne "NotConfigured"))
@@ -19013,6 +19081,39 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
+					If((validStateProp $Setting ClipboardSharingScope State ) -and ($Setting.ClipboardSharingScope.State -ne "NotConfigured"))
+					{
+						#new in 2607
+						$txt = "ICA\Clipboard sharing scope"
+						$tmp = ""
+						Switch ($Setting.ClipboardSharingScope.Value)
+						{
+							"Unlimited"	{$tmp = "Unlimited (default)"; Break}
+							"VDA"		{$tmp = "VDA"; Break}
+							"CEP"		{$tmp = "CEP"; Break}
+							"VDACEP"	{$tmp = "VDA and CEP"; Break}
+							Default		{$tmp = "Clipboard sharing scope: $($Setting.ClipboardSharingScope.Value)"; Break}
+						}
+						
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
+					}
 					If((validStateProp $Setting DesktopLaunchForNonAdmins State ) -and ($Setting.DesktopLaunchForNonAdmins.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Desktop launches"
@@ -19507,6 +19608,29 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.AllowScannerMacImageCaptureRedirection.State 
+						}
+					}
+					If((validStateProp $Setting MtuRediscovery State ) -and ($Setting.MtuRediscovery.State -ne "NotConfigured"))
+					{
+						#new in 2607
+						
+						$txt = "ICA\MTU Rediscovery"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.MtuRediscovery.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.MtuRediscovery.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.MtuRediscovery.Value 
 						}
 					}
 					If((validStateProp $Setting PrimarySelectionUpdateMode State ) -and ($Setting.PrimarySelectionUpdateMode.State -ne "NotConfigured"))
@@ -20102,6 +20226,27 @@ Function ProcessCitrixPolicies
 							}
 						}
 					}
+					If((validStateProp $Setting AllowWIARedirection State ) -and ($Setting.AllowWIARedirection.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\WIA Redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWIARedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWIARedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWIARedirection.State 
+						}
+					}
 					
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\App Protection"
 					If((validStateProp $Setting AppProtectionPostureCheck State ) -and ($Setting.AppProtectionPostureCheck.State -ne "NotConfigured"))
@@ -20348,6 +20493,52 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.LossTolerantAudio.State 
 						}
 					}
+
+					#new section in 2607
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Authentication"
+					If((validStateProp $Setting AllowWebSignIn State ) -and ($Setting.AllowWebSignIn.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Authentication\Allow web sign-in"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWebSignIn.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWebSignIn.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWebSignIn.State 
+						}
+					}
+					If((validStateProp $Setting MicrosoftEntraSSOn State ) -and ($Setting.MicrosoftEntraSSOn.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Authentication\Microsoft Entra single sign-on"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.MicrosoftEntraSSOn.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.MicrosoftEntraSSOn.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.MicrosoftEntraSSOn.State 
+						}
+					}
+					#end new section
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Auto Client Reconnect"
 					If((validStateProp $Setting AutoClientReconnect State ) -and ($Setting.AutoClientReconnect.State -ne "NotConfigured"))
@@ -21773,6 +21964,37 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DisplayLosslessIndicator.State 
 						}	
 					}
+					If((validStateProp $Setting SuperResolutionMode State ) -and ($Setting.SuperResolutionMode.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "ICA\Graphics\HDX graphics super resolution mode"
+						$tmp = ""
+						Switch ($Setting.SuperResolutionMode.Value)
+						{
+							"Automatic"	{$tmp = "Automatic"; Break}
+							"On"		{$tmp = "On"; Break}
+							"Off"		{$tmp = "Off"; Break}
+							Default		{$tmp = "HDX graphics super resolution mode could not be determined: $($Setting.SuperResolutionMode.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}	
+						$tmp = $Null
+					}
 					If((validStateProp $Setting ScreenSharingPortRange State ) -and ($Setting.ScreenSharingPortRange.State -ne "NotConfigured"))
 					{
 						#added in 2511
@@ -21980,6 +22202,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ScreenSharing.State 
 						}
 					}
+					If((validStateProp $Setting ScreenshotRedirectedContent State ) -and ($Setting.ScreenshotRedirectedContent.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "ICA\Graphics\Screenshot Redirected Content"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ScreenshotRedirectedContent.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ScreenshotRedirectedContent.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ScreenshotRedirectedContent.State 
+						}
+					}
 					If((validStateProp $Setting UseHardwareEncodingForVideoCodec State ) -and ($Setting.UseHardwareEncodingForVideoCodec.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Use hardware encoding for video codec"
@@ -22135,6 +22379,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.EnableUnicodeKeyboardLayoutMapping.State 
+						}
+					}
+					If((validStateProp $Setting EndUserLanguageBarControl State ) -and ($Setting.EndUserLanguageBarControl.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "ICA\Keyboard and IME\End user control of language bar"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EndUserLanguageBarControl.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EndUserLanguageBarControl.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EndUserLanguageBarControl.State 
 						}
 					}
 					If((validStateProp $Setting HideKeyboardLayoutSwitchPopupMessageBox State ) -and ($Setting.HideKeyboardLayoutSwitchPopupMessageBox.State -ne "NotConfigured"))
@@ -31241,6 +31507,28 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Profile container settings"
+					If((validStateProp $Setting EnableBindLink State ) -and ($Setting.EnableBindLink.State -ne "NotConfigured"))
+					{
+						#new in 2607
+						$txt = "Profile Management\Profile container settings\Enable BindLink redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableBindLink.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableBindLink.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableBindLink.State
+						}
+					}
 					If((validStateProp $Setting DisableConcurrentAccessToOneDriveContainer State ) -and ($Setting.DisableConcurrentAccessToOneDriveContainer.State -ne "NotConfigured"))
 					{
 						#added in 2311
@@ -33399,7 +33687,7 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting EnableuberAgentDataCollectio State ) -and ($Setting.EnableuberAgentDataCollectio.State -ne "NotConfigured"))
 					{
 						#added in 2511
-						$txt = "VDA Data Collection\uberAgent\Enhance Director to use uberAgent SessionDetail data for calculating Session Score"
+						$txt = "VDA Data Collection\uberAgent\Enhance Director to use uberAgent Session Detail data for calculating Session Score"
 						If($MSWord -or $PDF)
 						{
 							$WordTableRowHash = @{
@@ -33417,6 +33705,29 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.EnableuberAgentDataCollectio.State
+						}
+					}
+					If((validStateProp $Setting EnableuberAgentApplicationMetricsCollection State ) -and ($Setting.EnableuberAgentApplicationMetricsCollection.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "VDA Data Collection\uberAgent\Enhance Director with uberAgent data for application performance"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableuberAgentApplicationMetricsCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableuberAgentApplicationMetricsCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableuberAgentApplicationMetricsCollection.State
 						}
 					}
 					If((validStateProp $Setting EnableuberAgentDataCollection State ) -and ($Setting.EnableuberAgentDataCollection.State -ne "NotConfigured"))
@@ -35041,17 +35352,17 @@ Function OutputSiteSettings
 	#new for 1.28.005
 	If(validObject $Script:CCSite2 LogServerEnabled)
 	{
-		If($Script:CVADSite2.LogServerEnabled)
+		If($Script:CCSite2.LogServerEnabled)
 		{
 			$AOTEnabled       = $True
-			$LogServerEnabled = $Script:CVADSite2.LogServerEnabled.ToString()
-			$LogServerName    = $Script:CVADSite2.LogServerName
-			$LogServerPort    = $Script:CVADSite2.LogServerPort.ToString()
+			$LogServerEnabled = $Script:CCSite2.LogServerEnabled.ToString()
+			$LogServerName    = $Script:CCSite2.LogServerName
+			$LogServerPort    = $Script:CCSite2.LogServerPort.ToString()
 		}
 		Else
 		{
 			$AOTEnabled       = $False
-			$LogServerEnabled = $Script:CVADSite2.LogServerEnabled.ToString()
+			$LogServerEnabled = $Script:CCSite2.LogServerEnabled.ToString()
 			$LogServerName    = ""
 			$LogServerPort    = ""
 		}
@@ -36652,7 +36963,7 @@ Function GetRolePermissions
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
 			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
-			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Director")} #added in 1.28.002
+			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring) (1)", "Director")} #added in 1.28.002
 			"Director_IntegrationsAndDataExport"						{$Results.Add("View Integrations and Data exports page", "Director")} #added in 1.27
 			"Director_KillApplication"									{$Results.Add("Perform Kill Application running on a machine", "Director")}
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
@@ -36684,6 +36995,7 @@ Function GetRolePermissions
 			"Director_Search_Cond_Auth_Transaction"						{$Results.Add("View Conditional Authentication Transaction Data", "Director")} #added in 1.28.002
 			"Director_Search_Transaction"								{$Results.Add("View Transaction Data", "Director")}
 			"Director_SecurePrivateAccess"								{$Results.Add("View Secure Private Access page", "Director")} #added in 1.28.002
+			"Director_Service_Continuity_View"							{$Results.Add("View Service Continuity page", "Director")} #added in 1.30
 			"Director_Settings"											{$Results.Add("View Settings page", "Director")} #added in 1.28.002
 			"Director_ShadowSession"									{$Results.Add("Perform Remote Assistance on a machine", "Director")}
 			"Director_ShadowSession_Edit"								{$Results.Add("Edit Remote Assistance related Broker machine command properties", "Director")}
@@ -36696,6 +37008,7 @@ Function GetRolePermissions
 			"Director_TaskManagerInformation_Edit"						{$Results.Add("Edit Task Manager related Broker machine command properties", "Director")}
 			"Director_Trends_Read"										{$Results.Add("View Trends page", "Director")}
 			"Director_UCaaS_Connections_Manage"							{$Results.Add("Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1)", "Director")} #added in 1.29
+			"Director_UCaaS_RealTimeCommunications"						{$Results.Add("View Real-time communications page", "Director")} #added in 1.30
 			"Director_UploadCustomScript"								{$Results.Add("Upload Custom Script", "Director")} #added in 1.29
 			"Director_UserDetails_Read"									{$Results.Add("View User Details page", "Director")}
 			"Director_WindowsSessionId_Edit"							{$Results.Add("Edit Windows Sessionid related Broker machine command properties", "Director")}
@@ -36782,6 +37095,8 @@ Function GetRolePermissions
 			"EdgeService_Admin"											{$Results.Add("EdgeService LHC permission", "Other permissions")} #added in 1.28.002
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
+			"ExtendedTracingAOT_Manage"									{$Results.Add("Manage Always on Tracing Capture Session", "Other permissions")} #added in 1.30
+			"ExtendedTracingAOT_Read"									{$Results.Add("View Always on Tracing Capture Sessions", "Other permissions")} #added in 1.30
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
 			"Global_Write"												{$Results.Add("Update Site Configuration (Global_Write)", "Other permissions")}
 			"Machine_VdaAotTracing_Configuration"						{$Results.Add("Create, view, modify, and delete machine configurations for VDA Always on Tracing.", "Other permissions")} #added in 1.29
@@ -37982,15 +38297,18 @@ Function OutputDesktopOSMachine
 {
 	Param([object]$Desktop)
 
-	#updated in V1.24
+	# Regex pattern for a valid Windows SID
+	$SidPattern = "^S-\d-\d+(-\d+)*$"
+
 	If($Desktop.DNSName)	# is there anything in the DNSName property
 	{
 		$tmp = $Desktop.DNSName.Split(".")
 		$xDesktopName = $tmp[0]
 		$tmp = $Null
 	}
-	ElseIf($Desktop.MachineName)	# is there anything in the MachineName property
+	ElseIf($Desktop.MachineName -and $Desktop.MachineName -notmatch $SidPattern)	
 	{
+		# is there anything in the MachineName property and it is not a SID
 		$tmp = $Desktop.MachineName.Split("\")
 		$xDesktopName = $tmp[1]
 		$tmp = $Null
@@ -37999,9 +38317,9 @@ Function OutputDesktopOSMachine
 	{
 		$xDesktopName = $Desktop.HostedMachineName
 	}
-	Else	# error, there is no name for the Desktop
+	Else	# error, there is no name for the Server
 	{
-		$xDesktopName = "error, there was no name found for the Server"
+		$xDesktopName = "error, there was no name found for the Desktop"
 	}
 
 	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput desktop $xDesktopName"
@@ -38153,15 +38471,18 @@ Function OutputServerOSMachine
 {
 	Param([object]$Server)
 	
-	#updated in V1.24
+	# Regex pattern for a valid Windows SID
+	$SidPattern = "^S-\d-\d+(-\d+)*$"
+
 	If($Server.DNSName)	# is there anything in the DNSName property
 	{
 		$tmp = $Server.DNSName.Split(".")
 		$xServerName = $tmp[0]
 		$tmp = $Null
 	}
-	ElseIf($Server.MachineName)	# is there anything in the MachineName property
+	ElseIf($Server.MachineName -and $Server.MachineName -notmatch $SidPattern)	
 	{
+		# is there anything in the MachineName property that is not a SID
 		$tmp = $Server.MachineName.Split("\")
 		$xServerName = $tmp[1]
 		$tmp = $Null
@@ -38623,7 +38944,7 @@ Function OutputLicensingOverview
 	}
 	Else
 	{
-		$LicensingGracePeriodActive = $Script:CVADSite1.LicensingGracePeriodActive.ToString()
+		$LicensingGracePeriodActive = $Script:CCSite1.LicensingGracePeriodActive.ToString()
 	}
 	If($null -eq $Script:CCSite1.LicensingOutOfBoxGracePeriodActive)
 	{
@@ -38631,7 +38952,7 @@ Function OutputLicensingOverview
 	}
 	Else
 	{
-		$LicensingOutOfBoxGracePeriodActive = $Script:CVADSite1.LicensingOutOfBoxGracePeriodActive.ToString()
+		$LicensingOutOfBoxGracePeriodActive = $Script:CCSite1.LicensingOutOfBoxGracePeriodActive.ToString()
 	}
 	If($null -eq $Script:CCSite1.LicensedSessionsActive)
 	{
@@ -39793,13 +40114,16 @@ Function ProcessScriptSetup
 	CVADS Remote Powershell SDK is not available.
 	`n`n
 	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 	`n`n
-	If you are running XA/XD 7.8 through CVAD 2006, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 	`n`n
-	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	If you are running CVAD 2006 through 2511, please use:
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+	`n`n
+	If you are running CVAD 2511 or later, please use:
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 	`n`n
 	Script will now close.
 	`n
@@ -39980,18 +40304,18 @@ Script cannot continue
 
 				Write-Host "" -ForegroundColor White
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
-				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.                             " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Are the two Visual C++ Runtimes installed?                                                                              " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Verify that the Visual C++ Runtimes are installed.                                                                      " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Install from the Microsoft download page                                                                                " -ForegroundColor Red
-				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                                                      " -ForegroundColor Red
-				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                                                      " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Please see the ReadMe file:                                                                                             " -ForegroundColor Red
-				Write-Host "	https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0" -ForegroundColor Red
+				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off." -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Are the two Visual C++ Runtimes installed?                                                 " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Verify that the Visual C++ Runtimes are installed.                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Install from the Microsoft download page                                                   " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                         " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Please see the ReadMe file:                                                                " -ForegroundColor Red
+				Write-Host "	https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf " -ForegroundColor Red
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
 				Write-Host "" -ForegroundColor White
 				Break

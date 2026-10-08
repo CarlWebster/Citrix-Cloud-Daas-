@@ -31,14 +31,17 @@
 	If you are running XA/XD 7.8 through CVAD 2006, please use:
 	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 
-	If you are running CVAD 2006 and later, please use:
+	If you are running CVAD 2006 through 2511, please use:
 	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+
+	If you are running CVAD 2511 or later, please use:
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 
 	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, follow the 
 	instructions in the Authentication section of the ReadMe file to create a profile named 
 	Default.
 	
-	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+	ReadMe file: https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 	
 	By default, the script only gives summary information for:
 		Administrators
@@ -77,7 +80,7 @@
 	Creates an output file named after the Citrix Cloud (now DaaS) Site (which by default is 
 	cloudxdsite) unless you use the SiteName parameter.
 	
-	Word and PDF Document includes a Cover Page, Table of Contents, and Footer.
+	Word and PDF documents include a Cover Page, Table of Contents, and Footer.
 	Includes support for the following language versions of Microsoft Word:
 		Catalan
 		Chinese
@@ -107,7 +110,7 @@
 	You must follow the Process in either the ReadMe file or your own Process to capture 
 	the Client ID and Client Secret and save them to a CSV credential profile.
 	
-	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+	ReadMe file: https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 
 	To prevent multiple Citrix Cloud (now DaaS) authentication prompts, create a profile 
 	named Default.
@@ -213,7 +216,7 @@
 	This parameter is disabled by default.
 	This parameter has an alias of NP.
 .PARAMETER NoSessions
-	Excludes Machine Catalog, Application and Hosting session data from the report.
+	Excludes Machine Catalog, Application, and Hosting session data from the report.
 	
 	Using the MaxDetails parameter does not change this setting.
 	
@@ -290,8 +293,8 @@
 .PARAMETER AddDateTime
 	Adds a date timestamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2026, at 6PM is 2026-06-01_1800.
-	The output filename will be ReportName_2026-06-01_1800.docx (or.pdf).
+	June 1, 2027, at 6 PM is 2027-06-01_1800.
+	The output filename will be ReportName_2027-06-01_1800.docx (or.pdf).
 	This parameter is disabled by default.
 	This parameter has an alias of ADT.
 .PARAMETER CSV
@@ -517,7 +520,7 @@
 	Note: Review the instructions in the Authentication section of the ReadMe file for the 
 	details on creating a profile named Default.
 	
-	ReadMe file: https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+	ReadMe file: https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 	
 	PowerShell.exe -NoLogo -File "C:\PSScript\CC_Inventory_V1.ps1 -MaxDetails 
 	-SiteName MyCCSite' -AddDateTime"	
@@ -724,11 +727,11 @@
 	Note: If a profile named Default does not exist, you may be prompted multiple times 
 	for Citrix Cloud (now DaaS) credentials.
 .EXAMPLE
-	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2026 -EndDate 
-	09/30/2026	
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate 09/01/2027 -EndDate 
+	09/30/2027	
 	
-	Creates an HTML report with Configuration Logging details for the dates 09/01/2026 
-	through 09/30/2026.
+	Creates an HTML report with Configuration Logging details for the dates 09/01/2027 
+	through 09/30/2027.
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -736,11 +739,11 @@
     If a profile named Default exists, the script uses the credentials stored in the Default
     profile.
 .EXAMPLE
-	PS C:\PSScript >.\CVAD_Inventory_V3.ps1 -Logging -StartDate "09/01/2026 10:00:00" 
-	-EndDate "09/01/2026 14:00:00" -MSWord
+	PS C:\PSScript >.\CC_Inventory_V1.ps1 -Logging -StartDate "09/01/2027 10:00:00" 
+	-EndDate "09/01/2027 14:00:00" -MSWord
 	
 	Creates a Microsoft Word report with Configuration Logging details for the time range 
-	09/01/2026 10:00:00AM through 09/01/2026 02:00:00PM.
+	09/01/2027 10:00:00AM through 09/01/2027 02:00:00PM.
 	
 	Narrowing the report down to seconds does not work. Seconds must be either 00 or 59.
 	
@@ -909,8 +912,8 @@
 	Creates an HTML report.
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2026, at 6PM is 2026-06-01_1800.
-	The output filename will be CCSiteName_2026-06-01_1800.docx
+	June 1, 2027, at 6 PM is 2027-06-01_1800.
+	The output filename will be CCSiteName_2027-06-01_1800.docx
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -933,8 +936,8 @@
 
 	Adds a date time stamp to the end of the file name.
 	The timestamp is in the format of yyyy-MM-dd_HHmm.
-	June 1, 2026, at 6PM is 2026-06-01_1800.
-	The output filename will be CCSiteName_2026-06-01_1800.pdf
+	June 1, 2027, at 6 PM is 2027-06-01_1800.
+	The output filename will be CCSiteName_2027-06-01_1800.pdf
 
     If no authentication profile exists, the script prompts for Citrix Cloud (now DaaS)
     credentials.
@@ -1103,7 +1106,7 @@
 	
 	Creates four reports: HTML, Microsoft Word, PDF, and plain text.
 	
-	For Microsoft Word and PDF, Uses all Default values.
+	For Microsoft Word and PDF, uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -1187,7 +1190,7 @@
 	For example:
 		CCSiteName_Documentation_AppendixA_VDARegistryItems.csv
 
-	For Microsoft Word and PDF, Uses all Default values.
+	For Microsoft Word and PDF, uses all Default values.
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\CompanyName="Carl 
 	Webster" or 
 	HKEY_CURRENT_USER\Software\Microsoft\Office\Common\UserInfo\Company="Carl Webster"
@@ -1223,10 +1226,10 @@
 	PS C:\PSScript >.\CC_Inventory_V1.ps1 -SmtpServer mail.domain.tld -From 
 	CCAdmin@domain.tld -To ITGroup@domain.tld	
 
-	The script Uses the email server mail.domain.tld, sending from CCAdmin@domain.tld and 
+	The script uses the email server mail.domain.tld, sending from CCAdmin@domain.tld and 
 	sending to ITGroup@domain.tld.
 
-	The script Uses the default SMTP port 25 and does not use SSL.
+	The script uses the default SMTP port 25 and does not use SSL.
 
 	If the current user's credentials are not valid to send an email, the script prompts 
 	the user to enter valid credentials.
@@ -1252,13 +1255,13 @@
 
 	The script uses the default SMTP port 25 and does not use SSL.
 	
-	***GMAIL/G SUITE SMTP RELAY***
+	***GMAIL/Google Workspace SMTP RELAY***
 	https://support.google.com/a/answer/2956491?hl=en
 	https://support.google.com/a/answer/176600?hl=en
 
-	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	To send an email using a Gmail or Google Workspace account, you may have to turn ON the "Less 
 	secure app access" option on your account.
-	***GMAIL/G SUITE SMTP RELAY***
+	***GMAIL/Google Workspace SMTP RELAY***
 
 	The script will generate an anonymous, secure password for the anonymous@domain.tld 
 	account.
@@ -1317,7 +1320,7 @@
 	-UseSSL -From Webster@CarlWebster.com -To ITGroup@CarlWebster.com	
 
 	*** NOTE ***
-	To send an email using a Gmail or g-suite account, you may have to turn ON the "Less 
+	To send an email using a Gmail or Google Workspace account, you may have to turn ON the "Less 
 	secure app access" option on your account.
 	*** NOTE ***
 	
@@ -1341,9 +1344,9 @@
 	This script creates a Word, PDF, plain text, or HTML document.
 .NOTES
 	NAME: CC_Inventory_V1.ps1
-	VERSION: 1.29
+	VERSION: 1.30
 	AUTHOR: Carl Webster
-	LASTEDIT: March 31, 2026
+	LASTEDIT: October 8, 2026
 #>
 
 #endregion
@@ -1527,6 +1530,39 @@ Param(
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.30 8-Oct-2027
+#	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
+#
+#	Add a PDF copy of the ReadMe file so it can be displayed in GitHub
+#
+#	Added the following policy settings:
+#		AssistantApp\Enable Assistant App Notification Dialog
+#		ICA\Clipboard sharing scope
+#		ICA\MTU Rediscovery
+#		ICA\WIA Redirection
+#		ICA\Authentication\Allow web sign-in
+#		ICA\Authentication\Microsoft Entra single sign-on
+#		ICA\Graphics\HDX graphics super resolution mode
+#		ICA\Graphics\Screenshot Redirected Content
+#		ICA\Keyboard and IME\End user control of language bar
+#		Profile Management\Profile container settings\Enable BindLink redirection
+#		VDA Data Collection\uberAgent\Enhance Director with uberAgent data for application performance
+#
+#	Change all Dropbox and most CarlWebster.com links to GitHub links
+#
+#	In Function GetRolePermissions (Thanks to Michael Wieloch of Ferroque Systems)
+#		Director_Service_Continuity_View		(Director - View Service Continuity page)
+#		Director_UCaaS_RealTimeCommunications	(Director - View Real-time communications page)
+#		ExtendedTracingAOT_Manage				(Other permissions - Manage Always on Tracing Capture Session)
+#		ExtendedTracingAOT_Read					(Other permissions - View Always on Tracing Capture Sessions)
+#
+#	In Functions OutputDesktopOSMachine, OutputMachineDetails, and OutputServerOSMachine,
+#		Fixed bugs to prevent an empty machine name and to prevent processing a SID
+#
+#	Updated the help text
+#
+#	Updated the ReadMe file
+#
 #Version 1.29 31-Mar-2026
 #	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
 #
@@ -1958,7 +1994,7 @@ Param(
 #			https://aka.ms/vs/17/release/vc_redist.x64.exe                                             
 #                                                                                           
 #		Please see the ReadMe file:                                                                
-#			https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+#			https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 #		*******************************************************************************************
 #
 #	Reformatted the tables for policies to reduce word wrapping.
@@ -3316,7 +3352,7 @@ Param(
 #	Updated Functions ShowScriptOptions and ProcessScriptEnd to add $ReportFooter
 #	Updated the help text
 #	Updated the expired link for the ReadMe file 
-#		https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+#		https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 #	Updated the ReadMe file
 #
 #Version 1.14 29-Jul-2021
@@ -3538,7 +3574,7 @@ Param(
 #			Delete UPM Broker Machine Configuration
 #	Added a ValidateSet to the Sections parameter. You can use -Section, press tab, and tab through all the section options. (Credit to Guy Leech)
 #	Added a -ProfileName parameter for use by Get-XDAuthentication 
-#		For more information, see the Authentication section in the ReadMe file https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+#		For more information, see the Authentication section in the ReadMe file https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 #		Thanks to David Prows and Devan Tilly for documenting this Process for me to use
 #	Added testing to see if the computer running the script is in a Domain or Workgroup
 #		If not in a domain, and VDARegistryKeys is set, set it to $False
@@ -3679,9 +3715,9 @@ $SaveEAPreference         = $ErrorActionPreference
 $ErrorActionPreference    = 'SilentlyContinue'
 $Error.Clear()
 
-$script:MyVersion   = "'1.29 Beta 1"
+$script:MyVersion   = "'1.30"
 $Script:ScriptName  = "CC_Inventory_V1.ps1"
-$tmpdate            = [datetime] "02/19/2026"
+$tmpdate            = [datetime] "10/08/2026"
 $Script:ReleaseDate = $tmpdate.ToUniversalTime().ToShortDateString()
 
 If($Null -eq $HTML)
@@ -4009,18 +4045,21 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
 If you are running XA/XD 7.0 through 7.7, please use: 
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 `n`n
 If you are running XA/XD 7.8 through CVAD 2006, please use:
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 `n`n
-If you are running CVAD 2006 and later, please use:
-https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 through 2511, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+`n`n
+If you are running CVAD 2511 or later, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 `n`n
 Script cannot continue.
 `n`n
@@ -4048,18 +4087,21 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
+https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf
 `n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
 If you are running XA/XD 7.0 through 7.7, please use: 
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 `n`n
 If you are running XA/XD 7.8 through CVAD 2006, please use:
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 `n`n
-If you are running CVAD 2006 and later, please use:
-https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 through 2511, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+`n`n
+If you are running CVAD 2511 or later, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 `n`n
 Script cannot continue.
 `n`n
@@ -4073,18 +4115,20 @@ Get-XDAuthentication failed.
 `n`n
 For more information, see the Authentication section in the ReadMe file at 
 `n`n
-https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0
-`n`n
+https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf`n`n
 This script is designed for Citrix Cloud/Citrix Virtual Apps and Desktops Service.
 `n`n
 If you are running XA/XD 7.0 through 7.7, please use: 
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 `n`n
 If you are running XA/XD 7.8 through CVAD 2006, please use:
-https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 `n`n
-If you are running CVAD 2006 and later, please use:
-https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+If you are running CVAD 2006 through 2511, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+`n`n
+If you are running CVAD 2511 or later, please use:
+https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 `n`n
 Script cannot continue.
 `n`n
@@ -9542,17 +9586,19 @@ Function OutputMachineDetails
 		[string] $xAllocationType
 	)
 	
-	#if HostedMachineName is empty, like for RemotePC and unregistered machines, use the first part of DNSName
-	
-	#updated in V1.15
+	# Regex pattern for a valid Windows SID
+	$SidPattern = "^S-\d-\d+(-\d+)*$"
+
+	#don't use the MachineName property as it is a SID
 	If($Machine.DNSName)	# is there anything in the DNSName property
 	{
 		$tmp = $Machine.DNSName.Split(".")
 		$xMachineName = $tmp[0]
 		$tmp = $Null
 	}
-	ElseIf($Machine.MachineName)	# is there anything in the MachineName property
+	ElseIf($Machine.MachineName -and $Machine.MachineName -notmatch $SidPattern)	
 	{
+		# is there anything in the MachineName property and it is not a SID
 		$tmp = $Machine.MachineName.Split("\")
 		$xMachineName = $tmp[1]
 		$tmp = $Null
@@ -9561,9 +9607,9 @@ Function OutputMachineDetails
 	{
 		$xMachineName = $Machine.HostedMachineName
 	}
-	Else	# error, there is no name for the machine
+	Else	# error, there is no name for the Machine
 	{
-		$xMachineName = "error, there was no name found for the machine"
+		$xMachineName = "error, there was no name found for the Machine"
 	}
 
 	Write-Verbose "$(Get-Date -Format G): `t`t`t`t`tOutput $WhatType $xMachineName"
@@ -18439,6 +18485,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.EnableAssistantApp.State
 						}
 					}
+					If((validStateProp $Setting EnableAssistantAppNotificationDialog State ) -and ($Setting.EnableAssistantAppNotificationDialog.State -ne "NotConfigured"))
+					{
+						#added in 2607
+						$txt = "AssistantApp\Enable Assistant App Notification Dialog"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableAssistantAppNotificationDialogt.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableAssistantAppNotificationDialog.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableAssistantAppNotificationDialog.State
+						}
+					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tChrome Enterprise Premium"
 					If((validStateProp $Setting EnrollChromeBrowser State ) -and ($Setting.EnrollChromeBrowser.State -ne "NotConfigured"))
@@ -19013,6 +19081,39 @@ Function ProcessCitrixPolicies
 						}
 						$tmp = $Null
 					}
+					If((validStateProp $Setting ClipboardSharingScope State ) -and ($Setting.ClipboardSharingScope.State -ne "NotConfigured"))
+					{
+						#new in 2607
+						$txt = "ICA\Clipboard sharing scope"
+						$tmp = ""
+						Switch ($Setting.ClipboardSharingScope.Value)
+						{
+							"Unlimited"	{$tmp = "Unlimited (default)"; Break}
+							"VDA"		{$tmp = "VDA"; Break}
+							"CEP"		{$tmp = "CEP"; Break}
+							"VDACEP"	{$tmp = "VDA and CEP"; Break}
+							Default		{$tmp = "Clipboard sharing scope: $($Setting.ClipboardSharingScope.Value)"; Break}
+						}
+						
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}
+						$tmp = $Null
+					}
 					If((validStateProp $Setting DesktopLaunchForNonAdmins State ) -and ($Setting.DesktopLaunchForNonAdmins.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Desktop launches"
@@ -19507,6 +19608,29 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.AllowScannerMacImageCaptureRedirection.State 
+						}
+					}
+					If((validStateProp $Setting MtuRediscovery State ) -and ($Setting.MtuRediscovery.State -ne "NotConfigured"))
+					{
+						#new in 2607
+						
+						$txt = "ICA\MTU Rediscovery"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.MtuRediscovery.Value;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.MtuRediscovery.Value,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.MtuRediscovery.Value 
 						}
 					}
 					If((validStateProp $Setting PrimarySelectionUpdateMode State ) -and ($Setting.PrimarySelectionUpdateMode.State -ne "NotConfigured"))
@@ -20102,6 +20226,27 @@ Function ProcessCitrixPolicies
 							}
 						}
 					}
+					If((validStateProp $Setting AllowWIARedirection State ) -and ($Setting.AllowWIARedirection.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\WIA Redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWIARedirection.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWIARedirection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWIARedirection.State 
+						}
+					}
 					
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\App Protection"
 					If((validStateProp $Setting AppProtectionPostureCheck State ) -and ($Setting.AppProtectionPostureCheck.State -ne "NotConfigured"))
@@ -20348,6 +20493,52 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.LossTolerantAudio.State 
 						}
 					}
+
+					#new section in 2607
+					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Authentication"
+					If((validStateProp $Setting AllowWebSignIn State ) -and ($Setting.AllowWebSignIn.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Authentication\Allow web sign-in"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.AllowWebSignIn.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.AllowWebSignIn.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.AllowWebSignIn.State 
+						}
+					}
+					If((validStateProp $Setting MicrosoftEntraSSOn State ) -and ($Setting.MicrosoftEntraSSOn.State -ne "NotConfigured"))
+					{
+						$txt = "ICA\Authentication\Microsoft Entra single sign-on"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.MicrosoftEntraSSOn.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.MicrosoftEntraSSOn.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.MicrosoftEntraSSOn.State 
+						}
+					}
+					#end new section
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tICA\Auto Client Reconnect"
 					If((validStateProp $Setting AutoClientReconnect State ) -and ($Setting.AutoClientReconnect.State -ne "NotConfigured"))
@@ -21773,6 +21964,37 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.DisplayLosslessIndicator.State 
 						}	
 					}
+					If((validStateProp $Setting SuperResolutionMode State ) -and ($Setting.SuperResolutionMode.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "ICA\Graphics\HDX graphics super resolution mode"
+						$tmp = ""
+						Switch ($Setting.SuperResolutionMode.Value)
+						{
+							"Automatic"	{$tmp = "Automatic"; Break}
+							"On"		{$tmp = "On"; Break}
+							"Off"		{$tmp = "Off"; Break}
+							Default		{$tmp = "HDX graphics super resolution mode could not be determined: $($Setting.SuperResolutionMode.Value)"; Break}
+						}
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $tmp;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$tmp,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $tmp 
+						}	
+						$tmp = $Null
+					}
 					If((validStateProp $Setting ScreenSharingPortRange State ) -and ($Setting.ScreenSharingPortRange.State -ne "NotConfigured"))
 					{
 						#added in 2511
@@ -21980,6 +22202,28 @@ Function ProcessCitrixPolicies
 							OutputPolicySetting $txt $Setting.ScreenSharing.State 
 						}
 					}
+					If((validStateProp $Setting ScreenshotRedirectedContent State ) -and ($Setting.ScreenshotRedirectedContent.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "ICA\Graphics\Screenshot Redirected Content"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.ScreenshotRedirectedContent.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.ScreenshotRedirectedContent.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.ScreenshotRedirectedContent.State 
+						}
+					}
 					If((validStateProp $Setting UseHardwareEncodingForVideoCodec State ) -and ($Setting.UseHardwareEncodingForVideoCodec.State -ne "NotConfigured"))
 					{
 						$txt = "ICA\Graphics\Use hardware encoding for video codec"
@@ -22135,6 +22379,28 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.EnableUnicodeKeyboardLayoutMapping.State 
+						}
+					}
+					If((validStateProp $Setting EndUserLanguageBarControl State ) -and ($Setting.EndUserLanguageBarControl.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "ICA\Keyboard and IME\End user control of language bar"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EndUserLanguageBarControl.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EndUserLanguageBarControl.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EndUserLanguageBarControl.State 
 						}
 					}
 					If((validStateProp $Setting HideKeyboardLayoutSwitchPopupMessageBox State ) -and ($Setting.HideKeyboardLayoutSwitchPopupMessageBox.State -ne "NotConfigured"))
@@ -31241,6 +31507,28 @@ Function ProcessCitrixPolicies
 					}
 
 					Write-Verbose "$(Get-Date -Format G): `t`t`tProfile Management\Profile container settings"
+					If((validStateProp $Setting EnableBindLink State ) -and ($Setting.EnableBindLink.State -ne "NotConfigured"))
+					{
+						#new in 2607
+						$txt = "Profile Management\Profile container settings\Enable BindLink redirection"
+						If($MSWord -or $PDF)
+						{
+							$SettingsWordTable += @{
+							Text = $txt;
+							Value = $Setting.EnableBindLink.State;
+							}
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableBindLink.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableBindLink.State
+						}
+					}
 					If((validStateProp $Setting DisableConcurrentAccessToOneDriveContainer State ) -and ($Setting.DisableConcurrentAccessToOneDriveContainer.State -ne "NotConfigured"))
 					{
 						#added in 2311
@@ -33399,7 +33687,7 @@ Function ProcessCitrixPolicies
 					If((validStateProp $Setting EnableuberAgentDataCollectio State ) -and ($Setting.EnableuberAgentDataCollectio.State -ne "NotConfigured"))
 					{
 						#added in 2511
-						$txt = "VDA Data Collection\uberAgent\Enhance Director to use uberAgent SessionDetail data for calculating Session Score"
+						$txt = "VDA Data Collection\uberAgent\Enhance Director to use uberAgent Session Detail data for calculating Session Score"
 						If($MSWord -or $PDF)
 						{
 							$WordTableRowHash = @{
@@ -33417,6 +33705,29 @@ Function ProcessCitrixPolicies
 						If($Text)
 						{
 							OutputPolicySetting $txt $Setting.EnableuberAgentDataCollectio.State
+						}
+					}
+					If((validStateProp $Setting EnableuberAgentApplicationMetricsCollection State ) -and ($Setting.EnableuberAgentApplicationMetricsCollection.State -ne "NotConfigured"))
+					{
+						#new in 2603
+						$txt = "VDA Data Collection\uberAgent\Enhance Director with uberAgent data for application performance"
+						If($MSWord -or $PDF)
+						{
+							$WordTableRowHash = @{
+							Text = $txt;
+							Value = $Setting.EnableuberAgentApplicationMetricsCollection.State;
+							}
+							$SettingsWordTable += $WordTableRowHash;
+						}
+						If($HTML)
+						{
+							$rowdata += @(,(
+							$txt,$htmlbold,
+							$Setting.EnableuberAgentApplicationMetricsCollection.State,$htmlwhite))
+						}
+						If($Text)
+						{
+							OutputPolicySetting $txt $Setting.EnableuberAgentApplicationMetricsCollection.State
 						}
 					}
 					If((validStateProp $Setting EnableuberAgentDataCollection State ) -and ($Setting.EnableuberAgentDataCollection.State -ne "NotConfigured"))
@@ -35041,17 +35352,17 @@ Function OutputSiteSettings
 	#new for 1.28.005
 	If(validObject $Script:CCSite2 LogServerEnabled)
 	{
-		If($Script:CVADSite2.LogServerEnabled)
+		If($Script:CCSite2.LogServerEnabled)
 		{
 			$AOTEnabled       = $True
-			$LogServerEnabled = $Script:CVADSite2.LogServerEnabled.ToString()
-			$LogServerName    = $Script:CVADSite2.LogServerName
-			$LogServerPort    = $Script:CVADSite2.LogServerPort.ToString()
+			$LogServerEnabled = $Script:CCSite2.LogServerEnabled.ToString()
+			$LogServerName    = $Script:CCSite2.LogServerName
+			$LogServerPort    = $Script:CCSite2.LogServerPort.ToString()
 		}
 		Else
 		{
 			$AOTEnabled       = $False
-			$LogServerEnabled = $Script:CVADSite2.LogServerEnabled.ToString()
+			$LogServerEnabled = $Script:CCSite2.LogServerEnabled.ToString()
 			$LogServerName    = ""
 			$LogServerPort    = ""
 		}
@@ -36652,7 +36963,7 @@ Function GetRolePermissions
 			"Director_HDXProtocol_Edit"									{$Results.Add("Edit HDX Protocol related Broker machine command properties", "Director")}
 			"Director_HelpDesk_Read"									{$Results.Add("View Activity Manager page", "Director")}
 			"Director_InfrastructureMonitor"							{$Results.Add("View Infrastructure Monitor page", "Director")} #added in 1.27
-			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring)", "Director")} #added in 1.28.002
+			"Director_InfrastructureMonitor_Edit"						{$Results.Add("Create/Edit/Manage Connections to Citrix components (Infra Monitoring) (1)", "Director")} #added in 1.28.002
 			"Director_IntegrationsAndDataExport"						{$Results.Add("View Integrations and Data exports page", "Director")} #added in 1.27
 			"Director_KillApplication"									{$Results.Add("Perform Kill Application running on a machine", "Director")}
 			"Director_KillApplication_Edit"								{$Results.Add("Edit Kill Application related Broker machine command properties", "Director")}
@@ -36684,6 +36995,7 @@ Function GetRolePermissions
 			"Director_Search_Cond_Auth_Transaction"						{$Results.Add("View Conditional Authentication Transaction Data", "Director")} #added in 1.28.002
 			"Director_Search_Transaction"								{$Results.Add("View Transaction Data", "Director")}
 			"Director_SecurePrivateAccess"								{$Results.Add("View Secure Private Access page", "Director")} #added in 1.28.002
+			"Director_Service_Continuity_View"							{$Results.Add("View Service Continuity page", "Director")} #added in 1.30
 			"Director_Settings"											{$Results.Add("View Settings page", "Director")} #added in 1.28.002
 			"Director_ShadowSession"									{$Results.Add("Perform Remote Assistance on a machine", "Director")}
 			"Director_ShadowSession_Edit"								{$Results.Add("Edit Remote Assistance related Broker machine command properties", "Director")}
@@ -36696,6 +37008,7 @@ Function GetRolePermissions
 			"Director_TaskManagerInformation_Edit"						{$Results.Add("Edit Task Manager related Broker machine command properties", "Director")}
 			"Director_Trends_Read"										{$Results.Add("View Trends page", "Director")}
 			"Director_UCaaS_Connections_Manage"							{$Results.Add("Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1)", "Director")} #added in 1.29
+			"Director_UCaaS_RealTimeCommunications"						{$Results.Add("View Real-time communications page", "Director")} #added in 1.30
 			"Director_UploadCustomScript"								{$Results.Add("Upload Custom Script", "Director")} #added in 1.29
 			"Director_UserDetails_Read"									{$Results.Add("View User Details page", "Director")}
 			"Director_WindowsSessionId_Edit"							{$Results.Add("Edit Windows Sessionid related Broker machine command properties", "Director")}
@@ -36782,6 +37095,8 @@ Function GetRolePermissions
 			"EdgeService_Admin"											{$Results.Add("EdgeService LHC permission", "Other permissions")} #added in 1.28.002
 			"EnvTest"													{$Results.Add("Run environment tests", "Other permissions")}
 			"Export_BrokerConfiguration"								{$Results.Add("Export Broker Configuration", "Other permissions")}
+			"ExtendedTracingAOT_Manage"									{$Results.Add("Manage Always on Tracing Capture Session", "Other permissions")} #added in 1.30
+			"ExtendedTracingAOT_Read"									{$Results.Add("View Always on Tracing Capture Sessions", "Other permissions")} #added in 1.30
 			"Global_Read"												{$Results.Add("Read Site Configuration (Global_Read)", "Other permissions")}
 			"Global_Write"												{$Results.Add("Update Site Configuration (Global_Write)", "Other permissions")}
 			"Machine_VdaAotTracing_Configuration"						{$Results.Add("Create, view, modify, and delete machine configurations for VDA Always on Tracing.", "Other permissions")} #added in 1.29
@@ -37982,15 +38297,18 @@ Function OutputDesktopOSMachine
 {
 	Param([object]$Desktop)
 
-	#updated in V1.24
+	# Regex pattern for a valid Windows SID
+	$SidPattern = "^S-\d-\d+(-\d+)*$"
+
 	If($Desktop.DNSName)	# is there anything in the DNSName property
 	{
 		$tmp = $Desktop.DNSName.Split(".")
 		$xDesktopName = $tmp[0]
 		$tmp = $Null
 	}
-	ElseIf($Desktop.MachineName)	# is there anything in the MachineName property
+	ElseIf($Desktop.MachineName -and $Desktop.MachineName -notmatch $SidPattern)	
 	{
+		# is there anything in the MachineName property and it is not a SID
 		$tmp = $Desktop.MachineName.Split("\")
 		$xDesktopName = $tmp[1]
 		$tmp = $Null
@@ -37999,9 +38317,9 @@ Function OutputDesktopOSMachine
 	{
 		$xDesktopName = $Desktop.HostedMachineName
 	}
-	Else	# error, there is no name for the Desktop
+	Else	# error, there is no name for the Server
 	{
-		$xDesktopName = "error, there was no name found for the Server"
+		$xDesktopName = "error, there was no name found for the Desktop"
 	}
 
 	Write-Verbose "$(Get-Date -Format G): `t`t`tOutput desktop $xDesktopName"
@@ -38153,15 +38471,18 @@ Function OutputServerOSMachine
 {
 	Param([object]$Server)
 	
-	#updated in V1.24
+	# Regex pattern for a valid Windows SID
+	$SidPattern = "^S-\d-\d+(-\d+)*$"
+
 	If($Server.DNSName)	# is there anything in the DNSName property
 	{
 		$tmp = $Server.DNSName.Split(".")
 		$xServerName = $tmp[0]
 		$tmp = $Null
 	}
-	ElseIf($Server.MachineName)	# is there anything in the MachineName property
+	ElseIf($Server.MachineName -and $Server.MachineName -notmatch $SidPattern)	
 	{
+		# is there anything in the MachineName property that is not a SID
 		$tmp = $Server.MachineName.Split("\")
 		$xServerName = $tmp[1]
 		$tmp = $Null
@@ -38623,7 +38944,7 @@ Function OutputLicensingOverview
 	}
 	Else
 	{
-		$LicensingGracePeriodActive = $Script:CVADSite1.LicensingGracePeriodActive.ToString()
+		$LicensingGracePeriodActive = $Script:CCSite1.LicensingGracePeriodActive.ToString()
 	}
 	If($null -eq $Script:CCSite1.LicensingOutOfBoxGracePeriodActive)
 	{
@@ -38631,7 +38952,7 @@ Function OutputLicensingOverview
 	}
 	Else
 	{
-		$LicensingOutOfBoxGracePeriodActive = $Script:CVADSite1.LicensingOutOfBoxGracePeriodActive.ToString()
+		$LicensingOutOfBoxGracePeriodActive = $Script:CCSite1.LicensingOutOfBoxGracePeriodActive.ToString()
 	}
 	If($null -eq $Script:CCSite1.LicensedSessionsActive)
 	{
@@ -39793,13 +40114,16 @@ Function ProcessScriptSetup
 	CVADS Remote Powershell SDK is not available.
 	`n`n
 	If you are running XA/XD 7.0 through 7.7, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-x-documentation-script/
+	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V1
 	`n`n
-	If you are running XA/XD 7.8 through CVAD 2006, please use: 
-	https://carlwebster.com/downloads/download-info/xenappxendesktop-7-8/
+	If you are running XA/XD 7.8 through CVAD 2006, please use:
+	https://github.com/CarlWebster/Citrix-XenApp-XenDesktop-7-V2
 	`n`n
-	If you are running CVAD 2006 and later, please use:
-	https://carlwebster.com/downloads/download-info/citrix-virtual-apps-and-desktops-v3-script/
+	If you are running CVAD 2006 through 2511, please use:
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V3
+	`n`n
+	If you are running CVAD 2511 or later, please use:
+	https://github.com/CarlWebster/Citrix-Virtual-Apps-and-Desktops-V4
 	`n`n
 	Script will now close.
 	`n
@@ -39980,18 +40304,18 @@ Script cannot continue
 
 				Write-Host "" -ForegroundColor White
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
-				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off.                             " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Are the two Visual C++ Runtimes installed?                                                                              " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Verify that the Visual C++ Runtimes are installed.                                                                      " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Install from the Microsoft download page                                                                                " -ForegroundColor Red
-				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                                                      " -ForegroundColor Red
-				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                                                      " -ForegroundColor Red
-				Write-Host "                                                                                                                        " -ForegroundColor Red
-				Write-Host "Please see the ReadMe file:                                                                                             " -ForegroundColor Red
-				Write-Host "	https://www.dropbox.com/scl/fi/el0h9hgujlr3xhy6ntgip/CC_Inventory_V1_ReadMe.rtf?rlkey=jxo6015xwf982llbm1y2jzk8y&dl=0" -ForegroundColor Red
+				Write-Host "LocalSiteGPO PSDrive was not created, which should not have happened. Turning Policies off." -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Are the two Visual C++ Runtimes installed?                                                 " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Verify that the Visual C++ Runtimes are installed.                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Install from the Microsoft download page                                                   " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x86.exe (install first)                         " -ForegroundColor Red
+				Write-Host "	https://aka.ms/vs/17/release/vc_redist.x64.exe                                         " -ForegroundColor Red
+				Write-Host "                                                                                           " -ForegroundColor Red
+				Write-Host "Please see the ReadMe file:                                                                " -ForegroundColor Red
+				Write-Host "	https://github.com/CarlWebster/Citrix-Cloud-Daas-/blob/main/CC_Inventory_V1_ReadMe.pdf " -ForegroundColor Red
 				Write-Host "*******************************************************************************************" -ForegroundColor Red
 				Write-Host "" -ForegroundColor White
 				Break
@@ -40690,8 +41014,8 @@ ProcessScriptEnd
 # SIG # Begin signature block
 # MIIthQYJKoZIhvcNAQcCoIItdjCCLXICAQExCzAJBgUrDgMCGgUAMGkGCisGAQQB
 # gjcCAQSgWzBZMDQGCisGAQQBgjcCAR4wJgIDAQAABBAfzDtgWUsITrck0sYpfvNR
-# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUT2D1tTSi1umcSyeNgqfBJM4m
-# ecCggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
+# AgEAAgEAAgEAAgEAAgEAMCEwCQYFKw4DAhoFAAQUFML0fqEngcl8DRbJKwR32qDf
+# hd6ggibfMIIFjTCCBHWgAwIBAgIQDpsYjvnQLefv21DiCEAYWjANBgkqhkiG9w0B
 # AQwFADBlMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMRkwFwYD
 # VQQLExB3d3cuZGlnaWNlcnQuY29tMSQwIgYDVQQDExtEaWdpQ2VydCBBc3N1cmVk
 # IElEIFJvb3QgQ0EwHhcNMjIwODAxMDAwMDAwWhcNMzExMTA5MjM1OTU5WjBiMQsw
@@ -40822,25 +41146,25 @@ ProcessScriptEnd
 # Ru7hAWE6bTEm4XYRkA6Tl4KSFLFk43esaUeqGkH/wyW4N7OigizwJWeukcyIPbAv
 # jSabnf7+Pu0VrFgoiovRDiyx3zEdmcif/sYQsfch28bZeUz2rtY/9TCA6TD8dC3J
 # E3rYkrhLULy7Dc90G6e8BlqmyIjlgp2+VqsS9/wQD7yFylIz0scmbKvFoW2jNrbM
-# 1pD2T7m3XDCCBu0wggTVoAMCAQICEAqA7xhLjfEFgtHEdqeVdGgwDQYJKoZIhvcN
+# 1pD2T7m3XDCCBu0wggTVoAMCAQICEAhP3DNPfkVO28MPj/mSGDUwDQYJKoZIhvcN
 # AQELBQAwaTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDkRpZ2lDZXJ0LCBJbmMuMUEw
 # PwYDVQQDEzhEaWdpQ2VydCBUcnVzdGVkIEc0IFRpbWVTdGFtcGluZyBSU0E0MDk2
-# IFNIQTI1NiAyMDI1IENBMTAeFw0yNTA2MDQwMDAwMDBaFw0zNjA5MDMyMzU5NTla
+# IFNIQTI1NiAyMDI1IENBMTAeFw0yNjA4MDUwMDAwMDBaFw0zNzExMDQyMzU5NTla
 # MGMxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjE7MDkGA1UE
 # AxMyRGlnaUNlcnQgU0hBMjU2IFJTQTQwOTYgVGltZXN0YW1wIFJlc3BvbmRlciAy
-# MDI1IDEwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQDQRqwtEsae0Oqu
-# YFazK1e6b1H/hnAKAd/KN8wZQjBjMqiZ3xTWcfsLwOvRxUwXcGx8AUjni6bz52fG
-# Tfr6PHRNv6T7zsf1Y/E3IU8kgNkeECqVQ+3bzWYesFtkepErvUSbf+EIYLkrLKd6
-# qJnuzK8Vcn0DvbDMemQFoxQ2Dsw4vEjoT1FpS54dNApZfKY61HAldytxNM89PZXU
-# P/5wWWURK+IfxiOg8W9lKMqzdIo7VA1R0V3Zp3DjjANwqAf4lEkTlCDQ0/fKJLKL
-# kzGBTpx6EYevvOi7XOc4zyh1uSqgr6UnbksIcFJqLbkIXIPbcNmA98Oskkkrvt6l
-# PAw/p4oDSRZreiwB7x9ykrjS6GS3NR39iTTFS+ENTqW8m6THuOmHHjQNC3zbJ6nJ
-# 6SXiLSvw4Smz8U07hqF+8CTXaETkVWz0dVVZw7knh1WZXOLHgDvundrAtuvz0D3T
-# +dYaNcwafsVCGZKUhQPL1naFKBy1p6llN3QgshRta6Eq4B40h5avMcpi54wm0i2e
-# PZD5pPIssoszQyF4//3DoK2O65Uck5Wggn8O2klETsJ7u8xEehGifgJYi+6I03Uu
-# T1j7FnrqVrOzaQoVJOeeStPeldYRNMmSF3voIgMFtNGh86w3ISHNm0IaadCKCkUe
-# 2LnwJKa8TIlwCUNVwppwn4D3/Pt5pwIDAQABo4IBlTCCAZEwDAYDVR0TAQH/BAIw
-# ADAdBgNVHQ4EFgQU5Dv88jHt/f3X85FxYxlQQ89hjOgwHwYDVR0jBBgwFoAU729T
+# MDI2IDEwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQC2e6byyf7NSvjU
+# m0xls/04xjD4fAkOkbnGQi7+Wpx81iYxfzViaxSIctuH3KSl5YEYpMuFgGsA31N2
+# D9ATMbfZdw5uaAhuWevQKhDdZIB4NnqcfpfpWQXJiQnDdAElETC+bhSEvNLGbA8D
+# twUpFMQ4yyYQSPqomT92osQAv6hBi47ATZS6JfVWe6XxhF4jJZ3iSAuf2Cros1cz
+# RSmWRHqMv9AfGZvp8ygYElhudpQjtcPpwoOl6QrZJUyV3iINvN4cO05prGV0fkjG
+# 426xDr2d3z9lcSIHkdvGPdGUrXdxfVbgOUVcp2/8ISEzwKPW++Wa+E2ujI91EZtu
+# kGWDJ/xZ27k3oHKEXBRGfRTqjOU+jE3ba/5++JSE/7oNHnjs5mekExYN96LV/mxU
+# bCKJb8pBNY4r3uD7hEmk/M81XhVgwDA7aMzYC3LZBg9WY5BMmbSay5ecmtJuXaB/
+# 0nKWmQmVZeqTVDgsmzHP5MQuhAJkiWNuC9MmCg9TZHXbJ2/yLVSov9p16UDTLtT0
+# +aa1vN71fHeu1qMLlLNB3WOB/ADCxr3S/1hxI92Z6jKgEED/btwIvbfuXkNNhg8M
+# tDg43c4tMZae9FvqMOt/9PvmAxF9TNIsIFB8G6yb36ZJZGUL8N/pL971DyLXcK6H
+# M5PYnH5X+eVtczhCgHCVQCF6XDAlPQIDAQABo4IBlTCCAZEwDAYDVR0TAQH/BAIw
+# ADAdBgNVHQ4EFgQUFMljijAu1Er7bpTz5uNAfvXszeIwHwYDVR0jBBgwFoAU729T
 # SunkBnx6yuKQVvYv1Ensy04wDgYDVR0PAQH/BAQDAgeAMBYGA1UdJQEB/wQMMAoG
 # CCsGAQUFBwMIMIGVBggrBgEFBQcBAQSBiDCBhTAkBggrBgEFBQcwAYYYaHR0cDov
 # L29jc3AuZGlnaWNlcnQuY29tMF0GCCsGAQUFBzAChlFodHRwOi8vY2FjZXJ0cy5k
@@ -40848,37 +41172,37 @@ ProcessScriptEnd
 # U0hBMjU2MjAyNUNBMS5jcnQwXwYDVR0fBFgwVjBUoFKgUIZOaHR0cDovL2NybDMu
 # ZGlnaWNlcnQuY29tL0RpZ2lDZXJ0VHJ1c3RlZEc0VGltZVN0YW1waW5nUlNBNDA5
 # NlNIQTI1NjIwMjVDQTEuY3JsMCAGA1UdIAQZMBcwCAYGZ4EMAQQCMAsGCWCGSAGG
-# /WwHATANBgkqhkiG9w0BAQsFAAOCAgEAZSqt8RwnBLmuYEHs0QhEnmNAciH45PYi
-# T9s1i6UKtW+FERp8FgXRGQ/YAavXzWjZhY+hIfP2JkQ38U+wtJPBVBajYfrbIYG+
-# Dui4I4PCvHpQuPqFgqp1PzC/ZRX4pvP/ciZmUnthfAEP1HShTrY+2DE5qjzvZs7J
-# IIgt0GCFD9ktx0LxxtRQ7vllKluHWiKk6FxRPyUPxAAYH2Vy1lNM4kzekd8oEARz
-# FAWgeW3az2xejEWLNN4eKGxDJ8WDl/FQUSntbjZ80FU3i54tpx5F/0Kr15zW/mJA
-# xZMVBrTE2oi0fcI8VMbtoRAmaaslNXdCG1+lqvP4FbrQ6IwSBXkZagHLhFU9HCrG
-# /syTRLLhAezu/3Lr00GrJzPQFnCEH1Y58678IgmfORBPC1JKkYaEt2OdDh4GmO0/
-# 5cHelAK2/gTlQJINqDr6JfwyYHXSd+V08X1JUPvB4ILfJdmL+66Gp3CSBXG6IwXM
-# ZUXBhtCyIaehr0XkBoDIGMUG1dUtwq1qmcwbdUfcSYCn+OwncVUXf53VJUNOaMWM
-# ts0VlRYxe5nK+At+DI96HAlXHAL5SlfYxJ7La54i71McVWRP66bW+yERNpbJCjyC
-# YG2j+bdpxo/1Cy4uPcU3AWVPGrbn5PhDBf3Froguzzhk++ami+r3Qrx5bIbY3TVz
-# giFI7Gq3zWcwggdZMIIFQaADAgECAhALbN+2Z4EOKufLWhG6HUlwMA0GCSqGSIb3
+# /WwHATANBgkqhkiG9w0BAQsFAAOCAgEAjcU6YR6dUgrfmawJgH59KECxa9Ji8sEi
+# 2g10CBDaMiqsaxWyW5cwlT/6ZF5sFznazqVsoC85U9dqLOYqQwst+UQQoNlDHgKR
+# La3xoc+OReFreFhnTXSG0Vrd2E2CZqUfm+5a+He1MJ/h+tNLuA+0Zzhn/Fo+FDYA
+# HWZHx4R79ZsfRFYe9UiXpXBDf6DkUo183Y38NYmR/XfDYf7YZ+oR9t3flbDwK+hg
+# GMs0gNNp1w9Z2CyOyI5or/sSwomAuNQ0hWC9xoU4stD8aWsD7RkcmgVRs6vlIk3z
+# PKQ+ylcheWkMlj+CoVRlFE55pv0ZWCaFt04lwP/rdGHE9qEVQZtyRE42ox7oNgC/
+# r+Y4bSlZ3dw9K2x1xLtu6PkPKeLBFjzKigwfqm3Hm+k/+lnME8F5kPZTgiy2HLEH
+# klpryqs6QHnPXrRNeIzkAMyylnRN8P0wmirS0WkU+ywpEWFZ4QNg+9xS43tTuW9x
+# 0eXh7NDc1P/sV+zWxHXKH8tFt1ncHdVzqrZaYPyYMLSn2TOXajveJW1L3joiQSPs
+# WRGxkbDDW15jERFE4LvjnGu2O9zD1nLJSMdlYZEikl4w2w+q4IN/R+TIe0H4ngCI
+# 1moJCTbevGH4punIxM1Uoi0nmX3ZK+XbRT01uowE5ViXWHng0RgsmrX/EdYUo80r
+# 3TfMlkD0/YMwggdZMIIFQaADAgECAhAJuCcgOBs2YT7S+XvCw8f0MA0GCSqGSIb3
 # DQEBCwUAMGkxCzAJBgNVBAYTAlVTMRcwFQYDVQQKEw5EaWdpQ2VydCwgSW5jLjFB
 # MD8GA1UEAxM4RGlnaUNlcnQgVHJ1c3RlZCBHNCBDb2RlIFNpZ25pbmcgUlNBNDA5
-# NiBTSEEzODQgMjAyMSBDQTEwHhcNMjQwODEzMDAwMDAwWhcNMjYxMDE4MjM1OTU5
+# NiBTSEEzODQgMjAyMSBDQTEwHhcNMjYwNzEzMDAwMDAwWhcNMjYxMDE4MjM1OTU5
 # WjBhMQswCQYDVQQGEwJVUzESMBAGA1UECBMJVGVubmVzc2VlMRAwDgYDVQQHEwdM
 # ZWJhbm9uMRUwEwYDVQQKEwxDYXJsIFdlYnN0ZXIxFTATBgNVBAMTDENhcmwgV2Vi
-# c3RlcjCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANObiSjT83zRuTfB
-# koOFsUj74a/sVI6pDCmQpc4uC8XNvrEoZzqKL5mPQD5E7un43xWCwqijpwu9BdOG
-# jmb1Re8XZ0RbJNMKGOTADgLxDAzTXmpCrcfLkQOzhPHmV6biEP6iOGHrC9DGXRkg
-# PUMrElexmeEaN1/9moLgh42klfJPpzlFgiJngFLNCG4mZGvzqcYvkkCkatHxly75
-# G/RTm+uQnss4yclcnSwDKFwIIME1TDM6+kdJfBHdOBONr0jAcxekKNfkA4bG9QIb
-# MphHpbYWgNrdmCqILuHpIyHq0nLWMg8pJNhxjFnHfbiutYQOC0wkRVku1VC6W/rx
-# a/KGxAIURL5M7BrmTwS92SVkr9Y9HDP8lFSZdLT3ZHdLA2fDqE1ryfQ5c23O+WjY
-# IByIvOlGvIRHnXrHP8MgRge+mTKGvBfiIComl8QWyydmvEfQ+xQEgKP7mRePZdGd
-# SiAOkmf9cwe9UDCLaHxzZeqJulGHI6a3gyLgGLv79BtZ0CgW9ehExT32jLtKP0Kf
-# hOgvR4fSC0EymydVWyszSBEcuzxROCebBcNMhN0sjnowrkDrqMwbfDi64IDQJnZ6
-# G+0xpjeM20uWaw+T3A8yGevpFu5fsaCz8huJFaPErXQCEHYNpXUXQrxBgmO+C7W3
-# rzLtmlQwnSOwdx6j9B4EvDIR3+W9AgMBAAGjggIDMIIB/zAfBgNVHSMEGDAWgBRo
-# N+Drtjv4XxGG+/5hewiIZfROQjAdBgNVHQ4EFgQUjXWpkPG7S6X9XiykjcFP7U4f
-# mDUwPgYDVR0gBDcwNTAzBgZngQwBBAEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3
+# c3RlcjCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAKsfdK9kJ+4w38Ei
+# ZP7/xd81hmEb1qaRj3Fb1cLVGfsBH+pdNUt/iOEL+0E/t94YKquBDTQmaL439hgL
+# 2LoXpX65cxm5BgqflP5Lj/5B0f1XfmqXZJGMYJU4+PSDNJbs2qQoO33NWLhnZt58
+# qgwBKb7I7//AWWiqvsvB5Qro8Qil0x0JLH2sTFsaPsSpdtGDEnCCuO2d8uxDhcIR
+# 5y2v5EeZQPl4ZYeVVJM5k8IRqTl00QViFSvJ6I17Xw+ltE/KzQ2KU517z2j36Q6Z
+# McCUDuI4AQZbUe9MLgb1DrxmDHkUQDbhA7N+iAF1ufsuFVsod5ecbS1L4pFzQrBw
+# 40H9tBp311J8o3Fnby8NMVJcB1L04Or5GdTvcpHlAOsDxtROVhG9u0gzD2QEm0s2
+# iqwDu8skxg9wEZf65G6Gg8ozY55kArs97B7fcv7iINJByLmzKxgwHkFeE1yFtnIJ
+# mgyEWNdmOmqwPsgHMwnRiNlBhe13/XkV3dsJSysikn4P6ljJ7ok1HUGX0kR9mMtQ
+# tp7q2THs8q0/l23NAuVcXgRbd2b5zT/DD81xqamblaDzMkjiRX0VvPgTVLc1YVlf
+# onaCdeXGQsP2jTUdZcIghLMnJc9T2geKFr2oqZOUSb0DC9vfL42G/nuwZsdmeN8Z
+# G/9kBY3C3tLu/crMsmtYYtF378ZpAgMBAAGjggIDMIIB/zAfBgNVHSMEGDAWgBRo
+# N+Drtjv4XxGG+/5hewiIZfROQjAdBgNVHQ4EFgQU+LRgxllvY8pgTM+rGYb9dI8Y
+# sHMwPgYDVR0gBDcwNTAzBgZngQwBBAEwKTAnBggrBgEFBQcCARYbaHR0cDovL3d3
 # dy5kaWdpY2VydC5jb20vQ1BTMA4GA1UdDwEB/wQEAwIHgDATBgNVHSUEDDAKBggr
 # BgEFBQcDAzCBtQYDVR0fBIGtMIGqMFOgUaBPhk1odHRwOi8vY3JsMy5kaWdpY2Vy
 # dC5jb20vRGlnaUNlcnRUcnVzdGVkRzRDb2RlU2lnbmluZ1JTQTQwOTZTSEEzODQy
@@ -40887,48 +41211,48 @@ ProcessScriptEnd
 # gZQGCCsGAQUFBwEBBIGHMIGEMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC5kaWdp
 # Y2VydC5jb20wXAYIKwYBBQUHMAKGUGh0dHA6Ly9jYWNlcnRzLmRpZ2ljZXJ0LmNv
 # bS9EaWdpQ2VydFRydXN0ZWRHNENvZGVTaWduaW5nUlNBNDA5NlNIQTM4NDIwMjFD
-# QTEuY3J0MAkGA1UdEwQCMAAwDQYJKoZIhvcNAQELBQADggIBAELxe271+0s/f2L4
-# jS+stPNIV7xullhe392MKZQTh3kMuGwxhydNNN4+jHZ0kPk3m3HdQCGWirDSWo09
-# TUReBftt0Hof8pxZN5EbmmwiZI7Bjyw2UPlCs34X1kCjsFgiBILJsdkGtxDJvzSw
-# 22fUqrblVVqguvm/NiVoPBIbeodYiWzJwNzLbjPGbohynYynU4vNaXkOwkbunpPJ
-# 435mRKPHefXBVgPBxDOEv5OH97tf4Yx5EwN+Oq/sH9w7EyZfv4w4kA40wvFBdcET
-# EydMiVEJb4VGKhchCDpzCbchD8nxK/T+O/+JCK9v4kDJ7fBQ8/52by8WA2lYwf37
-# xS7LNtsBCl+LWefZ1+2Nb1wNGJOQcONHqBjM+l0kLivwo8e6ChwCYY9+9HpnPNRU
-# ib5Sb9SVXYuIlIX5+i31XHNNYuSHLhEKfIqRlake9AKdxymSt4b3FEEfm85rdB/b
-# Sw9So9iCWax2uUhcobuwEcpsvKqIailleOQ8efp2SL43obD0+SwJh6286TUYtuh9
-# wIiRB/dIwfvuVypwKDfSBROM4+k34+Jrnb8PhMQ4tuP815ITZ/MjmbkneKJ0/yDd
-# RMwO38fazCnXCyQKfbcrr0XLEg4l0usjaRLvyecV3QW4jg2qDMkXcnUyl1vXbybM
-# wlYzaY5hV3xrBtxgBA5Kx0vpwkevMYIGEDCCBgwCAQEwfTBpMQswCQYDVQQGEwJV
+# QTEuY3J0MAkGA1UdEwQCMAAwDQYJKoZIhvcNAQELBQADggIBAGWMr01OM6QQM3Je
+# 2UfeJTUslP8lGHysjagdm9HfXkgNS4Mf9mD4ddh5Y20B1SIJcf4DpTygA1P0w8qM
+# mBMubWJxLlCdVDwOLIgGpckDw7K3xY4RBJ2Vf9YY4KN6Z70pVVg1v8KdbgsmRu1d
+# LfOdNqS2U9E1Frty5ywFl7482Up8z3QHNv9doL1Qd/BSPPXW5P9HfRNoas80b7PF
+# VIeguQbYBOpb1ojQI1H5EdrpRf2sDpSymNHFh3TbPDJ7x26zcNftmeKmiQ/7x4UX
+# pBxTVoUs1CSCOhU9D0ihm8fU0rxFOoiBcq7P9yOy+A+e8Z4UH6SwMOf+NtdyfiH7
+# Tauoi3oe+gl8txLxXJrc7oVtXeYF7YTEmFLOhcxzcigalS/1aVFnaywHJc3c6apn
+# EG0nnpGLzWZFFWFh0OPESd+Phd8zurAw2aqMqx0xjHROz5nEAiKzgt71LZbuAW11
+# GZDYPXXUUyLGIKJXu8PvmhGixXa6xSmKOEuzKfnQ6BXFDiF85w01jhUp6DnfUNCC
+# IUQS7+HDucjdF2c64bbOqRXBaHDxs5b7AfrQbH1V2/iHr7KS9EvndsGq2qOjMiuv
+# BIBqyKL57WjvJ4IEpZXPGxaZH5fe7Xpra3GYrl3x/nq9lKjoqGRG+j2NVOF9JPKH
+# w8Dxa5BLRLZyosNgdnYwyvxWr00FMYIGEDCCBgwCAQEwfTBpMQswCQYDVQQGEwJV
 # UzEXMBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRy
-# dXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExAhAL
-# bN+2Z4EOKufLWhG6HUlwMAkGBSsOAwIaBQCgQDAZBgkqhkiG9w0BCQMxDAYKKwYB
-# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQUtZWmptEgJVlMstiPAXT8YaGWKpEwDQYJ
-# KoZIhvcNAQEBBQAEggIALBeDQYOgG7XGqDB9aNZ/Zpq2oTHlWXqbkrW/pCgWn8cm
-# 6HKTretglnZzGftI503OYN2yv9aK+9de7Nq8y0Vvnk7tDNA7d15YZ/Lc9JjZKFWw
-# 9KzP3bX82lX2Dvs9CpTZo5QzPEK48ec+8PVMkaNc7gbcdChXP1F5t3RLEjKPF+Ir
-# OoksRvgTTJOWQce9yT+3GmXh3QcAxJPPl2v8e8+kcpQGgQ1FqQ9/JRbKKeG1G5Lz
-# gNzKnDb84KZ7BswQK+6dAZejqClDRAbyIbfS0Q7tc67+xtoRjHfSpX8GIF8eNuAi
-# MMgK7ix9GCRSf83X2yDCdJg6USQGKmFMLiJaa0XSJnhl3WNv71AAOmRjV5kngDh0
-# XvUcDNuvTbLJ3NVN576XVU3hLqEhtOh8EuAdHSN12QAcq0VkvomMKwDQXV90Ry9x
-# 644J1ZUHmpyaNskasGGFfEQ3mKARX3/P4T9ZkNOs3a2IjMsgNBz/Pnr/IBJYgwAi
-# Q7H4L1w2NMFEv4EvF0U1jsPvdcZoQhzDBo31rQCQ0w6kstSPtFS7h/EAN1N/HZNe
-# Tfi1C44dw7kkx7Ju3lWt7FHbnrFiCjjucikmeLbYFHLTxWD0kFr/8ot0JhEAgNFp
-# Yfm0quXgcbJ+zbXp01O7HJzjMiDsg3h2qY/pqwePrX2jy5u5bFczVUE4Y+w79qCh
+# dXN0ZWQgRzQgQ29kZSBTaWduaW5nIFJTQTQwOTYgU0hBMzg0IDIwMjEgQ0ExAhAJ
+# uCcgOBs2YT7S+XvCw8f0MAkGBSsOAwIaBQCgQDAZBgkqhkiG9w0BCQMxDAYKKwYB
+# BAGCNwIBBDAjBgkqhkiG9w0BCQQxFgQULI5tF94dQ+VkceROGd/QqCu64bYwDQYJ
+# KoZIhvcNAQEBBQAEggIAkdJrDPrZx+u2Iq3X88BqM+8lro3fn3K4Qlmv9n6kAmAI
+# 8z0RxIOKqN8Q6ZQBP1jeIifBIFyffmJHv1clsGdzga7hb/1kPAuoCllY35U+Bpiq
+# 5UaSIQjFSugL+lSCi8c62Jq5rSHr3fmR5KPDVFMvifque134S6MGEETsaFNgagGo
+# IvicOZLlLTVvLUL23DdnenwMNpqR+82TRgmUy0J4NBGwAyPO4VLIywN6TQ7uEuYn
+# gpqbfLEjsXnzQ+ZKs+Z4z53KgM7Ake0xQft84yBXZXPiHByoOSYlRnOaRVNoUZGP
+# 6yBWQz9rBuCRN2AJLWVNMLjkP5QOBVN89onIl/oF9qWsPlzFR4OaGJaZQ1K48oZ2
+# UwBJNgNIZFBExTPyxmtLnttqHq1zas1QXvpHUz24Eake+viWE6O14fzFnYvJXn2J
+# hfqoML5sO9x6ofrQ84FzDsq4d8UHt87D1ngHiCyKG8E2Fx1szA9K52Q9ZYxGqEyA
+# gb8PlbJpQSJcMa8Z+fBAT/5dtOgm6zJUK8Viqc//6/JxW4scejt4/JoNqziDrr/o
+# Ua19qZFdTyCGfd7nYzsv4kBXcE6WG8iX+SsUtZnIkFHSdoMj6rJK2Xeoog8Ovz2T
+# lCAENXPMj3lpw0VeyG3ym8ikEoBg76PQi/hIxXkFhNjHhbDxAdbbSGk4R3s0246h
 # ggMmMIIDIgYJKoZIhvcNAQkGMYIDEzCCAw8CAQEwfTBpMQswCQYDVQQGEwJVUzEX
 # MBUGA1UEChMORGlnaUNlcnQsIEluYy4xQTA/BgNVBAMTOERpZ2lDZXJ0IFRydXN0
-# ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hBMjU2IDIwMjUgQ0ExAhAKgO8Y
-# S43xBYLRxHanlXRoMA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqG
-# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjYwMzMxMTYxOTQ5WjAvBgkqhkiG9w0B
-# CQQxIgQgWGfW0Sp2OKpREynyiuwMCx7kIGkhEaBaeamyNgAvJ5QwDQYJKoZIhvcN
-# AQEBBQAEggIApOQA0xxlmwqlF9HyRmHps068F17tMmGJQyHTg8sCSn+f669DBq59
-# h4mbVpjbJWLJS7E5+iG/e956a2PaFCAGZntf6gLrdOjS2Oe9+K6krRUhOck23+ii
-# Uk/S9Y1TGFedyFxeT4IkSHQ0kKlkqY2Wnm9y2PC6pspOunh76l/xFLIGdACaR5qp
-# 5TSlssudFWXjo93yF9cGFiRHWlJQkxIz/Krnl0wZYgQVkmKzPl233F/LZGNGXiQZ
-# /zitsjVdE0BF55f5IfoLXAURFUHvpRWZ9R1yBl1ylESIYoY0KNlTAzRbUo3wG6q+
-# lDggNpgGVomgq9v0W2jrhjRKdMkYYp1jXo095D8ddwzeOuC+pRSBU87u2s4jY98K
-# Klldw1syl6WBlliNG7gDsRed6sMO9Evi0i473sRIYiXdBKabf+FwPtiaQdl5Z+p3
-# ziO2xL5PINvYBaJV4OnWZ8k+Km5B3oOkSixptLxeQGndYKLHFg+nHgt/2GbBL5zE
-# o2ubaS54MSI21b9k1nkcCaPAiqrfZevHTUgoVvGXNH8sFz0uqXrxhGGi3gNjKmSK
-# QUypFwngOt4xZXH9qDGn21zWbgsghv++tzTuhYJHYFv4/TaDXc6HE9OIPBRdrLYk
-# vSahS8HKfvLQtuyE8PZbw8GwJkZLXj/SBxcRa2XEzf7fJW5Yue11948=
+# ZWQgRzQgVGltZVN0YW1waW5nIFJTQTQwOTYgU0hBMjU2IDIwMjUgQ0ExAhAIT9wz
+# T35FTtvDD4/5khg1MA0GCWCGSAFlAwQCAQUAoGkwGAYJKoZIhvcNAQkDMQsGCSqG
+# SIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMjYxMDA4MTkyNTM0WjAvBgkqhkiG9w0B
+# CQQxIgQgc10bnsblkpwndm6ZNh1WMTMzXvzBSp8emhbKKhimk+cwDQYJKoZIhvcN
+# AQEBBQAEggIAPOgFe3VY2OJ0ZX6OUk7wBof3qqqkTJqgrf0NVN1KXAzwkhk7hwlP
+# GpuMZtKyy+Ba6fsQ3EUYPUvUU9y7qOVyh0gZt5vRZ3d10TxME+R/3uhxaZq5BxGN
+# Ix+I0IRRVKgka1mLBHNu0uMaFBhIDlUKXjw1VZGIuxBqXR1yf/pQaFMujIzgv7V+
+# /jv4aZpYycY7sLgIYDXZgnYl/9W+CryVJXeYI+vzUapr3YrVgRz3XOdr6Q2bRtBl
+# 7yIcZCeoNScSl17P56+hpR1VD8t2Z/0DYDlQR9+gz6cRfwuKnlaSXKSNTl3Kr9Mm
+# 1KdaH/Fi6+AlRztjmg0Oy3sIDD1mC3h6OJmIf1D+jWHXjygEcjn4J4vdQXmaWHse
+# KY481YFhCiqtdPD8Evnxy1UTIspXb1an9uffoOxK5H1YChGWpBLcHHf6SUoZo2NA
+# iF1KyEy/SqZK7wDdP/fJ247v0pwKfQK3XMCQju7Ad+geJOZSJxEPWoMpJErMaUNd
+# xqsDDOQWCxwXbV/jC9z9ClWwn1b7cTjTcuLhsK8Eb8Fdo0Xc7YZ9A5ddUfbWkKWd
+# o2A1OVKre902cgx8JEVmO5vDBQhmtw1hCIbMMl4c2dfeawtsqWbwOB5bD22/RGVX
+# rU0RyXJsoMbuwR290+wmzqA98OwOlaizbGRf3DML4QCdj+cjaXhfDPk=
 # SIG # End signature block
