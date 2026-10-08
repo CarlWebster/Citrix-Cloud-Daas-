@@ -6,6 +6,39 @@
 
 # This script is based on the CVAD V3.00 doc script
 
+#Version 1.30 8-Oct-2027
+#	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
+#
+#	Add a PDF copy of the ReadMe file so it can be displayed in GitHub
+#
+#	Added the following policy settings:
+#		AssistantApp\Enable Assistant App Notification Dialog
+#		ICA\Clipboard sharing scope
+#		ICA\MTU Rediscovery
+#		ICA\WIA Redirection
+#		ICA\Authentication\Allow web sign-in
+#		ICA\Authentication\Microsoft Entra single sign-on
+#		ICA\Graphics\HDX graphics super resolution mode
+#		ICA\Graphics\Screenshot Redirected Content
+#		ICA\Keyboard and IME\End user control of language bar
+#		Profile Management\Profile container settings\Enable BindLink redirection
+#		VDA Data Collection\uberAgent\Enhance Director with uberAgent data for application performance
+#
+#	Change all Dropbox and most CarlWebster.com links to GitHub links
+#
+#	In Function GetRolePermissions (Thanks to Michael Wieloch of Ferroque Systems)
+#		Director_Service_Continuity_View		(Director - View Service Continuity page)
+#		Director_UCaaS_RealTimeCommunications	(Director - View Real-time communications page)
+#		ExtendedTracingAOT_Manage				(Other permissions - Manage Always on Tracing Capture Session)
+#		ExtendedTracingAOT_Read					(Other permissions - View Always on Tracing Capture Sessions)
+#
+#	In Functions OutputDesktopOSMachine, OutputMachineDetails, and OutputServerOSMachine,
+#		Fixed bugs to prevent an empty machine name and to prevent processing a SID
+#
+#	Updated the help text
+#
+#	Updated the ReadMe file
+
 #Version 1.29 31-Mar-2026
 #	Thanks to Ferroque Systems for lab access and help in gathering the necessary data for this update
 #

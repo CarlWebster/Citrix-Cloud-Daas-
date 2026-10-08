@@ -1,0 +1,320 @@
+
+GroupName                          Id                                        Name
+---------                          --                                        ----
+Administrators                     Admin_FullControl                         Manage Administrators
+Administrators                     Admin_NameControl                         Force Admin Name Update
+Administrators                     Admin_Read                                View Administrators
+Administrators                     Admin_RoleControl                         Manage Administrator Custom Roles
+Administrators                     Admin_ScopeControl                        Manage Administrator Scopes
+Administrators                     Admin_Sync                                Allow Admin Sync
+Administrators                     Manage_ServiceConfigurationData           Manage ServiceSettings
+Application Groups                 AppGroupApplications_ChangeTags           Edit Application tags (Application Group)
+Application Groups                 AppGroupApplications_ChangeUserAssignment Change users assigned to an application (Application Group)
+Application Groups                 AppGroupApplications_Create               Create Application (Application Group)
+Application Groups                 AppGroupApplications_CreateFolder         Create Application Folder (Application Group)
+Application Groups                 AppGroupApplications_Delete               Delete Application (Application Group)
+Application Groups                 AppGroupApplications_EditFolder           Edit Application Folder (Application Group)
+Application Groups                 AppGroupApplications_EditProperties       Edit Application Properties (Application Group)
+Application Groups                 AppGroupApplications_MoveFolder           Move Application Folder (Application Group)
+Application Groups                 AppGroupApplications_Read                 View Applications (Application Group)
+Application Groups                 AppGroupApplications_RemoveFolder         Remove Application Folder (Application Group)
+Application Groups                 ApplicationGroup_AddApplication           Add Application to Application Group
+Application Groups                 ApplicationGroup_AddScope                 Add Application Group to Scope
+Application Groups                 ApplicationGroup_AddToDesktopGroup        Add Delivery Group to Application Group
+Application Groups                 ApplicationGroup_ChangeTags               Change Tags on Application Group
+Application Groups                 ApplicationGroup_ChangeUserAssignment     Edit User Assignment on Application Group
+Application Groups                 ApplicationGroup_Create                   Create Application Group
+Application Groups                 ApplicationGroup_CreateFolder             Create Application Group Folder
+Application Groups                 ApplicationGroup_Delete                   Delete Application Group
+Application Groups                 ApplicationGroup_EditFolder               Edit Application Group Folder
+Application Groups                 ApplicationGroup_EditProperties           Edit Application Group Properties
+Application Groups                 ApplicationGroup_MoveFolder               Move Application Group Folder
+Application Groups                 ApplicationGroup_Read                     View Application Groups
+Application Groups                 ApplicationGroup_RemoveApplication        Remove Application from Application Group
+Application Groups                 ApplicationGroup_RemoveFolder             Remove Application Group Folder
+Application Groups                 ApplicationGroup_RemoveFromDesktopGroup   Remove Delivery Group from Application Group
+Application Groups                 ApplicationGroup_RemoveScope              Remove Application Group from Scope
+Application Packages               AppLib_AddApplication                     Add Packaged Applications
+Application Packages               AppLib_AddPackage                         Add Application Libraries and Packages
+Application Packages               AppLib_IsolationGroup_Create              Create App-V Isolation Group
+Application Packages               AppLib_IsolationGroup_Remove              Remove App-V Isolation Groups
+Application Packages               AppLib_PackageDiscovery_Create            Create Application Package Discovery Sessions 
+Application Packages               AppLib_PackageDiscoveryProfile_Create     Create Application Package Discovery Profiles
+Application Packages               AppLib_PackageDiscoveryProfile_Remove     Remove Application Package Discovery Profiles
+Application Packages               AppLib_Read                               Read Application Libraries and Packages
+Application Packages               AppLib_RemoveApplication                  Remove Packaged Applications
+Application Packages               AppLib_RemoveAppVServer                   Remove App-V Server and associated Packages
+Application Packages               AppLib_RemovePackage                      Remove Application Libraries and Packages
+Application Packages               AppV_AddServer                            Add App-V Publishing Server
+Application Packages               AppV_Read                                 Read App-V Servers
+Citrix Catalog Service             EA_Acct                                   Catalog Service Identity operations
+Citrix Catalog Service             EA_Broker                                 Catalog Service Broker operations
+Citrix Catalog Service             EA_Hyp                                    Catalog Service Hypervisor operations
+Citrix Catalog Service             EA_Prov                                   Remove Desktop from Delivery Group (1)
+Citrix Windows 365 Service Catalog C365_EA_Acct                              Windows 365 Identity operations
+Citrix Windows 365 Service Catalog C365_EA_Broker                            Windows 365 Broker operations
+Citrix Windows 365 Service Catalog C365_EA_Hyp                               Windows 365 Hypervisor operations
+Citrix Windows 365 Service Catalog C365_EA_Prov                              Windows 365 MCS operations
+Cloud                              Cloud_Storefront_Read                     Read Storefront Configuration
+Cloud                              Cloud_Storefront_Write                    Update Storefront Configuration
+Controllers                        Controller_EditProperties                 Edit Controller
+Controllers                        Controllers_Remove                        Remove Delivery Controller
+Cost Management                    Cost_Read                                 Read Cost
+Delivery Groups                    Applications_ChangeMaintenanceMode        Enable/disable maintenance mode of an Application
+Delivery Groups                    Applications_ChangeTags                   Edit Application tags
+Delivery Groups                    Applications_ChangeUserAssignment         Change users assigned to an application
+Delivery Groups                    Applications_Create                       Create Application
+Delivery Groups                    Applications_CreateFolder                 Create Application Folder
+Delivery Groups                    Applications_Delete                       Delete Application
+Delivery Groups                    Applications_EditFolder                   Edit Application Folder
+Delivery Groups                    Applications_EditProperties               Edit Application Properties
+Delivery Groups                    Applications_MoveFolder                   Move Application Folder
+Delivery Groups                    Applications_Read                         View Applications
+Delivery Groups                    Applications_RemoveFolder                 Remove Application Folder
+Delivery Groups                    DesktopGroup_AddApplication               Add Application to Delivery Group
+Delivery Groups                    DesktopGroup_AddApplicationGroup          Add Application Group to Delivery Group
+Delivery Groups                    DesktopGroup_AddMachines                  Add Machines to Delivery Group
+Delivery Groups                    DesktopGroup_AddScope                     Add Delivery Group to Scope
+Delivery Groups                    DesktopGroup_AddWebhook                   Add Webhooks to Delivery Group
+Delivery Groups                    DesktopGroup_ChangeMachineMaintenanceMode Enable/disable maintenance mode of a machine via Delivery Group membership
+Delivery Groups                    DesktopGroup_ChangeMaintenanceMode        Enable/disable maintenance mode of a Delivery Group
+Delivery Groups                    DesktopGroup_ChangeTags                   Edit Delivery Group tags
+Delivery Groups                    DesktopGroup_ChangeUserAssignment         Change users assigned to a desktop
+Delivery Groups                    DesktopGroup_Create                       Create Delivery Group
+Delivery Groups                    DesktopGroup_CreateFolder                 Create Delivery Group Folder
+Delivery Groups                    DesktopGroup_Delete                       Delete Delivery Group
+Delivery Groups                    DesktopGroup_EditFolder                   Edit Delivery Group Folder
+Delivery Groups                    DesktopGroup_EditProperties               Edit Delivery Group Properties
+Delivery Groups                    DesktopGroup_Machine_ChangeTags           Edit Delivery Group machine tags
+Delivery Groups                    DesktopGroup_MoveFolder                   Move Delivery Group Folder
+Delivery Groups                    DesktopGroup_PowerOperations_RDS          Perform power operations on Windows Server machines via Delivery Group membership
+Delivery Groups                    DesktopGroup_PowerOperations_VDI          Perform power operations on Windows Desktop machines via Delivery Group membership
+Delivery Groups                    DesktopGroup_Read                         View Delivery Groups
+Delivery Groups                    DesktopGroup_RemoveApplication            Remove Application from Delivery Group
+Delivery Groups                    DesktopGroup_RemoveApplicationGroup       Remove Application Group from Delivery Group
+Delivery Groups                    DesktopGroup_RemoveDesktop                Remove Desktop from Delivery Group
+Delivery Groups                    DesktopGroup_RemoveFolder                 Remove Delivery Group Folder
+Delivery Groups                    DesktopGroup_RemoveScope                  Remove Delivery Group from Scope
+Delivery Groups                    DesktopGroup_SessionManagement            Perform session management on machines via Delivery Group membership
+Delivery Groups                    EntitlementPolicyRule_ChangeTags          Edit Desktop tags
+Delivery Groups                    Machine_ChangeTagsBase                    Edit machine tags (hidden)
+Director                           Director_AlertPolicy_Edit                 Create\Edit\Enable\Delete Alert Policies
+Director                           Director_AlertPolicy_Read                 View Alert Policies
+Director                           Director_Alerts_Read                      View Alerts
+Director                           Director_AlertWebhookProfile_Edit         Create\Edit\Remove\View Webhook Profile Configurations
+Director                           Director_Analytics                        View Analytics page
+Director                           Director_AotLogs                          View Logs page
+Director                           Director_ApplicationDashboard             View Applications page
+Director                           Director_BulkActions_Edit                 Perform bulk actions for machine and session management
+Director                           Director_ClientDetails_Read               View Client Details page
+Director                           Director_ClientHelpDesk_Read              View Client Activity Manager page
+Director                           Director_Configuration                    View Configurations page
+Director                           Director_CostSavings                      View Cost Optimization page
+Director                           Director_Dashboard_Read                   View Dashboard page
+Director                           Director_DesktopHardwareInformation       Perform Machine Hardware related Broker machine command
+Director                           Director_DesktopHardwareInformation_Edit  Edit Machine Hardware related Broker machine command properties
+Director                           Director_DiskMetrics                      Perform Disk metrics related Broker machine command
+Director                           Director_DiskMetrics_Edit                 Edit Disk metrics related Broker machine command properties
+Director                           Director_DismissAlerts                    Dismiss Alerts
+Director                           Director_DownloadSFOnboardScripts         Perform download of on-premises StoreFront onboarding scripts
+Director                           Director_EmailserverConfiguration_Edit    Create\Edit\Remove Alert Email Server Configuration
+Director                           Director_Endpoint                         View Endpoint page
+Director                           Director_EndpointMetrics                  Perform Endpoint Metrics related Broker machine command
+Director                           Director_EndpointMetrics_Edit             Edit Endpoint Metrics related Broker machine command properties
+Director                           Director_Filters_ApplicationInstances     View Filters page Application Instances only
+Director                           Director_Filters_Connections              View Filters page Connections only
+Director                           Director_Filters_Machines                 View Filters page Machines only
+Director                           Director_Filters_Sessions                 View Filters page Sessions only
+Director                           Director_GetVDARegistryKeyValues          Get VDA registry key values
+Director                           Director_GetVDARegistryKeyValues_Edit     Edit VDA registry keys retrieval related machine command properties
+Director                           Director_GPOData                          Perform GPO Data related Broker machine command
+Director                           Director_GPOData_Edit                     Edit GPO Data related Broker machine command properties
+Director                           Director_GpuMetrics                       Perform Gpu metrics related Broker machine command
+Director                           Director_GpuMetrics_Edit                  Edit Gpu metrics related Broker machine command properties
+Director                           Director_HDXInformation                   Perform HDX related Broker machine command
+Director                           Director_HDXInformation_Edit              Edit HDX related Broker machine command properties
+Director                           Director_HDXProtocol                      Perform HDX Protocol related Broker machine command
+Director                           Director_HDXProtocol_Edit                 Edit HDX Protocol related Broker machine command properties
+Director                           Director_HelpDesk_Read                    View Activity Manager page
+Director                           Director_InfrastructureMonitor            View Infrastructure Monitor page
+Director                           Director_InfrastructureMonitor_Edit       Create/Edit/Manage Connections to Citrix components (Infra Monitoring) (1)
+Director                           Director_IntegrationsAndDataExport        View Integrations and Data exports page
+Director                           Director_KillApplication                  Perform Kill Application running on a machine
+Director                           Director_KillApplication_Edit             Edit Kill Application related Broker machine command properties
+Director                           Director_KillProcess                      Perform Kill Process running on a machine
+Director                           Director_KillProcess_Edit                 Edit Kill Process related Broker machine command properties
+Director                           Director_LatencyInformation               Perform Latency related Broker machine command
+Director                           Director_LatencyInformation_Edit          Edit Latency related Broker machine command properties
+Director                           Director_MachineDetails_Read              View Machine Details page
+Director                           Director_MachineMetricValues              Perform Machine metric related Broker machine command
+Director                           Director_MachineMetricValues_Edit         Edit Machine metric related Broker machine command properties
+Director                           Director_MTOPInformation                  Perform MTOP related Broker machine command
+Director                           Director_MTOPInformation_Edit             Edit MTOP related Broker machine command properties
+Director                           Director_PerformBuildInScriptedTask       Perform Build-In Scripted Task on Machines/Sessions
+Director                           Director_PerformCustomScriptedTask        Perform Custom Scripted Task on Machines/Sessions
+Director                           Director_PersonalizationInformation       Perform Personalization related Broker machine command
+Director                           Director_PersonalizationInformation_Edit  Edit Personalization related Broker machine command properties
+Director                           Director_PoliciesInformation              Perform Policies related Broker machine command
+Director                           Director_PoliciesInformation_Edit         Edit Policies related Broker machine command properties
+Director                           Director_ProbeConfigurationActions        Create\Edit\Remove Probe Configurations
+Director                           Director_ProbeSummaryView                 View Probe Summary page
+Director                           Director_ProfileLoadData                  Perform Profile Load Data related Broker machine command
+Director                           Director_ProfileLoadData_Edit             Edit Profile Load Data related Broker machine command properties
+Director                           Director_RDSLicenseCheck                  RDS License Check
+Director                           Director_ResetVDisk                       Perform Reset VDisk operation
+Director                           Director_ResetVDisk_Edit                  Edit Reset VDisk related Broker machine command properties
+Director                           Director_RoundTripInformation             Perform Roundtrip Time related Broker machine command
+Director                           Director_RoundTripInformation_Edit        Edit Roundtrip Time related Broker machine command properties
+Director                           Director_SCOM_Read                        View SCOM Notifications
+Director                           Director_Search_Cond_Auth_Transaction     View Conditional Authentication Transaction Data
+Director                           Director_Search_Transaction               View Transaction Data
+Director                           Director_SecurePrivateAccess              View Secure Private Access page
+Director                           Director_Service_Continuity_View          View Service Continuity page
+Director                           Director_Settings                         View Settings page
+Director                           Director_ShadowSession                    Perform Remote Assistance on a machine
+Director                           Director_ShadowSession_Edit               Edit Remote Assistance related Broker machine command properties
+Director                           Director_ShadowSessionViaHDXSS            Perform Remote Assistance on a machine via HDX Screen Sharing
+Director                           Director_ShadowSessionViaHDXSS_Edit       Edit HDX Screen Sharing related machine command properties
+Director                           Director_SliceAndDice_Read                View Filters page
+Director                           Director_StartupMetrics                   Perform Startup Metrics Data related Broker machine command
+Director                           Director_StartupMetrics_Edit              Edit Startup Metrics Data related Broker machine command properties
+Director                           Director_TaskManagerInformation           Perform TaskManager related Broker machine command
+Director                           Director_TaskManagerInformation_Edit      Edit TaskManager related Broker machine command properties
+Director                           Director_Trends_Read                      View Trends page
+Director                           Director_UCaaS_Connections_Manage         Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring) (1)
+Director                           Director_UCaaS_RealTimeCommunications     View Real-time communications page
+Director                           Director_UploadCustomScript               Upload Custom Script
+Director                           Director_UserDetails_Read                 View User Details page
+Director                           Director_WindowsSessionId_Edit            Edit Windows SessionId related Broker machine command properties
+Director                           UPM_Reset_Profiles                        Reset user profiles
+Director                           UPM_Reset_Profiles_Edit                   Edit Reset User Profiles related Broker machine command properties
+DirectorProbeAgent                 Director_ProbeAgentConfigurationActions   Access to Probe Agent APIs
+Entitlement Policy Rules           EntitlementPolicyRule_Machine_ChangeTags  Edit Entitlement Policy Rule machine tags
+Hosts                              Hosts_AddScope                            Add Host Connection to Scope
+Hosts                              Hosts_AddStorage                          Add storage to Resources
+Hosts                              Hosts_ChangeMaintenanceMode               Enable/Disable maintenance mode of a Host Connection
+Hosts                              Hosts_Consume                             Use Host Connection or Resources to Create Catalog
+Hosts                              Hosts_CreateHost                          Add Host Connection or Resources
+Hosts                              Hosts_DeleteConnection                    Delete Host Connection
+Hosts                              Hosts_DeleteHost                          Delete Resources
+Hosts                              Hosts_DetectOrphanedResources             Use Host Connection to Detect Orphaned Resources in Hypervisor
+Hosts                              Hosts_EditConnectionProperties            Edit Host Connection properties
+Hosts                              Hosts_EditHostProperties                  Edit Resources
+Hosts                              Hosts_Read                                View Host Connections and Resources
+Hosts                              Hosts_RemoveScope                         Remove Host Connection from Scope
+Images                             Image_AddScope                            Add Image to Scope
+Images                             Image_Create                              Create Images
+Images                             Image_Delete                              Delete Images
+Images                             Image_EditProperties                      Edit Images
+Images                             Image_Read                                Read Images
+Images                             Image_RemoveScope                         Remove Image from Scope
+Licensing                          Licensing_ChangeLicenseServer             Change licensing server
+Licensing                          Licensing_EditLicensingProperties         Edit product edition
+Licensing                          Licensing_Read                            View Licensing
+Logging                            Logging_Delete                            Delete Configuration Logs
+Logging                            Logging_EditPreferences                   Edit Logging Preferences
+Logging                            Logging_Read                              View Configuration Logs
+Machine Catalogs                   Catalog_AddMachines                       Add Machines to Machine Catalog
+Machine Catalogs                   Catalog_AddScope                          Add Machine Catalog to Scope
+Machine Catalogs                   Catalog_CancelProvTask                    Cancel Provisioning Task
+Machine Catalogs                   Catalog_ChangeMachineMaintenanceMode      Enable/disable maintenance mode of a machine via Machine Catalog membership
+Machine Catalogs                   Catalog_ChangeMaintenanceMode             Enable/disable maintenance mode on Desktop via Machine Catalog membership
+Machine Catalogs                   Catalog_ChangeTags                        Edit Catalog tags
+Machine Catalogs                   Catalog_ChangeUserAssignment              Change users assigned to a machine
+Machine Catalogs                   Catalog_ConsumeMachines                   Allow machines to be consumed by a Delivery Group
+Machine Catalogs                   Catalog_Create                            Create Machine Catalog
+Machine Catalogs                   Catalog_CreateFolder                      Create Machine Catalog Folder
+Machine Catalogs                   Catalog_Delete                            Delete Machine Catalog
+Machine Catalogs                   Catalog_EditFolder                        Edit Machine Catalog Folder
+Machine Catalogs                   Catalog_EditProperties                    Edit Machine Catalog Properties
+Machine Catalogs                   Catalog_Machine_ChangeTags                Edit Catalog machine tags
+Machine Catalogs                   Catalog_ManageAccounts                    Manage Active Directory Accounts
+Machine Catalogs                   Catalog_ManageWemSet                      Manage Catalog Configuration Set
+Machine Catalogs                   Catalog_MoveFolder                        Move Machine Catalog Folder
+Machine Catalogs                   Catalog_PowerOperations_RDS               Perform power operations on Windows Server machines via Machine Catalog membership
+Machine Catalogs                   Catalog_PowerOperations_VDI               Perform power operations on Windows Desktop machines via Machine Catalog membership
+Machine Catalogs                   Catalog_Read                              View Machine Catalogs
+Machine Catalogs                   Catalog_RemoveFolder                      Remove Machine Catalog Folder
+Machine Catalogs                   Catalog_RemoveMachine                     Remove Machines from Machine Catalog
+Machine Catalogs                   Catalog_RemoveScope                       Remove Machine Catalog from Scope
+Machine Catalogs                   Catalog_SessionManagement                 Perform session management on machines via Machine Catalog membership
+Machine Catalogs                   Catalog_UpdateMasterImage                 Perform Machine update
+Merge Groups                       MergeGroup_Create                         Create Merge Groups
+Merge Groups                       MergeGroup_Delete                         Delete Merge Groups
+Merge Groups                       MergeGroup_EditProperties                 Edit Merge Groups
+Merge Groups                       MergeGroup_Read                           View Merge Groups
+Other permissions                  AutoTagRule_Create                        Create AutoTagRule
+Other permissions                  AutoTagRule_Delete                        Delete AutoTagRule
+Other permissions                  AutoTagRule_Edit                          Edit AutoTagRule
+Other permissions                  AutoTagRule_Read                          Read AutoTagRule
+Other permissions                  Configuration_Read                        Read Site Configuration
+Other permissions                  Configuration_Restricted_ServiceRead      Get Config data for the service
+Other permissions                  Configuration_Restricted_ServiceWrite     Set or Remove Config data for the service
+Other permissions                  Configuration_Restricted_Write            Customer Update Site Configuration
+Other permissions                  Configuration_Unrestricted_Write          Update Site Configuration
+Other permissions                  Database_Read                             Read database status information
+Other permissions                  Director_Admin                            Director admin permission
+Other permissions                  DirectorAgent_Registration                Create/Edit/Manage Connections to Citrix components (Infra Monitoring)
+Other permissions                  EdgeService_Admin                         EdgeService LHC permission
+Other permissions                  EnvTest                                   Run environment tests
+Other permissions                  Export_BrokerConfiguration                Export Broker Configuration
+Other permissions                  ExtendedTracingAOT_Manage                 Manage Always on Tracing Capture Sessions
+Other permissions                  ExtendedTracingAOT_Read                   View Always on Tracing Capture Sessions
+Other permissions                  Global_Read                               Read Service status information
+Other permissions                  Global_Write                              Essential write operations needed by every write permission
+Other permissions                  Machine_VdaAotTracing_Configuration       Create, view, modify, and delete machine configurations for VDA Always on Tracing.
+Other permissions                  Monitor_Log_Server_Configuration_Manage   Manage Monitor log server configurations
+Other permissions                  Monitor_UCaaS_Connections_Manage          Create/Edit/Manage Connections to communication apps (Real-time communications Monitoring)
+Other permissions                  Monitor_UCaaS_Connections_Read            View Connections to communication apps (Real-time communications Monitoring)
+Other permissions                  Orchestration_RestApi                     Manage Orchestration Service REST API
+Other permissions                  Paladin_Admin                             Paladin service permission
+Other permissions                  PerformUpgrade                            Perform upgrade
+Other permissions                  PVS_Admin                                 PVS console admin permission
+Other permissions                  Tag_Create                                Create tags
+Other permissions                  Tag_Delete                                Delete tags
+Other permissions                  Tag_Edit                                  Edit tags
+Other permissions                  Tag_Read                                  Read tags
+Other permissions                  Trust_MultiTenantAccessList               Create and manage multi-tenant service access list permissions.
+Other permissions                  Trust_MultiTenantAccessList_Read          Read multi-tenant service access list permissions.
+Other permissions                  Trust_ServiceKeys                         Manage Trust Service Keys
+Other permissions                  Trust_VdaEnrollment                       Create and manage VDA enrollment tokens.
+Other permissions                  Trust_VdaEnrollmentToken_Read             Read VDA enrollment tokens.
+Other permissions                  VdaUpgrade_CatalogManage                  Manage VDA Upgrade Catalog Schedules
+Other permissions                  VdaUpgrade_MachineManage                  Manage VDA Upgrade Machine Schedules
+Policies                           Policies_Manage                           Manage Policies
+Policies                           Policies_Read                             View Policies
+Policies                           PolicySets_AddScope                       Add Policy Set to Scope
+Policies                           PolicySets_RemoveScope                    Remove Policy Set from Scope
+Resource Filter                    ResourceAccessPolicyRule_Create           Creates Resource Filter
+Resource Filter                    ResourceAccessPolicyRule_Delete           Delete Resource Filter
+Resource Filter                    ResourceAccessPolicyRule_EditProperties   Edit Resource Filter
+Resource Filter                    ResourceAccessPolicyRule_Read             Reads Resource Filter
+SecureBrowser                      SecureBrowser_NewConfiguration            Add SecureBrowser Broker Machine Configuration
+SecureBrowser                      SecureBrowser_Read                        Read SecureBrowser Broker Machine Configuration
+SecureBrowser                      SecureBrowser_RemoveConfiguration         Delete SecureBrowser Broker Machine Configuration
+SecureBrowser                      SecureBrowser_SetConfiguration            Set SecureBrowser Broker Machine Configuration
+Service Accounts                   ServiceAccount_AddScope                   Add Service Account to Scope
+Service Accounts                   ServiceAccount_Create                     Create Service Account
+Service Accounts                   ServiceAccount_Delete                     Delete Service Account
+Service Accounts                   ServiceAccount_EditProperties             Edit Service Account
+Service Accounts                   ServiceAccount_Read                       Read Service Account
+Service Accounts                   ServiceAccount_RemoveScope                Remove Service Account from Scope
+Settings                           Setting_Edit                              Edit Settings
+Settings                           Setting_Read                              View Settings
+StoreFronts                        Storefront_Create                         Create a new StoreFront definition
+StoreFronts                        Storefront_Delete                         Delete a StoreFront definition
+StoreFronts                        Storefront_Read                           Read StoreFront definitions
+StoreFronts                        Storefront_Update                         Update a StoreFront definition
+UPM                                UPM_NewConfiguration                      Add UPM Broker Machine Configuration
+UPM                                UPM_Read                                  Read UPM Broker Machine Configuration
+UPM                                UPM_RemoveConfiguration                   Delete UPM Broker Machine Configuration
+Zones                              EdgeServer_Manage                         Manage Citrix Cloud Connector
+Zones                              EdgeServer_Read                           View Citrix Cloud Connector
+Zones                              Zone_AddScope                             Add Zone to Scope
+Zones                              Zone_Create                               Create Zone
+Zones                              Zone_Delete                               Delete Zone
+Zones                              Zone_EditProperties                       Edit Zone
+Zones                              Zone_Read                                 View Zones
+Zones                              Zone_RemoveScope                          Remove Zone from Scope
+
+
